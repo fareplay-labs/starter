@@ -69,9 +69,7 @@ export function Header() {
               <Link
                 to="/"
                 className={`transition-colors ${
-                  location.pathname === '/'
-                    ? 'var(--foreground) font-medium'
-                    : 'text-gray-300 hover:text-white'
+                  location.pathname === '/' ? 'active-link' : 'inactive-link'
                 }`}
               >
                 Games
@@ -80,8 +78,8 @@ export function Header() {
                 to="/settings"
                 className={`transition-colors ${
                   location.pathname === '/settings'
-                    ? 'var(--foreground) font-medium'
-                    : 'text-gray-300 hover:text-white'
+                    ? 'active-link'
+                    : 'inactive-link'
                 }`}
               >
                 Settings
@@ -105,7 +103,7 @@ export function Header() {
             )}
 
             {connected && !isAuthenticated && !isLoading && error && (
-              <Button onClick={handleManualSignIn} size="sm">
+              <Button onClick={handleManualSignIn} variant="default" size="md">
                 ✍️ Sign In
               </Button>
             )}
