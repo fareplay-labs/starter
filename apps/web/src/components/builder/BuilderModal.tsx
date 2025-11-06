@@ -1,5 +1,4 @@
 import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
 
 type Step = { key: string; label: string };
 

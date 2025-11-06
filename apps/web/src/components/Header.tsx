@@ -4,6 +4,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+import { ThemeToggle } from './ui/theme-toggle';
 
 export function Header() {
   const { connected, publicKey } = useWallet();
@@ -69,7 +70,7 @@ export function Header() {
                 to="/"
                 className={`transition-colors ${
                   location.pathname === '/'
-                    ? 'text-white font-medium'
+                    ? 'var(--foreground) font-medium'
                     : 'text-gray-300 hover:text-white'
                 }`}
               >
@@ -79,7 +80,7 @@ export function Header() {
                 to="/settings"
                 className={`transition-colors ${
                   location.pathname === '/settings'
-                    ? 'text-white font-medium'
+                    ? 'var(--foreground) font-medium'
                     : 'text-gray-300 hover:text-white'
                 }`}
               >
@@ -91,10 +92,12 @@ export function Header() {
           <div className="flex items-center space-x-4">
             {isAuthenticated && user && (
               <div className="text-sm text-gray-400">
-                Welcome, {user.username || `${user.address.slice(0, 4)}...${user.address.slice(-4)}`}
+                Welcome,{' '}
+                {user.username ||
+                  `${user.address.slice(0, 4)}...${user.address.slice(-4)}`}
               </div>
             )}
-            
+
             {connected && !isAuthenticated && isLoading && (
               <div className="text-sm text-gray-400 animate-pulse">
                 Signing in...
@@ -114,6 +117,7 @@ export function Header() {
             )}
 
             <WalletMultiButton />
+            <ThemeToggle />
           </div>
         </div>
       </div>
