@@ -30,21 +30,26 @@ export function useBuilder(isManager: boolean) {
     viewJob,
   } = useBuilderStore();
 
-  const stepOrder: Step[] = useMemo(() => ([
-    { key: 'theme', label: 'Theme' },
-    { key: 'colors', label: 'Colors & Font' },
-    { key: 'parallel:imagePrompts+gamePlan', label: 'Plan & Prompts' },
-    { key: 'designGames', label: 'Design Games' },
-    { key: 'images', label: 'Banner & Logo' },
-    { key: 'resolvingImages', label: 'Generate Assets' },
-    { key: 'persistingEntities', label: 'Save to DB' },
-    { key: 'finalizingAssets', label: 'Finalize' },
-    { key: 'complete', label: 'Complete' },
-  ]), []);
+  const stepOrder: Step[] = useMemo(
+    () => [
+      { key: 'theme', label: 'Theme' },
+      { key: 'colors', label: 'Colors & Font' },
+      { key: 'parallel:imagePrompts+gamePlan', label: 'Plan & Prompts' },
+      { key: 'designGames', label: 'Design Games' },
+      { key: 'images', label: 'Banner & Logo' },
+      { key: 'resolvingImages', label: 'Generate Assets' },
+      { key: 'persistingEntities', label: 'Save to DB' },
+      { key: 'finalizingAssets', label: 'Finalize' },
+      { key: 'complete', label: 'Complete' },
+    ],
+    [],
+  );
 
   const formatElapsed = useCallback((ms: number) => {
     const s = Math.floor(ms / 1000);
-    const mm = Math.floor(s / 60).toString().padStart(2, '0');
+    const mm = Math.floor(s / 60)
+      .toString()
+      .padStart(2, '0');
     const ss = (s % 60).toString().padStart(2, '0');
     return `${mm}:${ss}`;
   }, []);
@@ -52,11 +57,15 @@ export function useBuilder(isManager: boolean) {
   useEffect(() => {
     if (!isManager) return;
     connect();
-    return () => { disconnect(); };
+    return () => {
+      disconnect();
+    };
   }, [isManager, connect, disconnect]);
 
   // initial jobs
-  useEffect(() => { if (isManager) refreshJobs(); }, [isManager, refreshJobs]);
+  useEffect(() => {
+    if (isManager) refreshJobs();
+  }, [isManager, refreshJobs]);
 
   return {
     jobs,
