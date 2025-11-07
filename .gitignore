@@ -1,7 +1,14 @@
-# compiled output
-/dist
-/node_modules
-/build
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Build outputs
+dist/
+dist-ssr/
+build/
+out/
+*.local
 
 # Logs
 logs
@@ -14,37 +21,47 @@ lerna-debug.log*
 
 # OS
 .DS_Store
+Thumbs.db
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
 
-# Tests
-/coverage
-/.nyc_output
+# Testing
+coverage/
+.nyc_output/
+*.lcov
 
 # IDEs and editors
-/.idea
+.idea/
 .project
 .classpath
 .c9/
 *.launch
 .settings/
 *.sublime-workspace
+*.sublime-project
 
-# IDE - VSCode
+# VS Code
 .vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
+*.code-workspace
 
-# dotenv environment variable files
+# Environment variables
 .env
+.env.local
 .env.development.local
 .env.test.local
 .env.production.local
-.env.local
 
-# temp directory
-.temp
-.tmp
+# Temp directories
+.temp/
+.tmp/
+tmp/
 
 # Runtime data
 pids
@@ -52,5 +69,40 @@ pids
 *.seed
 *.pid.lock
 
-# Diagnostic reports (https://nodejs.org/api/report.html)
+# Diagnostic reports
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
+
+# Cache directories
+.cache/
+.parcel-cache/
+.next/
+.nuxt/
+.vuepress/dist
+.serverless/
+.fusebox/
+.dynamodb/
+.tern-port
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+# Vite
+.vite/
+.vite-temp/
+
+# Package manager lock files (keep the one you use)
+# Uncomment if you want to ignore specific lock files
+# package-lock.json
+# yarn.lock
+# pnpm-lock.yaml
+
+# Vercel
+.vercel
+
+# Turbo
+.turbo
+
+# Misc
+*.orig
+.eslintcache
