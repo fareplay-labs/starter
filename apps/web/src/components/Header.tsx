@@ -68,12 +68,22 @@ export function Header() {
               <Link
                 to="/"
                 className={`transition-colors ${
-                  location.pathname === '/'
+                  location.pathname === '/' || location.pathname.startsWith('/casino')
                     ? 'text-white font-medium'
                     : 'text-gray-300 hover:text-white'
                 }`}
               >
-                Games
+                Casino
+              </Link>
+              <Link
+                to="/dashboard"
+                className={`transition-colors ${
+                  location.pathname === '/dashboard'
+                    ? 'text-white font-medium'
+                    : 'text-gray-300 hover:text-white'
+                }`}
+              >
+                Dashboard
               </Link>
               <Link
                 to="/settings"
@@ -120,4 +130,3 @@ export function Header() {
     </header>
   );
 }
-

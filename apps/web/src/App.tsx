@@ -7,6 +7,7 @@ import { Home } from './pages/Home';
 import { Settings } from './pages/Settings';
 import { Game } from './pages/Game';
 import { ThemeProvider } from './contexts/ThemeContext';
+import { UserPage } from './components/CustomUserCasinos/UserPage/UserPage';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -27,9 +28,12 @@ function App() {
             <BrowserRouter>
               <Layout>
                 <Routes>
-                  <Route path="/" element={<Home />} />
+                  <Route path="/" element={<UserPage />} />
+                  <Route path="/dashboard" element={<Home />} />
                   <Route path="/settings" element={<Settings />} />
                   <Route path="/game/:id" element={<Game />} />
+                  <Route path="/play/:gameType" element={<Game />} />
+                  <Route path="/casino/:username" element={<UserPage />} />
                 </Routes>
               </Layout>
             </BrowserRouter>
@@ -41,4 +45,3 @@ function App() {
 }
 
 export default App;
-
