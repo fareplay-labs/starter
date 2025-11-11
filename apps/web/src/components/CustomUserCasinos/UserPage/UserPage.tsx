@@ -136,6 +136,7 @@ export const UserPage: React.FC = () => {
             {/* Game Sections */}
             <GameSections
               sections={transformedSections}
+              ownerUsername={casino.username}
               games={casino.games}
               isEditMode={isEditMode}
               themeColors={{

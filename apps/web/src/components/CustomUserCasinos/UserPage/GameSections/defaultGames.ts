@@ -31,7 +31,7 @@ const GAME_TEMPLATES = [
   },
   {
     name: 'Crash',
-    icon: '📈',
+    icon: '💥',
     type: AppGameName.Crash,
     config: {},
   },
@@ -49,7 +49,7 @@ const GAME_TEMPLATES = [
   },
   {
     name: 'Slots',
-    icon: '🎰',
+    icon: '🎡',
     type: AppGameName.Slots_1,
     config: {},
   },
@@ -61,7 +61,7 @@ const GAME_TEMPLATES = [
   },
   {
     name: 'Crypto Launch',
-    icon: '🚀',
+    icon: '🛰️',
     type: AppGameName.CryptoLaunch_1,
     config: {},
   },

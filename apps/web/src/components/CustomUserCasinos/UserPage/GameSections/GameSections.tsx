@@ -8,6 +8,7 @@ import { type GameSectionsProps } from './types'
 
 export const GameSections: React.FC<GameSectionsProps> = ({
   sections,
+  ownerUsername,
   isEditMode = false,
   themeColors,
   onEdit,
@@ -59,6 +60,7 @@ export const GameSections: React.FC<GameSectionsProps> = ({
       isEditMode,
       themeColors,
       layout: section.layout,
+      ownerUsername,
       onEdit,
       onAddGame: () => handleAddGame(section.id),
       onRemoveGame,

@@ -28,6 +28,7 @@ export const GameSection: React.FC<GameSectionProps> = ({
   sectionId,
   title,
   games,
+  ownerUsername,
   isEditMode,
   themeColors,
   layout = 'carousel',
@@ -59,7 +60,10 @@ export const GameSection: React.FC<GameSectionProps> = ({
   const handleGameClick = (game: CustomCasinoGame) => {
     const type = typeof game?.type === 'string' ? game.type : ''
     if (!type) return
-    navigate(`/play/${type}`, { state: { game } })
+    const path =
+      game.id ? `/play/${type}/${game.id}`
+      : `/play/${type}`
+    navigate(path, { state: { game } })
   }
 
   const renderGameTile = (game: CustomCasinoGame, index: number, absIndex: number) => {

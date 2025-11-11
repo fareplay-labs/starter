@@ -9,6 +9,7 @@ export interface GameSectionProps {
   isEditMode?: boolean
   themeColors: ThemeColors
   layout?: 'carousel' | 'smallTiles' | 'largeTiles'
+  ownerUsername?: string
   onEdit?: (field: string, value: string) => void
   onAddGame?: (sectionId: string) => void
   onRemoveGame?: (sectionId: string, gameId: string) => void
@@ -31,6 +32,7 @@ export interface GameSectionsProps {
     layout?: 'carousel' | 'smallTiles' | 'largeTiles'
   }>
   games: CustomCasinoGame[]
+  ownerUsername?: string
   isEditMode?: boolean
   themeColors: ThemeColors
   onEdit?: (field: string, value: string) => void
