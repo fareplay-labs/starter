@@ -36,7 +36,7 @@ export function usePoolManager() {
     const provider = new AnchorProvider(
       connection,
       wallet as any,
-      AnchorProvider.defaultOptions()
+      AnchorProvider.defaultOptions(),
     );
     setProvider(provider);
 
@@ -50,7 +50,7 @@ export function usePoolManager() {
     try {
       const program = getProgram();
       const allPools = await (program.account as any).poolState.all();
-      
+
       const poolsInfo: PoolInfo[] = allPools.map((pool: any) => ({
         account: pool.publicKey.toString(),
         config: {
@@ -126,14 +126,15 @@ export function usePoolManager() {
         return { tx, poolAddress };
       } catch (err) {
         console.error('Pool creation failed:', err);
-        const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+        const errorMessage =
+          err instanceof Error ? err.message : 'Unknown error';
         setError(`Failed to create pool: ${errorMessage}`);
         throw err;
       } finally {
         setIsCreating(false);
       }
     },
-    [wallet, getProgram, fetchPools]
+    [wallet, getProgram, fetchPools],
   );
 
   return {
@@ -146,4 +147,3 @@ export function usePoolManager() {
     clearError: () => setError(null),
   };
 }
-
