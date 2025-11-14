@@ -25,12 +25,12 @@ export declare class AuthService {
         email?: string;
         avatarUrl?: string;
     }): Promise<{
-        id: string;
-        address: string;
-        username: string;
-        email: string;
-        avatarUrl: string;
-        updatedAt: Date;
+        id: any;
+        address: any;
+        username: any;
+        email: any;
+        avatarUrl: any;
+        updatedAt: any;
     }>;
     generateNonce(address: string): string;
 }

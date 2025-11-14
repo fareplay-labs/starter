@@ -56,7 +56,9 @@ export class CasinoSettingsController {
     }
 
     return {
-      registered: Boolean(settings.registeredCasinoId && settings.registeredPublicKey),
+      registered: Boolean(
+        settings.registeredCasinoId && settings.registeredPublicKey,
+      ),
       casinoId: settings.registeredCasinoId || null,
       publicKey: settings.registeredPublicKey || null,
       registeredAt: settings.registeredAt || null,
@@ -110,11 +112,17 @@ export class CasinoSettingsController {
       if (updated.registeredCasinoId) {
         const baseUrl = 'https://api.discover.fareplay.io';
         const client = new FareDiscoveryClient({ baseUrl });
-        const privateKey = this.configService.get<string>('HEARTBEAT_PRIVATE_KEY');
+        const privateKey = this.configService.get<string>(
+          'HEARTBEAT_PRIVATE_KEY',
+        );
         if (privateKey) {
           // Compose metadata
-          const games = await this.prisma.game.findMany({ select: { name: true } });
-          const gameNames = Array.isArray(games) ? games.map((g: any) => g.name) : [];
+          const games = await this.prisma.game.findMany({
+            select: { name: true },
+          });
+          const gameNames = Array.isArray(games)
+            ? games.map((g: any) => g.name)
+            : [];
 
           const metadata: any = {
             games: gameNames,
@@ -124,10 +132,14 @@ export class CasinoSettingsController {
           if (desc) metadata.description = desc;
           if (updated.logoUrl) metadata.logo = updated.logoUrl;
           if (updated.bannerUrl) metadata.banner = updated.bannerUrl;
-          if (updated.socialLinks) metadata.socialLinks = updated.socialLinks as any;
+          if (updated.socialLinks)
+            metadata.socialLinks = updated.socialLinks as any;
 
           // Optional status mapping (omit if undesired)
-          const statusMap: Record<string, 'online' | 'offline' | 'maintenance' | 'suspended'> = {
+          const statusMap: Record<
+            string,
+            'online' | 'offline' | 'maintenance' | 'suspended'
+          > = {
             ACTIVE: 'online',
             INACTIVE: 'offline',
             MAINTENANCE: 'maintenance',
@@ -155,4 +167,3 @@ export class CasinoSettingsController {
     return updated;
   }
 }
-

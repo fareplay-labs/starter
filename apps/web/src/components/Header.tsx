@@ -78,8 +78,8 @@ export function Header() {
                 to="/dashboard"
                 className={`transition-colors ${
                   location.pathname === '/dashboard'
-                    ? 'text-white font-medium'
-                    : 'text-gray-300 hover:text-white'
+                    ? 'active-link'
+                    : 'inactive-link'
                 }`}
               >
                 Dashboard

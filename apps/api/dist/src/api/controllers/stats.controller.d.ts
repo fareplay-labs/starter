@@ -5,20 +5,20 @@ export declare class StatsController {
     getGlobalStats(): Promise<{
         totalWagered: string;
         totalPayout: string;
-        totalPlays: number;
-        totalPlayers: number;
+        totalPlays: any;
+        totalPlayers: any;
         houseEdge: number;
     }>;
     getPoolStats(poolAddress: string): Promise<{
-        poolAddress: string;
-        managerAddress: string;
-        totalTrials: number;
-        resolvedTrials: number;
+        poolAddress: any;
+        managerAddress: any;
+        totalTrials: any;
+        resolvedTrials: any;
         pendingTrials: number;
-        feePlayMultiplier: string;
-        feeLossMultiplier: string;
-        feeMintMultiplier: string;
-        feeHostPercent: string;
-        feePoolPercent: string;
+        feePlayMultiplier: any;
+        feeLossMultiplier: any;
+        feeMintMultiplier: any;
+        feeHostPercent: any;
+        feePoolPercent: any;
     }>;
 }

@@ -23,16 +23,6 @@ export declare class MediaStorageService {
         imageUrl: string;
         s3Key?: string;
         metadata?: any;
-    }): Promise<{
-        createdAt: Date;
-        id: string;
-        userAddress: string;
-        jobId: string | null;
-        elementJobId: string | null;
-        prompt: string;
-        imageUrl: string;
-        s3Key: string;
-        metadata: import("@prisma/client/runtime/library").JsonValue | null;
-    }>;
+    }): Promise<any>;
 }
 export {};
