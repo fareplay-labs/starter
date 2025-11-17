@@ -192,33 +192,12 @@ class ImageMetadataService {
 let imageServiceInstance: IImageService | null = null
 
 /**
- * Factory to create the image service
+ * Factory to create the image service.
+ * Currently uses an in-browser media store (MediaStorageApi) only.
  */
 export const createImageService = (): IImageService => {
-  // Return existing instance if already created
   if (imageServiceInstance) {
     return imageServiceInstance
-  }
-
-  const hasBackendUrl = !!import.meta.env.VITE_BACKEND_URL
-  const isDevelopment = import.meta.env.DEV
-
-  // Check for backend URL
-  if (!hasBackendUrl) {
-    const errorMsg =
-      '[ImageService] No backend URL configured! Set VITE_BACKEND_URL environment variable.'
-    if (isDevelopment) {
-      console.warn(errorMsg)
-    } else {
-      console.error(errorMsg)
-    }
-  }
-
-  if (import.meta.env.DEV) {
-    console.log(
-      '[ImageService] Using Media Storage API:',
-      import.meta.env.VITE_BACKEND_URL || 'NOT CONFIGURED'
-    )
   }
 
   imageServiceInstance = new ImageService()

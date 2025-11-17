@@ -17,25 +17,6 @@ type StoredTheme = {
   [key: string]: any
 }
 
-const GAME_CONFIG_STORAGE_KEY = 'customCasino_game_configs'
-
-const readGameConfigStore = (): Record<string, IGameConfigData<any>> => {
-  if (typeof window === 'undefined') return {}
-  try {
-    const raw = localStorage.getItem(GAME_CONFIG_STORAGE_KEY)
-    return raw ? JSON.parse(raw) : {}
-  } catch {
-    return {}
-  }
-}
-
-const writeGameConfigStore = (store: Record<string, IGameConfigData<any>>) => {
-  if (typeof window === 'undefined') return
-  localStorage.setItem(GAME_CONFIG_STORAGE_KEY, JSON.stringify(store))
-}
-
-const makeGameConfigKey = (username: string, gameId: string) => `${username}:${gameId}`
-
 const defaultStats = {
   totalPlays: 0,
   totalWagered: 0,
@@ -178,23 +159,86 @@ export class RealBackendService {
   }
 
   static async getGameConfig(
-    username: string,
+    _username: string,
     gameId: string,
-    _gameType?: string
+    gameType?: string
   ): Promise<IGameConfigData<any> | null> {
-    const store = readGameConfigStore()
-    return store[makeGameConfigKey(username, gameId)] ?? null
+    const settings: any = await api.getCasinoSettings()
+    const theme = (settings?.theme as StoredTheme) ?? {}
+    const games = Array.isArray(theme.games) ? theme.games : []
+
+    const match =
+      games.find((g: any) => g?.id === gameId) ||
+      games.find((g: any) => g?.type === gameType)
+
+    if (!match) return null
+
+    // If the saved config is already in IGameConfigData shape, use it directly
+    if (match.config && typeof match.config === 'object') {
+      const cfg = match.config as IGameConfigData<any>
+      // Backward compatibility: if parameters are missing but config itself is parameters, wrap it
+      if (!cfg.parameters) {
+        return {
+          name: cfg.name ?? match.name,
+          icon: cfg.icon ?? match.icon,
+          parameters: cfg as any,
+        }
+      }
+      return {
+        ...cfg,
+        name: cfg.name ?? match.name,
+        icon: cfg.icon ?? match.icon,
+      }
+    }
+
+    return null
   }
 
   static async saveGameConfig(
-    username: string,
+    _username: string,
     gameId: string,
     config: IGameConfigData<any>,
-    _gameType?: string
+    gameType?: string
   ): Promise<void> {
-    const store = readGameConfigStore()
-    store[makeGameConfigKey(username, gameId)] = config
-    writeGameConfigStore(store)
+    const settings: any = await api.getCasinoSettings()
+    const theme: StoredTheme = (settings?.theme as StoredTheme) ?? {}
+    const games: CustomCasinoGame[] = Array.isArray(theme.games) ? [...theme.games] : []
+
+    const idx = games.findIndex(g => g.id === gameId)
+    const nextConfig = {
+      name: config.name,
+      icon: config.icon,
+      description: config.description,
+      layout: config.layout,
+      colors: config.colors,
+      window: config.window,
+      parameters: config.parameters ?? {},
+    } as IGameConfigData<any>
+
+    if (idx >= 0) {
+      games[idx] = {
+        ...games[idx],
+        name: config.name ?? games[idx].name,
+        icon: config.icon ?? games[idx].icon,
+        type: games[idx].type ?? (gameType as any),
+        config: nextConfig,
+      }
+    } else {
+      games.push({
+        id: gameId,
+        type: (gameType as any) ?? '',
+        name: config.name ?? gameType ?? 'Game',
+        icon: config.icon ?? '',
+        order: games.length + 1,
+        config: nextConfig,
+      })
+    }
+
+    theme.games = games
+
+    await api.updateCasinoSettings({
+      theme,
+    })
   }
 
   static async getCasinoPreviews(): Promise<CasinoPreview[]> {
@@ -222,6 +266,6 @@ export class RealBackendService {
   }
 
   static async clearAllUserData(_userId: string): Promise<void> {
-    writeGameConfigStore({})
+    // No-op now that configs are stored in the backend
   }
 }
