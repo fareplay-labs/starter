@@ -1,5 +1,15 @@
 import { ComponentType, lazy, type LazyExoticComponent } from 'react';
 import { AppGameName } from '@/chains/types';
+import { DICE_GAME_INFO } from '@/components/CustomUserCasinos/CustomGames/Dice/types';
+import { ROULETTE_GAME_INFO } from '@/components/CustomUserCasinos/CustomGames/Roulette/types';
+import { PLINKO_GAME_INFO } from '@/components/CustomUserCasinos/CustomGames/Plinko/types';
+import { COINFLIP_GAME_INFO } from '@/components/CustomUserCasinos/CustomGames/CoinFlip/types';
+import { CRASH_GAME_INFO } from '@/components/CustomUserCasinos/CustomGames/Crash/types';
+import { SLOTS_GAME_INFO } from '@/components/CustomUserCasinos/CustomGames/Slots/types';
+import { BOMBS_GAME_INFO } from '@/components/CustomUserCasinos/CustomGames/Bombs/types';
+import { RPS_CONFIG } from '@/components/CustomUserCasinos/CustomGames/RPS/types';
+import { CARDS_GAME_INFO } from '@/components/CustomUserCasinos/CustomGames/Cards/types';
+import { CRYPTO_LAUNCH_GAME_INFO } from '@/components/CustomUserCasinos/CustomGames/CryptoLaunch/types';
 
 type GameComponent = LazyExoticComponent<ComponentType<{ config: Record<string, any> }>>;
 
@@ -26,63 +36,63 @@ const stubs = {
 export const GameRegistry: Record<AppGameName, RegisteredGame> = {
   [AppGameName.Dice]: {
     key: AppGameName.Dice,
-    title: 'Dice',
-    description: 'Classic over/under dice betting with instant rolls.',
+    title: DICE_GAME_INFO.name,
+    description: DICE_GAME_INFO.description,
     component: lazy(() => import('./dice/DiceGame')),
     tags: ['live', 'featured'],
   },
   [AppGameName.Roulette]: {
     key: AppGameName.Roulette,
-    title: 'Roulette',
-    description: 'Spin the wheel and pick your lucky number.',
+    title: ROULETTE_GAME_INFO.name,
+    description: ROULETTE_GAME_INFO.description,
     component: stubs.Roulette,
   },
   [AppGameName.Plinko]: {
     key: AppGameName.Plinko,
-    title: 'Plinko',
-    description: 'Drop balls through pegs, chase multiplier pockets.',
+    title: PLINKO_GAME_INFO.name,
+    description: PLINKO_GAME_INFO.description,
     component: stubs.Plinko,
   },
   [AppGameName.CoinFlip]: {
     key: AppGameName.CoinFlip,
-    title: 'Coin Flip',
-    description: '50/50 fortunes with configurable odds.',
+    title: COINFLIP_GAME_INFO.name,
+    description: COINFLIP_GAME_INFO.description,
     component: stubs.CoinFlip,
   },
   [AppGameName.Crash]: {
     key: AppGameName.Crash,
-    title: 'Crash',
-    description: 'Ride the multiplier rocket and bail out in time.',
+    title: CRASH_GAME_INFO.name,
+    description: CRASH_GAME_INFO.description,
     component: stubs.Crash,
   },
   [AppGameName.Slots_1]: {
     key: AppGameName.Slots_1,
-    title: 'Slots',
-    description: 'High-volatility reels with configurable themes.',
+    title: SLOTS_GAME_INFO.name,
+    description: SLOTS_GAME_INFO.description,
     component: stubs.Slots,
   },
   [AppGameName.Bombs]: {
     key: AppGameName.Bombs,
-    title: 'Bombs',
-    description: 'Grid-based risk and reward mini-game.',
+    title: BOMBS_GAME_INFO.name,
+    description: BOMBS_GAME_INFO.description,
     component: stubs.Bombs,
   },
   [AppGameName.RPS]: {
     key: AppGameName.RPS,
-    title: 'Rock Paper Scissors',
-    description: 'Beat the house with timeless hand signs.',
+    title: RPS_CONFIG.name,
+    description: RPS_CONFIG.description,
     component: stubs.RPS,
   },
   [AppGameName.Cards_1]: {
     key: AppGameName.Cards_1,
-    title: 'Cards',
-    description: 'Card mini-games placeholder.',
+    title: CARDS_GAME_INFO.name,
+    description: CARDS_GAME_INFO.description,
     component: stubs.Cards,
   },
   [AppGameName.CryptoLaunch_1]: {
     key: AppGameName.CryptoLaunch_1,
-    title: 'Crypto Launch',
-    description: 'A rocket-style crash variant.',
+    title: CRYPTO_LAUNCH_GAME_INFO.name,
+    description: CRYPTO_LAUNCH_GAME_INFO.description,
     component: stubs.CryptoLaunch,
   },
 };
@@ -98,4 +108,3 @@ export const getRegisteredGame = (type?: string | null): RegisteredGame | undefi
   const matched = supportedGameTypes.find((entry) => entry.toLowerCase() === type.toLowerCase());
   return matched ? GameRegistry[matched] : undefined;
 };
-
