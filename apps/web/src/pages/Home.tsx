@@ -87,7 +87,11 @@ export function Home() {
                     <p className="text-muted-foreground text-sm">No games in this section.</p>
                   ) : (
                     section.games.map((g: any) => (
-                      <Card key={g.id} onClick={() => navigate(`/game/${g.id}`)} className="hover:border-primary transition-all cursor-pointer">
+                      <Card
+                        key={g.id}
+                        onClick={() => navigate(`/play/${g.gameType}/${g.id}`)}
+                        className="hover:border-primary transition-all cursor-pointer"
+                      >
                         <CardContent className="pt-4">
                           {g.thumbnail ? (
                             <img src={g.thumbnail} alt={g.name} className="h-24 w-full object-cover rounded mb-3" />
