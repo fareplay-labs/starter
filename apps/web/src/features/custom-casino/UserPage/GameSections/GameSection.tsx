@@ -119,8 +119,8 @@ export const GameSection: React.FC<GameSectionProps> = ({
     )
 
     const tileProps = {
-      borderColor: themeColors.themeColor1,
-      hoverColors: {
+      $borderColor: themeColors.themeColor1,
+      $hoverColors: {
         secondary: themeColors.themeColor2,
         tertiary: themeColors.themeColor3,
       },

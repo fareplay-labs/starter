@@ -4,7 +4,7 @@ import { COLORS } from '@/design/colors'
 import { getImageUrl } from '@/features/custom-casino/shared/utils/cropDataUtils'
 
 // Base container for all game content with background support
-export const GameContainer = styled.div<{ backgroundColor?: any }>`
+export const GameContainer = styled.div<{ $backgroundColor?: any }>`
   position: relative;
   width: 100%;
   height: 100%;
@@ -20,7 +20,7 @@ export const GameContainer = styled.div<{ backgroundColor?: any }>`
   padding: 20px;
   border-radius: 8px;
   overflow: hidden;
-  background: ${props => getImageUrl(props.backgroundColor) || 'transparent'};
+  background: ${props => getImageUrl(props.$backgroundColor) || 'transparent'};
 `
 
 // Add a pulsing animation for loading

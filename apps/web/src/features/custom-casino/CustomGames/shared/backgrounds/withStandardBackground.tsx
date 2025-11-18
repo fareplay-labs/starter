@@ -180,7 +180,11 @@ export function withStandardBackground<P extends object>(
     // If it's a solid color or gradient, let the wrapped component handle it normally
     if (!hasImageBackground) {
       return (
-        <WrappedComponent {...(componentProps as P)} backgroundColor={backgroundColor} ref={ref} />
+        <WrappedComponent
+          {...(componentProps as P)}
+          $backgroundColor={backgroundColor}
+          ref={ref}
+        />
       )
     }
 
