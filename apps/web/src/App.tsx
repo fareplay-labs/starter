@@ -5,10 +5,9 @@ import { WebSocketProvider } from './contexts/WebSocketContext';
 import { Layout } from './components/Layout';
 import { Home } from './pages/Home';
 import { Settings } from './pages/Settings';
-import { Game } from './pages/Game';
 import { ThemeProvider } from './contexts/ThemeContext';
-import { UserPage } from './components/CustomUserCasinos/UserPage/UserPage';
-import CustomGamesRouter from './components/CustomUserCasinos/CustomGames/shared/CustomGamePage/CustomGameRouter';
+import { UserPage } from './features/custom-casino/UserPage/UserPage';
+import CustomGamesRouter from './features/custom-casino/CustomGames/shared/CustomGamePage/CustomGameRouter';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -34,7 +33,6 @@ function App() {
                   <Route path="/settings" element={<Settings />} />
                   <Route path="/play/:gameType" element={<CustomGamesRouter />} />
                   <Route path="/play/:gameType/:instanceId" element={<CustomGamesRouter />} />
-                  <Route path="/game/:id" element={<Game />} />
                   <Route path="/casino/:username" element={<UserPage />} />
                 </Routes>
               </Layout>
