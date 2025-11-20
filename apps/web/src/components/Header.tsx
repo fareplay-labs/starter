@@ -72,7 +72,17 @@ export function Header() {
                   location.pathname === '/' ? 'active-link' : 'inactive-link'
                 }`}
               >
-                Games
+                Casino
+              </Link>
+              <Link
+                to="/dashboard"
+                className={`transition-colors ${
+                  location.pathname === '/dashboard'
+                    ? 'active-link'
+                    : 'inactive-link'
+                }`}
+              >
+                Dashboard
               </Link>
               <Link
                 to="/settings"
@@ -122,4 +132,3 @@ export function Header() {
     </header>
   );
 }
-

@@ -10,6 +10,13 @@ build/
 out/
 *.local
 
+# workspace build artifacts
+**/dist
+**/node_modules
+**/build
+**/.vite
+*.tsbuildinfo
+
 # Logs
 logs
 *.log

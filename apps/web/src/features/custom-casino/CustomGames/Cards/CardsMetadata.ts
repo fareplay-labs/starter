@@ -1,0 +1,186 @@
+// @ts-nocheck
+import { type GameEditorMetadata } from '../shared/GameParameterEditor/types'
+import { AppGameName } from '@/chains/types'
+import { DEFAULT_CARDS_PARAMETERS } from './types'
+
+export const CARDS_EDITOR_METADATA: GameEditorMetadata = {
+  gameType: AppGameName.Cards_1,
+  sections: [
+    {
+      id: 'game',
+      title: 'Visual Settings',
+      parameters: [
+        {
+          id: 'background',
+          label: 'Background',
+          type: 'color',
+          colorOptions: {
+            allowGradient: true,
+            allowAlpha: true,
+            allowGradientDirection: true,
+            allowLinearGradient: true,
+            allowRadialGradient: true,
+            allowImage: true,
+            allowAIGen: true,
+            imageType: 'background',
+            imageAspectRatio: 626 / 487,
+          },
+          defaultValue: DEFAULT_CARDS_PARAMETERS.background.url,
+          description: 'Background of the game area',
+        },
+        {
+          id: 'commonColor',
+          label: 'Common Color',
+          type: 'color',
+          defaultValue: '#B0B0B0',
+          description: 'Color for common rarity cards',
+        },
+        {
+          id: 'rareColor',
+          label: 'Rare Color',
+          type: 'color',
+          defaultValue: '#0088FF',
+          description: 'Color for rare rarity cards',
+        },
+        {
+          id: 'epicColor',
+          label: 'Epic Color',
+          type: 'color',
+          defaultValue: '#9932CC',
+          description: 'Color for epic rarity cards',
+        },
+        {
+          id: 'legendaryColor',
+          label: 'Legendary Color',
+          type: 'color',
+          defaultValue: '#FF8C00',
+          description: 'Color for legendary rarity cards',
+        },
+        // {
+        //   id: 'revealIntervalMs',
+        //   label: 'Reveal Interval (ms)',
+        //   type: 'number',
+        //   defaultValue: 350,
+        //   constraints: { min: 0, max: 2000, step: 50 },
+        // },
+        {
+          id: 'iconSize',
+          label: 'Icon Size',
+          type: 'number',
+          defaultValue: 1.0,
+          constraints: { min: 0.6, max: 2.0, step: 0.1 },
+          description: 'Relative size of card icons (1.0 = normal size)',
+        },
+        {
+          id: 'packNames',
+          label: 'Pack Names',
+          type: 'array',
+          defaultValue: DEFAULT_CARDS_PARAMETERS.packNames,
+          description: 'Names for the three pack types',
+          arrayOptions: {
+            itemType: 'string',
+            fixedLength: 3,
+            itemLabels: ['Beginner Pack', 'Intermediate Pack', 'Expert Pack'],
+          },
+        },
+      ],
+    },
+    {
+      id: 'cardCollection',
+      title: 'Card Collection',
+      parameters: [
+        {
+          id: 'cardsCatalog',
+          label: 'Cards Catalog',
+          type: 'catalog',
+          defaultValue: DEFAULT_CARDS_PARAMETERS.cardsCatalog,
+          description: 'Card collection (matches live game - visual customization only)',
+          catalogOptions: {
+            fields: [
+              { key: 'name', label: 'Name', type: 'string', required: true },
+              {
+                key: 'iconUrl',
+                label: 'Icon',
+                type: 'url',
+                imageAspectRatio: 1,
+                imageType: 'icon',
+                cropShape: 'round',
+                allowAIGen: true,
+                allowEmoji: true,
+              },
+              // { key: 'description', label: 'Description', type: 'string' },
+              {
+                key: 'tier',
+                label: 'Rarity',
+                type: 'select',
+                options: [
+                  { value: 'common', label: 'Common' },
+                  { value: 'rare', label: 'Rare' },
+                  { value: 'epic', label: 'Epic' },
+                  { value: 'legendary', label: 'Legendary' },
+                ],
+              },
+            ],
+            allowAdd: false,
+            allowRemove: false,
+            seedDefaults: DEFAULT_CARDS_PARAMETERS.cardsCatalog,
+          },
+        },
+      ],
+    },
+    {
+      id: 'sounds',
+      title: 'Sound Settings',
+      parameters: [
+        {
+          id: 'customSounds.packSelect',
+          label: 'Pack Select Sound',
+          type: 'sound',
+          defaultValue: undefined,
+          description: 'Sound played when selecting a pack',
+          soundOptions: { soundContext: 'Pack Select' },
+        },
+        {
+          id: 'customSounds.packOpen',
+          label: 'Pack Open Sound',
+          type: 'sound',
+          defaultValue: undefined,
+          description: 'Sound played when opening/cutting a pack',
+          soundOptions: { soundContext: 'Pack Open' },
+        },
+        {
+          id: 'customSounds.cardFlip',
+          label: 'Card Flip Sound',
+          type: 'sound',
+          defaultValue: undefined,
+          description: 'Sound played when flipping a regular card',
+          soundOptions: { soundContext: 'Card Flip' },
+        },
+        {
+          id: 'customSounds.cardReveal',
+          label: 'Card Reveal Sound',
+          type: 'sound',
+          defaultValue: undefined,
+          description: 'Sound played when card value is revealed',
+          soundOptions: { soundContext: 'Card Reveal' },
+        },
+        {
+          id: 'customSounds.win',
+          label: 'Win Sound',
+          type: 'sound',
+          defaultValue: undefined,
+          description: 'Sound played when player wins',
+          soundOptions: { soundContext: 'Win' },
+        },
+        {
+          id: 'customSounds.lose',
+          label: 'Lose Sound',
+          type: 'sound',
+          defaultValue: undefined,
+          description: 'Sound played when player loses',
+          soundOptions: { soundContext: 'Lose' },
+        },
+      ],
+    },
+  ],
+}

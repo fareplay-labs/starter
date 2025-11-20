@@ -5,25 +5,7 @@ export declare class CasinoSettingsController {
     private readonly prisma;
     private readonly configService;
     constructor(prisma: PrismaService, configService: ConfigService);
-    getSettings(): Promise<{
-        name: string;
-        createdAt: Date;
-        updatedAt: Date;
-        poolAddress: string | null;
-        id: string;
-        shortDescription: string | null;
-        longDescription: string | null;
-        logoUrl: string | null;
-        bannerUrl: string | null;
-        primaryColor: string | null;
-        theme: import("@prisma/client/runtime/library").JsonValue | null;
-        status: import(".prisma/client").$Enums.CasinoStatus;
-        websiteUrl: string | null;
-        socialLinks: import("@prisma/client/runtime/library").JsonValue | null;
-        registeredCasinoId: string | null;
-        registeredPublicKey: string | null;
-        registeredAt: Date | null;
-    }>;
+    getSettings(): Promise<any>;
     getRegistrationStatus(): Promise<{
         registered: boolean;
         reason: string;
@@ -33,10 +15,10 @@ export declare class CasinoSettingsController {
         status?: undefined;
     } | {
         registered: boolean;
-        casinoId: string;
-        publicKey: string;
-        registeredAt: Date;
-        status: import(".prisma/client").$Enums.CasinoStatus;
+        casinoId: any;
+        publicKey: any;
+        registeredAt: any;
+        status: any;
         reason?: undefined;
     }>;
     updateSettings(updateData: {
@@ -51,23 +33,5 @@ export declare class CasinoSettingsController {
         status?: CasinoStatus;
         websiteUrl?: string;
         socialLinks?: any;
-    }): Promise<{
-        name: string;
-        createdAt: Date;
-        updatedAt: Date;
-        poolAddress: string | null;
-        id: string;
-        shortDescription: string | null;
-        longDescription: string | null;
-        logoUrl: string | null;
-        bannerUrl: string | null;
-        primaryColor: string | null;
-        theme: import("@prisma/client/runtime/library").JsonValue | null;
-        status: import(".prisma/client").$Enums.CasinoStatus;
-        websiteUrl: string | null;
-        socialLinks: import("@prisma/client/runtime/library").JsonValue | null;
-        registeredCasinoId: string | null;
-        registeredPublicKey: string | null;
-        registeredAt: Date | null;
-    }>;
+    }): Promise<any>;
 }
