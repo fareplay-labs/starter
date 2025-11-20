@@ -162,7 +162,6 @@ export declare const RPSParamsSchema: z.ZodObject<{
     showVsText: z.ZodDefault<z.ZodBoolean>;
     glowEffect: z.ZodDefault<z.ZodBoolean>;
 }, "strip", z.ZodTypeAny, {
-    primaryColor?: string;
     gameIcon?: string;
     background?: string;
     animationSpeed?: number;
@@ -171,6 +170,7 @@ export declare const RPSParamsSchema: z.ZodObject<{
     animationPreset?: "standard" | "clash";
     handSize?: number;
     handSpacing?: number;
+    primaryColor?: string;
     secondaryColor?: string;
     useCustomIcons?: boolean;
     customRockImage?: string;
@@ -180,7 +180,6 @@ export declare const RPSParamsSchema: z.ZodObject<{
     showVsText?: boolean;
     glowEffect?: boolean;
 }, {
-    primaryColor?: string;
     gameIcon?: string;
     background?: string;
     animationSpeed?: number;
@@ -189,6 +188,7 @@ export declare const RPSParamsSchema: z.ZodObject<{
     animationPreset?: "standard" | "clash";
     handSize?: number;
     handSpacing?: number;
+    primaryColor?: string;
     secondaryColor?: string;
     useCustomIcons?: boolean;
     customRockImage?: string;

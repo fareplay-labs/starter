@@ -3,36 +3,23 @@ export declare class PlayerController {
     private readonly prisma;
     constructor(prisma: PrismaService);
     getPlayer(address: string): Promise<{
-        address: string;
-        username: string;
-        avatarUrl: string;
-        totalWagered: string;
-        totalPayout: string;
+        address: any;
+        username: any;
+        avatarUrl: any;
+        totalWagered: any;
+        totalPayout: any;
         profitLoss: string;
-        totalBets: number;
-        totalWins: number;
-        totalLosses: number;
+        totalBets: any;
+        totalWins: any;
+        totalLosses: any;
         winRate: number;
-        createdAt: Date;
-        lastSeenAt: Date;
+        createdAt: any;
+        lastSeenAt: any;
     }>;
     getPlayerTrials(address: string, limit?: string, offset?: string): Promise<{
-        trials: {
-            trialId: string;
-            poolAddress: string;
-            multiplier: string;
-            qkWithConfigHash: string;
-            extraDataHash: string;
-            createdAt: Date;
-            resolved: boolean;
-            resolvedAt: Date;
-            resultIndex: number;
-            resultK: string;
-            deltaAmount: string;
-            gameResult: import("@prisma/client/runtime/library").JsonValue;
-        }[];
+        trials: any;
         pagination: {
-            total: number;
+            total: any;
             limit: number;
             offset: number;
             hasMore: boolean;

@@ -4,14 +4,20 @@ import { StatsCard } from '@/components/StatsCard';
 import { useGameWebSocket } from '@/contexts/WebSocketContext';
 import { useEffect, useState } from 'react';
 import type { Trial } from '@fare-casino/types';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useNavigate } from 'react-router-dom';
 
 export function Home() {
   const [recentTrials, setRecentTrials] = useState<Trial[]>([]);
   const navigate = useNavigate();
-  
+
   const { data: stats, isLoading } = useQuery({
     queryKey: ['globalStats'],
     queryFn: () => api.getGlobalStats(),
@@ -33,7 +39,9 @@ export function Home() {
   useEffect(() => {
     if (trialResolved) {
       setRecentTrials((prev) =>
-        prev.map((t) => (t.trialId === trialResolved.trialId ? trialResolved : t))
+        prev.map((t) =>
+          t.trialId === trialResolved.trialId ? trialResolved : t,
+        ),
       );
     }
   }, [trialResolved]);
@@ -59,16 +67,42 @@ export function Home() {
           Provably fair gaming on Solana
         </p>
         <Badge variant={connected ? 'default' : 'secondary'} className="gap-2">
-          <span className={`h-2 w-2 rounded-full ${connected ? 'bg-green-500' : 'bg-gray-500'} animate-pulse`} />
+          <span
+            className={`h-2 w-2 rounded-full ${connected ? 'bg-green-500' : 'bg-gray-500'} animate-pulse`}
+          />
           {connected ? 'Live' : 'Connecting...'}
         </Badge>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <StatsCard title="Total Wagered" value={stats ? `${(Number(stats.totalWagered) / 1e6).toFixed(2)} USDC` : '...'} icon="💰" />
-        <StatsCard title="Total Payout" value={stats ? `${(Number(stats.totalPayout) / 1e6).toFixed(2)} USDC` : '...'} icon="🎁" />
-        <StatsCard title="Total Players" value={stats?.totalPlayers || 0} icon="👥" />
-        <StatsCard title="House Edge" value={stats ? `${stats.houseEdge.toFixed(2)}%` : '...'} icon="🏠" />
+        <StatsCard
+          title="Total Wagered"
+          value={
+            stats
+              ? `${(Number(stats.totalWagered) / 1e6).toFixed(2)} USDC`
+              : '...'
+          }
+          icon="💰"
+        />
+        <StatsCard
+          title="Total Payout"
+          value={
+            stats
+              ? `${(Number(stats.totalPayout) / 1e6).toFixed(2)} USDC`
+              : '...'
+          }
+          icon="🎁"
+        />
+        <StatsCard
+          title="Total Players"
+          value={stats?.totalPlayers || 0}
+          icon="👥"
+        />
+        <StatsCard
+          title="House Edge"
+          value={stats ? `${stats.houseEdge.toFixed(2)}%` : '...'}
+          icon="🏠"
+        />
       </div>
 
       {Array.isArray(sections) && sections.length > 0 && (
@@ -82,9 +116,17 @@ export function Home() {
                 <CardDescription>Layout: {section.layout}</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className={section.layout === 'carousel' ? 'grid grid-flow-col auto-cols-[220px] gap-3 overflow-x-auto' : 'grid grid-cols-1 md:grid-cols-3 gap-4'}>
-                  {(!section.games || section.games.length === 0) ? (
-                    <p className="text-muted-foreground text-sm">No games in this section.</p>
+                <div
+                  className={
+                    section.layout === 'carousel'
+                      ? 'grid grid-flow-col auto-cols-[220px] gap-3 overflow-x-auto'
+                      : 'grid grid-cols-1 md:grid-cols-3 gap-4'
+                  }
+                >
+                  {!section.games || section.games.length === 0 ? (
+                    <p className="text-muted-foreground text-sm">
+                      No games in this section.
+                    </p>
                   ) : (
                     section.games.map((g: any) => (
                       <Card
@@ -94,12 +136,20 @@ export function Home() {
                       >
                         <CardContent className="pt-4">
                           {g.thumbnail ? (
-                            <img src={g.thumbnail} alt={g.name} className="h-24 w-full object-cover rounded mb-3" />
+                            <img
+                              src={g.thumbnail}
+                              alt={g.name}
+                              className="h-24 w-full object-cover rounded mb-3"
+                            />
                           ) : (
-                            <div className="text-4xl mb-3">{gameEmoji(g.gameType)}</div>
+                            <div className="text-4xl mb-3">
+                              {gameEmoji(g.gameType)}
+                            </div>
                           )}
                           <h3 className="text-xl font-bold mb-1">{g.name}</h3>
-                          <p className="text-muted-foreground text-sm">{g.description || g.gameType}</p>
+                          <p className="text-muted-foreground text-sm">
+                            {g.description || g.gameType}
+                          </p>
                         </CardContent>
                       </Card>
                     ))
@@ -140,8 +190,21 @@ export function Home() {
                       <p className="font-bold">
                         {(Number(trial.multiplier) / 1e6).toFixed(2)} USDC
                       </p>
-                      <Badge variant={trial.resolved ? (trial.deltaAmount && Number(trial.deltaAmount) > 0 ? 'default' : 'destructive') : 'secondary'} className="mt-1">
-                        {trial.resolved ? (trial.deltaAmount && Number(trial.deltaAmount) > 0 ? `+${(Number(trial.deltaAmount) / 1e6).toFixed(2)} USDC` : `${(Number(trial.deltaAmount || 0) / 1e6).toFixed(2)} USDC`) : 'Pending...'}
+                      <Badge
+                        variant={
+                          trial.resolved
+                            ? trial.deltaAmount && Number(trial.deltaAmount) > 0
+                              ? 'default'
+                              : 'destructive'
+                            : 'secondary'
+                        }
+                        className="mt-1"
+                      >
+                        {trial.resolved
+                          ? trial.deltaAmount && Number(trial.deltaAmount) > 0
+                            ? `+${(Number(trial.deltaAmount) / 1e6).toFixed(2)} USDC`
+                            : `${(Number(trial.deltaAmount || 0) / 1e6).toFixed(2)} USDC`
+                          : 'Pending...'}
                       </Badge>
                     </div>
                   </CardContent>
@@ -157,16 +220,27 @@ export function Home() {
 
 function gameEmoji(gameType: string): string {
   switch (gameType) {
-    case 'dice': return '🎲';
-    case 'coinflip': return '🪙';
-    case 'slots': return '🎰';
-    case 'bombs': return '💣';
-    case 'roulette': return '🎡';
-    case 'crash': return '🚀';
-    case 'plinko': return '🟣';
-    case 'cards': return '🃏';
-    case 'cryptolaunch': return '📈';
-    case 'rps': return '✊';
-    default: return '🎮';
+    case 'dice':
+      return '🎲';
+    case 'coinflip':
+      return '🪙';
+    case 'slots':
+      return '🎰';
+    case 'bombs':
+      return '💣';
+    case 'roulette':
+      return '🎡';
+    case 'crash':
+      return '🚀';
+    case 'plinko':
+      return '🟣';
+    case 'cards':
+      return '🃏';
+    case 'cryptolaunch':
+      return '📈';
+    case 'rps':
+      return '✊';
+    default:
+      return '🎮';
   }
 }

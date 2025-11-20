@@ -1,4 +1,10 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -15,7 +21,16 @@ interface Props {
 }
 
 export function ProfileSettings(props: Props) {
-  const { user, publicKey, username, setUsername, email, setEmail, isSaving, onSave } = props;
+  const {
+    user,
+    publicKey,
+    username,
+    setUsername,
+    email,
+    setEmail,
+    isSaving,
+    onSave,
+  } = props;
   return (
     <Card>
       <CardHeader>
@@ -73,5 +88,3 @@ export function ProfileSettings(props: Props) {
     </Card>
   );
 }
-
-

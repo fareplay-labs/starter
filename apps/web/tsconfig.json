@@ -20,11 +20,10 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
 
-    /* Path aliases */
+    /* Path mapping */
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"],
-      "@fare-casino/types": ["../../packages/types/src"]
+      "@/*": ["./src/*"]
     }
   },
   "include": ["src"],
