@@ -91,7 +91,6 @@ report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 .tern-port
 
 # TypeScript
-*.tsbuildinfo
 next-env.d.ts
 
 # Vite

@@ -50,7 +50,6 @@ tmp/
 *.tsbuildinfo
 
 # NestJS
-dist/
 .nest/
 
 # Prisma
