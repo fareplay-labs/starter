@@ -11,34 +11,28 @@ import {
   DemoModeToggle,
   LabelledNumberSliderInput,
   BannerSelect,
-} from '../../shared/formComponents'
+} from '../../shared/formComponents/tailwind'
 import { useMaxBetAmount } from '../../shared/hooks/useMaxBetAmount'
 import { useIsLoading } from '../../shared/hooks/useIsLoading'
-import { styled } from 'styled-components'
+import { cn } from '@/lib/utils'
 import { GameButton } from '@/features/custom-casino/shared/Button/GameButton'
 import { useGameContract } from '@/features/custom-casino/Singletons/useGameContract'
 import { cardDrawCountToOpenAPack } from '@/features/custom-casino/lib/crypto/cards'
 import { KeepSelectionCheckbox } from '@/features/custom-casino/shared/KeepSelectionCheckbox'
 
-const TotalCostDisplay = styled.div`
-  padding: 0.75rem;
-  background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.05));
-  border: 1px solid rgba(16, 185, 129, 0.3);
-  border-radius: 8px;
-  text-align: center;
-
-  .label {
-    font-size: 0.75rem;
-    color: rgba(255, 255, 255, 0.6);
-    margin-bottom: 0.25rem;
-  }
-
-  .value {
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: #10b981;
-  }
-`
+// TotalCostDisplay component with Tailwind
+const TotalCostDisplay: React.FC<{ label: string; value: string }> = ({ label, value }) => (
+  <div
+    className={cn(
+      'p-3 rounded-lg text-center',
+      'bg-gradient-to-br from-emerald-500/10 to-emerald-500/5',
+      'border border-emerald-500/30'
+    )}
+  >
+    <div className="text-xs text-white/60 mb-1">{label}</div>
+    <div className="text-2xl font-bold text-emerald-500">{value}</div>
+  </div>
+)
 
 export const CardsForm: React.FC = () => {
   const { maxBetAmount, sliderStep, balance } = useMaxBetAmount()
@@ -207,10 +201,7 @@ export const CardsForm: React.FC = () => {
         disabled={isDisabled}
       />
 
-      <TotalCostDisplay>
-        <div className='label'>TOTAL BET</div>
-        <div className='value'>${formatCardValue(totalCost)}</div>
-      </TotalCostDisplay>
+      <TotalCostDisplay label="TOTAL BET" value={`$${formatCardValue(totalCost)}`} />
 
       {isDemoMode ?
         <DemoSubmitButton

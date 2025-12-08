@@ -9,7 +9,7 @@ import {
   DemoSubmitButton,
   DemoModeToggle,
   StandardFormLayout,
-} from '../shared/formComponents'
+} from '../shared/formComponents/tailwind'
 import {
   ChipSection,
   ChipTitle,
@@ -49,7 +49,7 @@ import { useGameContract } from '@/features/custom-casino/Singletons/useGameCont
 import { GameButton } from '@/features/custom-casino/shared/Button/GameButton'
 import { ChipBorder } from '@/features/custom-casino/CustomGames/Roulette/RouletteLegacyStyles'
 import { type BetType } from '@/features/custom-casino/store/useRouletteGameStore'
-import { CheckboxContainer, CheckboxLabel, StyledCheckbox } from '@/features/custom-casino/shared/KeepSelectionCheckbox/styles'
+import { KeepSelectionCheckbox } from '@/features/custom-casino/shared/KeepSelectionCheckbox'
 import { useIsGameAnimating } from '@/features/custom-casino/hooks/useIsGameAnimating'
 
 interface RouletteFormProps {
@@ -343,17 +343,14 @@ const RouletteForm: React.FC<RouletteFormProps> = ({ onSpin, editMode = false })
 
       {!editMode && <DemoModeToggle />}
 
-      <CheckboxContainer>
-        <CheckboxLabel>
-          <StyledCheckbox
-            type='checkbox'
-            checked={keepSelection}
-            onChange={toggleKeepSelection}
-            disabled={isGameAnimating}
-          />
-          Keep Selections
-        </CheckboxLabel>
-      </CheckboxContainer>
+      <KeepSelectionCheckbox
+        checked={keepSelection}
+        onChange={toggleKeepSelection}
+        disabled={isGameAnimating}
+        className="roulette-checkbox"
+      >
+        Keep Selections
+      </KeepSelectionCheckbox>
 
       <FormErrorDisplay message={error} />
     </StandardFormLayout>

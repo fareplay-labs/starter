@@ -13,11 +13,11 @@ import {
   GameStats,
   DemoSubmitButton,
   DemoModeToggle,
-} from '../shared/formComponents'
+} from '../shared/formComponents/tailwind'
 import { calculateCoinFlipMultiplier, calculateWinChance } from './logic/CoinFlipGameLogic'
 import { useIsLoading } from '../shared/hooks/useIsLoading'
 import { useIsDisabled } from '../shared/hooks/useIsDisabled'
-import { styled } from 'styled-components'
+import { cn } from '@/lib/utils'
 import { GameButton } from '@/features/custom-casino/shared/Button/GameButton'
 import { useGameContract } from '@/features/custom-casino/Singletons/useGameContract'
 import { useIsGameAnimating } from '@/features/custom-casino/hooks/useIsGameAnimating'
@@ -27,39 +27,33 @@ interface CoinFlipFormProps {
   editMode?: boolean
 }
 
-const ChoiceContainer = styled.div`
-  display: flex;
-  gap: 12px;
-  margin-bottom: 20px;
-`
-
-const ChoiceButton = styled.button<{
-  $isSelected: boolean
-  $color: string
-}>`
-  flex: 1;
-  padding: 16px;
-  border: 2px solid ${props => (props.$isSelected ? props.$color : 'rgba(255, 255, 255, 0.2)')};
-  border-radius: 12px;
-  background: ${props => (props.$isSelected ? props.$color : 'rgba(255, 255, 255, 0.05)')};
-  color: ${props => (props.$isSelected ? 'white' : 'rgba(255, 255, 255, 0.8)')};
-  font-size: 16px;
-  font-weight: bold;
-  text-transform: uppercase;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  user-select: none;
-
-  &:hover {
-    background: ${props => (props.$isSelected ? props.$color : 'rgba(255, 255, 255, 0.1)')};
-    border-color: ${props => props.$color};
-  }
-
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-`
+// CoinFlip choice button component
+const CoinChoiceButton: React.FC<{
+  isSelected: boolean
+  color: string
+  onClick: () => void
+  disabled: boolean
+  children: React.ReactNode
+}> = ({ isSelected, color, onClick, disabled, children }) => (
+  <button
+    type="button"
+    onClick={onClick}
+    disabled={disabled}
+    className={cn(
+      'flex-1 p-4 rounded-xl border-2 transition-all duration-200',
+      'text-base font-bold uppercase cursor-pointer select-none',
+      'disabled:opacity-50 disabled:cursor-not-allowed',
+      !isSelected && 'border-white/20 bg-white/5 text-white/80 hover:bg-white/10'
+    )}
+    style={{
+      borderColor: isSelected ? color : undefined,
+      backgroundColor: isSelected ? color : undefined,
+      color: isSelected ? 'white' : undefined,
+    }}
+  >
+    {children}
+  </button>
+)
 
 export const CoinFlipForm: React.FC<CoinFlipFormProps> = ({ onFlip, editMode = false }) => {
   const { maxBetAmount, sliderStep } = useMaxBetAmount()
@@ -193,24 +187,24 @@ export const CoinFlipForm: React.FC<CoinFlipFormProps> = ({ onFlip, editMode = f
 
   return (
     <StandardFormLayout>
-      <ChoiceContainer>
-        <ChoiceButton
-          $isSelected={entry.side === CoinFlipSelection.Heads}
-          $color={headsColor}
+      <div className="flex gap-3 mb-5">
+        <CoinChoiceButton
+          isSelected={entry.side === CoinFlipSelection.Heads}
+          color={headsColor}
           onClick={() => handleChoiceChange(CoinFlipSelection.Heads)}
           disabled={isDisabled}
         >
           HEADS
-        </ChoiceButton>
-        <ChoiceButton
-          $isSelected={entry.side === CoinFlipSelection.Tails}
-          $color={tailsColor}
+        </CoinChoiceButton>
+        <CoinChoiceButton
+          isSelected={entry.side === CoinFlipSelection.Tails}
+          color={tailsColor}
           onClick={() => handleChoiceChange(CoinFlipSelection.Tails)}
           disabled={isDisabled}
         >
           TAILS
-        </ChoiceButton>
-      </ChoiceContainer>
+        </CoinChoiceButton>
+      </div>
 
       <GameStats
         stats={[

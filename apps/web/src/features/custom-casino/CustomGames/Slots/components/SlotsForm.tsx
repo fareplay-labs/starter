@@ -12,7 +12,7 @@ import {
   GameStats,
   DemoSubmitButton,
   DemoModeToggle,
-} from '@/features/custom-casino/CustomGames/shared/formComponents'
+} from '@/features/custom-casino/CustomGames/shared/formComponents/tailwind'
 import { useIsLoading } from '@/features/custom-casino/CustomGames/shared/hooks/useIsLoading'
 import { useIsDisabled } from '@/features/custom-casino/CustomGames/shared/hooks/useIsDisabled'
 import { GameButton } from '@/features/custom-casino/shared/Button/GameButton'

@@ -8,7 +8,7 @@ import {
   DemoModeToggle,
   GameStats,
   SimulationControl,
-} from '../../shared/formComponents'
+} from '../../shared/formComponents/tailwind'
 import { GameButton } from '@/features/custom-casino/shared/Button/GameButton'
 import { useGameContract } from '@/features/custom-casino/Singletons/useGameContract'
 import { useMaxBetAmount } from '../../shared/hooks/useMaxBetAmount'
@@ -16,7 +16,7 @@ import { bombCountToRevealCountToMultiplier } from '@/features/custom-casino/lib
 import { formatEther } from 'viem'
 import { useIsLoading } from '../../shared/hooks/useIsLoading'
 import { useIsDisabled } from '../../shared/hooks/useIsDisabled'
-import { CheckboxContainer, CheckboxLabel, StyledCheckbox } from '@/features/custom-casino/shared/KeepSelectionCheckbox/styles'
+import { KeepSelectionCheckbox } from '@/features/custom-casino/shared/KeepSelectionCheckbox'
 import { calculateWinChance } from '../logic/BombsGameLogic'
 import { useIsGameAnimating } from '@/features/custom-casino/hooks/useIsGameAnimating'
 
@@ -236,17 +236,13 @@ export const BombsForm: React.FC<BombsFormProps> = ({ editMode = false }) => {
 
       {!editMode && <DemoModeToggle />}
 
-      <CheckboxContainer>
-        <CheckboxLabel>
-          <StyledCheckbox
-            type='checkbox'
-            checked={keepSelection}
-            onChange={toggleKeepSelection}
-            disabled={isGameAnimating}
-          />
-          Keep Selection
-        </CheckboxLabel>
-      </CheckboxContainer>
+      <KeepSelectionCheckbox
+        checked={keepSelection}
+        onChange={toggleKeepSelection}
+        disabled={isGameAnimating}
+      >
+        Keep Selection
+      </KeepSelectionCheckbox>
     </StandardFormLayout>
   )
 }

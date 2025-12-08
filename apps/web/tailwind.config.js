@@ -114,8 +114,13 @@ export default {
   			'line-reveal-left': 'lineReveal 2s ease-out forwards',
   			'line-reveal-right': 'lineReveal 2s ease-out forwards',
   			'glow-pulse': 'glowPulse 2s ease-in-out infinite',
+  			'shimmer': 'shimmer 2s infinite',
   		},
   		keyframes: {
+  			shimmer: {
+  				'0%': { left: '-100%' },
+  				'100%': { left: '100%' },
+  			},
   			iconPop: {
   				'0%': { transform: 'scale(0)', opacity: '0' },
   				'50%': { transform: 'scale(1.2)', opacity: '1' },

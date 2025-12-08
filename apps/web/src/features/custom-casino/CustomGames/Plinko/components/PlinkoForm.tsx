@@ -7,16 +7,11 @@ import {
   DemoSubmitButton,
   DemoModeToggle,
   SimulationControl,
-} from '../../shared/formComponents'
+  ChoiceButtons,
+} from '../../shared/formComponents/tailwind'
 import { useMaxBetAmount } from '../../shared/hooks/useMaxBetAmount'
 import { PLINKO_CONSTRAINTS } from '../types'
 import { ensureRowLoaded } from '../runtime/animationManager'
-import {
-  SChoiceButton,
-  SChoiceLabel,
-  SChoicesContainer,
-  SLabel,
-} from '../../shared/formComponents/styled'
 import { useIsLoading } from '../../shared/hooks/useIsLoading'
 import { useIsDisabled } from '../../shared/hooks/useIsDisabled'
 import { getMaxCountForPlinko } from '@/features/custom-casino/lib/crypto/plinko'
@@ -28,38 +23,12 @@ interface PlinkoFormProps {
   editMode?: boolean
 }
 
-// Risk level button component
-const RiskLevelButtons: React.FC<{
-  value: number
-  onChange: (value: number) => void
-  disabled?: boolean
-  primaryColor: string
-}> = ({ value, onChange, disabled = false, primaryColor }) => {
-  const riskLevels = [
-    { value: 0, label: 'LOW' },
-    { value: 1, label: 'MED' },
-    { value: 2, label: 'HIGH' },
-  ]
-
-  return (
-    <>
-      <SLabel>RISK LEVEL</SLabel>
-      <SChoicesContainer>
-        {riskLevels.map(risk => (
-          <SChoiceButton
-            key={risk.value}
-            $selected={value === risk.value}
-            onClick={() => onChange(risk.value)}
-            disabled={disabled}
-            $primaryColor={primaryColor}
-          >
-            <SChoiceLabel>{risk.label}</SChoiceLabel>
-          </SChoiceButton>
-        ))}
-      </SChoicesContainer>
-    </>
-  )
-}
+// Risk level options for ChoiceButtons
+const riskLevelOptions = [
+  { value: 0, label: 'LOW' },
+  { value: 1, label: 'MED' },
+  { value: 2, label: 'HIGH' },
+]
 
 export const PlinkoForm: React.FC<PlinkoFormProps> = ({ editMode = false }) => {
   const { maxBetAmount, sliderStep } = useMaxBetAmount()
@@ -225,11 +194,13 @@ export const PlinkoForm: React.FC<PlinkoFormProps> = ({ editMode = false }) => {
 
   return (
     <StandardFormLayout>
-      <RiskLevelButtons
-        value={riskLevel}
-        onChange={handleRiskLevelChange}
+      <ChoiceButtons
+        label="RISK LEVEL"
+        options={riskLevelOptions}
+        selected={riskLevel}
+        onSelect={handleRiskLevelChange}
         disabled={isRiskDisabled}
-        primaryColor={accentColor}
+        accentColor={accentColor}
       />
 
       <LabelledNumberSliderInput

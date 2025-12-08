@@ -11,7 +11,7 @@ import {
   GameStats,
   DemoSubmitButton,
   DemoModeToggle,
-} from '../shared/formComponents'
+} from '../shared/formComponents/tailwind'
 import { useIsLoading } from '../shared/hooks/useIsLoading'
 import { useIsDisabled } from '../shared/hooks/useIsDisabled'
 import { useGameContract } from '@/features/custom-casino/Singletons/useGameContract'

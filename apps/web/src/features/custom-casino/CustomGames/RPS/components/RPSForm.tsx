@@ -9,18 +9,11 @@ import {
   SimulationControl,
   StandardFormLayout,
   LabelledNumberSliderInput,
-} from '../../shared/formComponents'
-
-// Images
+  ChoiceButtons,
+} from '../../shared/formComponents/tailwind'
 import { useIsLoading } from '../../shared/hooks/useIsLoading'
 import { useIsDisabled } from '../../shared/hooks/useIsDisabled'
 import { useMaxBetAmount } from '../../shared/hooks/useMaxBetAmount'
-import {
-  SChoiceButton,
-  SChoiceIcon,
-  SChoicesContainer,
-  SLabel,
-} from '../../shared/formComponents/styled'
 import type { RPSChoice } from '../types'
 import { useGameContract } from '@/features/custom-casino/Singletons/useGameContract'
 import { GameButton } from '@/features/custom-casino/shared/Button/GameButton'
@@ -36,38 +29,12 @@ interface RPSFormProps {
   editMode?: boolean
 }
 
-const ChoiceButtons: React.FC<{
-  playerChoice: RPSChoice | null
-  setPlayerChoice: (choice: RPSChoice) => void
-  isPlaying: boolean
-  primaryColor: string
-}> = ({ playerChoice, setPlayerChoice, isPlaying, primaryColor }) => {
-  const choices: { value: RPSChoice; icon: string; label: string }[] = [
-    { value: 'rock', icon: rockIconAlt, label: 'Rock' },
-    { value: 'paper', icon: paperIconAlt, label: 'Paper' },
-    { value: 'scissors', icon: scissorsIconAlt, label: 'Scissors' },
-  ]
-
-  return (
-    <>
-      <SLabel>SELECTION CHOICE</SLabel>
-      <SChoicesContainer>
-        {choices.map(choice => (
-          <SChoiceButton
-            key={choice.value}
-            $selected={playerChoice === choice.value}
-            onClick={() => setPlayerChoice(choice.value)}
-            disabled={isPlaying}
-            title={choice.label}
-            $primaryColor={primaryColor}
-          >
-            <SChoiceIcon src={choice.icon} alt={choice.label} />
-          </SChoiceButton>
-        ))}
-      </SChoicesContainer>
-    </>
-  )
-}
+// RPS choice options with icons
+const rpsChoiceOptions: { value: RPSChoice; icon: string; iconAlt: string }[] = [
+  { value: 'rock', icon: rockIconAlt, iconAlt: 'Rock' },
+  { value: 'paper', icon: paperIconAlt, iconAlt: 'Paper' },
+  { value: 'scissors', icon: scissorsIconAlt, iconAlt: 'Scissors' },
+]
 
 export const RPSForm: React.FC<RPSFormProps> = ({
   onPlay,
@@ -205,10 +172,12 @@ export const RPSForm: React.FC<RPSFormProps> = ({
   return (
     <StandardFormLayout>
       <ChoiceButtons
-        playerChoice={playerChoice}
-        setPlayerChoice={setPlayerChoice}
-        isPlaying={isPlaying}
-        primaryColor={primaryColor}
+        label="SELECTION CHOICE"
+        options={rpsChoiceOptions}
+        selected={playerChoice}
+        onSelect={setPlayerChoice}
+        disabled={isPlaying}
+        accentColor={primaryColor}
       />
 
       <GameStats

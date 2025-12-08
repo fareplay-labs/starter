@@ -6,7 +6,7 @@ import {
   DemoSubmitButton,
   DemoModeToggle,
   FormErrorDisplay,
-} from '../../shared/formComponents'
+} from '../../shared/formComponents/tailwind'
 import { useCryptoLaunchGameStore } from '../store/CryptoLaunchGameStore'
 import { useMaxBetAmount } from '../../shared/hooks/useMaxBetAmount'
 import { useIsLoading } from '../../shared/hooks/useIsLoading'

@@ -4,15 +4,19 @@ import { useGameStore } from '@/features/custom-casino/CustomGames/shared/Custom
 import { type DiceParameters, type DiceResult } from './types'
 import { useMaxBetAmount } from '../shared/hooks/useMaxBetAmount'
 import { useGameContract } from '@/features/custom-casino/Singletons/useGameContract'
+// Tailwind-based form components (migrated)
 import {
-  TargetRollSlider,
-  LabelledNumberSliderInput,
   StandardFormLayout,
   SimulationControl,
   FormErrorDisplay,
   GameStats,
   DemoSubmitButton,
   DemoModeToggle,
+} from '../shared/formComponents/tailwind'
+// Styled-components that are NOT migrated (complex slider styling)
+import {
+  TargetRollSlider,
+  LabelledNumberSliderInput,
 } from '../shared/formComponents'
 import { calculateDiceMultiplier } from './logic/DiceGameLogic'
 import { useIsLoading } from '../shared/hooks/useIsLoading'
