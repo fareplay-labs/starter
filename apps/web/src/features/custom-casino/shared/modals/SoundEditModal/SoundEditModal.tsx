@@ -2,6 +2,7 @@
 import React, { useState } from 'react'
 import { cn } from '@/lib/utils'
 import { ModalBase } from '../shared/ModalBase'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { type SoundData } from '../../types/sound.types'
 import SoundLibrary from './components/SoundLibrary'
 import SoundUpload from './components/SoundUpload'
@@ -145,18 +146,22 @@ const SoundEditModal: React.FC<SoundEditModalProps> = ({
           )}
         </div>
 
-        {/* Volume Section */}
+        {/* Selected Sound Card */}
         {selectedSound && (
-          <div className="border-t border-white/10 py-4">
-            <div className="mb-4">
-              <div className="text-white text-sm font-medium">Selected: {selectedSound.name || 'Unknown'}</div>
-            </div>
-            <VolumeControl
-              volume={selectedSound.volume || 0.7}
-              onChange={handleVolumeChange}
-              label='Sound Volume'
-            />
-          </div>
+          <Card className="bg-surface-raised border-border mt-4">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium">
+                Selected: {selectedSound.name || 'Unknown'}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <VolumeControl
+                volume={selectedSound.volume || 0.7}
+                onChange={handleVolumeChange}
+                label='Sound Volume'
+              />
+            </CardContent>
+          </Card>
         )}
 
         {/* Footer */}

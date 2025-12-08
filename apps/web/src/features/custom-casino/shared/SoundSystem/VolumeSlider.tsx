@@ -81,16 +81,15 @@ export const VolumeSlider: React.FC<VolumeSliderProps> = ({ onVolumeChange }) =>
       className={cn(
         'relative inline-flex items-center bg-transparent',
         'border border-dashed border-border rounded-md p-1.5',
-        'transition-all duration-300 ease-in-out overflow-hidden select-none',
-        'w-[30px] max-sm:w-5',
-        isHovered && 'w-[150px] border-solid bg-white/10'
+        'transition-all duration-300 ease-in-out select-none',
+        isHovered ? 'w-[150px] border-solid bg-white/10' : 'w-9 max-sm:w-7'
       )}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
       <button
         onClick={handleMuteToggle}
-        className="bg-transparent border-none cursor-pointer p-1 flex items-center justify-center"
+        className="bg-transparent border-none cursor-pointer p-1 flex items-center justify-center flex-shrink-0"
       >
         <img
           src={iconSrc}
@@ -100,8 +99,8 @@ export const VolumeSlider: React.FC<VolumeSliderProps> = ({ onVolumeChange }) =>
       </button>
       <div
         className={cn(
-          'ml-2 transition-opacity duration-200',
-          isHovered ? 'opacity-100' : 'opacity-0'
+          'ml-2 transition-all duration-200 overflow-hidden',
+          isHovered ? 'w-[100px] opacity-100' : 'w-0 opacity-0'
         )}
       >
         <Slider

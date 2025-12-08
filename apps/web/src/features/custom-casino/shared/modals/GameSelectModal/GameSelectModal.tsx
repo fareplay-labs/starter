@@ -5,6 +5,7 @@ import { GameCard, GameSearchAndFilter, LayoutSelector, type LayoutType } from '
 import { type CustomCasinoGame } from '../../types'
 import { ModalBase } from '../shared/ModalBase'
 import { ModalActions } from '../shared/ModalActions'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { type GameSelectModalProps, type ThemeColors } from '../shared/modalTypes'
 import { ConfirmationModal } from '../shared/ConfirmationModal'
 import { useEditStore } from '@/features/custom-casino/UserPage/editor/useEditStore'
@@ -345,125 +346,132 @@ export const GameSelectModal: React.FC<GameSelectModalProps> = ({
       />
 
       {/* New Basic Game Section */}
-      <div className="mb-6">
-        <h3
-          className="text-base font-semibold mb-3"
-          style={{ color: themeColors?.themeColor1 || '#ffffff' }}
-        >
-          New Basic Game
-        </h3>
-        <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-xs">
-          {basicGames.map((game, _index) => {
-            const gameState = creatingGames[game.id]
-            const isDisabled = gameState === 'loading' || gameState === 'success'
+      <Card className="mb-6 bg-surface-raised border-border">
+        <CardHeader className="pb-3">
+          <CardTitle
+            className="text-base font-semibold"
+            style={{ color: themeColors?.themeColor1 || '#ffffff' }}
+          >
+            New Basic Game
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-xs">
+            {basicGames.map((game, _index) => {
+              const gameState = creatingGames[game.id]
+              const isDisabled = gameState === 'loading' || gameState === 'success'
 
-            return (
-              <div key={game.id} className="w-20 h-20 flex-shrink-0">
-                <SmallTile
-                  onClick={() => !isDisabled && handleCreateGame(game)}
-                  $borderColor={themeColors?.themeColor1}
-                  $hoverColors={{
-                    secondary: themeColors?.themeColor2 || '#ff7a6e',
-                    tertiary: themeColors?.themeColor3 || '#ff9c92',
-                  }}
-                  style={{
-                    background: 'rgba(10, 10, 10, 0.65)',
-                    cursor: isDisabled ? 'not-allowed' : 'pointer',
-                    opacity: isDisabled ? 0.8 : 1,
-                  }}
-                  aria-label={`Create new ${game.name}`}
-                  role='button'
-                >
-                  {gameState === 'loading' ? (
-                    <div className="w-6 h-6 border-[3px] border-white/10 border-t-white/80 rounded-full animate-spin" />
-                  ) : gameState === 'success' ? (
-                    <div
-                      className="w-6 h-6 relative after:content-['✓'] after:absolute after:top-1/2 after:left-1/2 after:-translate-x-1/2 after:-translate-y-1/2 after:text-xl after:font-bold"
-                      style={{ color: themeColors?.themeColor1 || '#4CAF50' }}
-                    />
-                  ) : (
-                    <GameIcon
-                      icon={game.icon}
-                      type={game.type}
-                      size='small'
-                      alt={`${game.name} icon`}
-                    />
-                  )}
-                </SmallTile>
-              </div>
-            )
-          })}
-        </div>
-      </div>
+              return (
+                <div key={game.id} className="w-20 h-20 flex-shrink-0">
+                  <SmallTile
+                    onClick={() => !isDisabled && handleCreateGame(game)}
+                    $borderColor={themeColors?.themeColor1}
+                    $hoverColors={{
+                      secondary: themeColors?.themeColor2 || '#ff7a6e',
+                      tertiary: themeColors?.themeColor3 || '#ff9c92',
+                    }}
+                    style={{
+                      background: 'rgba(10, 10, 10, 0.65)',
+                      cursor: isDisabled ? 'not-allowed' : 'pointer',
+                      opacity: isDisabled ? 0.8 : 1,
+                    }}
+                    aria-label={`Create new ${game.name}`}
+                    role='button'
+                  >
+                    {gameState === 'loading' ? (
+                      <div className="w-6 h-6 border-[3px] border-white/10 border-t-white/80 rounded-full animate-spin" />
+                    ) : gameState === 'success' ? (
+                      <div
+                        className="w-6 h-6 relative after:content-['✓'] after:absolute after:top-1/2 after:left-1/2 after:-translate-x-1/2 after:-translate-y-1/2 after:text-xl after:font-bold"
+                        style={{ color: themeColors?.themeColor1 || '#4CAF50' }}
+                      />
+                    ) : (
+                      <GameIcon
+                        icon={game.icon}
+                        type={game.type}
+                        size='small'
+                        alt={`${game.name} icon`}
+                      />
+                    )}
+                  </SmallTile>
+                </div>
+              )
+            })}
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Your Games Section */}
-      <div className="mb-6">
-        <h3
-          className="text-base font-semibold mb-3"
-          style={{ color: themeColors?.themeColor1 || '#ffffff' }}
-        >
-          Your Games
-        </h3>
+      <Card className="mb-6 bg-surface-raised border-border">
+        <CardHeader className="pb-3">
+          <CardTitle
+            className="text-base font-semibold"
+            style={{ color: themeColors?.themeColor1 || '#ffffff' }}
+          >
+            Your Games
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {/* Search and Filter */}
+          <GameSearchAndFilter
+            searchTerm={searchTerm}
+            onSearchChange={handleSearchChange}
+            totalCount={localUserGames.length}
+            filteredCount={filteredUserGames.length}
+            selectedCount={selectedGameIds.filter(id => localUserGames.some(g => g.id === id)).length}
+            showCounts={true}
+          />
 
-        {/* Search and Filter */}
-        <GameSearchAndFilter
-          searchTerm={searchTerm}
-          onSearchChange={handleSearchChange}
-          totalCount={localUserGames.length}
-          filteredCount={filteredUserGames.length}
-          selectedCount={selectedGameIds.filter(id => localUserGames.some(g => g.id === id)).length}
-          showCounts={true}
-        />
+          {/* Your Games Grid */}
+          {filteredUserGames.length > 0 ? (
+            <div className="max-h-[400px] overflow-y-auto pr-2 scrollbar-thin">
+              <div
+                className="grid grid-cols-4 gap-3 max-[992px]:grid-cols-3 max-[640px]:grid-cols-2 max-[640px]:gap-2"
+                role='listbox'
+                aria-label='Your games'
+                aria-multiselectable='true'
+              >
+                {filteredUserGames.map(game => {
+                  // Define a default theme object that conforms to ThemeColors
+                  const defaultFullTheme: ThemeColors = {
+                    themeColor1: '#ff5e4f',
+                    themeColor2: '#ff7a6e',
+                    themeColor3: '#ff9c92',
+                    backgroundColor: '#0a0a0a',
+                  }
 
-        {/* Your Games Grid */}
-        {filteredUserGames.length > 0 ? (
-          <div className="max-h-[400px] overflow-y-auto pr-2 scrollbar-thin">
-            <div
-              className="grid grid-cols-4 gap-3 max-[992px]:grid-cols-3 max-[640px]:grid-cols-2 max-[640px]:gap-2"
-              role='listbox'
-              aria-label='Your games'
-              aria-multiselectable='true'
-            >
-              {filteredUserGames.map(game => {
-                // Define a default theme object that conforms to ThemeColors
-                const defaultFullTheme: ThemeColors = {
-                  themeColor1: '#ff5e4f',
-                  themeColor2: '#ff7a6e',
-                  themeColor3: '#ff9c92',
-                  backgroundColor: '#0a0a0a',
-                }
+                  const cardThemeColors: ThemeColors =
+                    themeColors ?
+                      {
+                        themeColor1: themeColors.themeColor1,
+                        themeColor2: themeColors.themeColor2 ?? defaultFullTheme.themeColor2,
+                        themeColor3: themeColors.themeColor3 ?? defaultFullTheme.themeColor3,
+                      }
+                    : defaultFullTheme
 
-                const cardThemeColors: ThemeColors =
-                  themeColors ?
-                    {
-                      themeColor1: themeColors.themeColor1,
-                      themeColor2: themeColors.themeColor2 ?? defaultFullTheme.themeColor2,
-                      themeColor3: themeColors.themeColor3 ?? defaultFullTheme.themeColor3,
-                    }
-                  : defaultFullTheme
-
-                return (
-                  <GameCard
-                    key={game.id}
-                    id={game.id}
-                    name={game.name}
-                    icon={game.icon}
-                    type={game.type}
-                    isSelected={selectedGameIds.includes(game.id)}
-                    themeColors={cardThemeColors}
-                    onClick={handleGameToggle}
-                    onDelete={handleDeleteGame}
-                  />
-                )
-              })}
+                  return (
+                    <GameCard
+                      key={game.id}
+                      id={game.id}
+                      name={game.name}
+                      icon={game.icon}
+                      type={game.type}
+                      isSelected={selectedGameIds.includes(game.id)}
+                      themeColors={cardThemeColors}
+                      onClick={handleGameToggle}
+                      onDelete={handleDeleteGame}
+                    />
+                  )
+                })}
+              </div>
             </div>
-          </div>
-        ) : (
-          <div className="text-center p-10 text-white/50">
-            {searchTerm ? 'No games found matching your search' : 'No custom games available yet'}
-          </div>
-        )}
-      </div>
+          ) : (
+            <div className="text-center p-10 text-white/50">
+              {searchTerm ? 'No games found matching your search' : 'No custom games available yet'}
+            </div>
+          )}
+        </CardContent>
+      </Card>
 
       {/* Action Buttons */}
       <ModalActions

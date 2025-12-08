@@ -4,6 +4,7 @@ import { type ModalType } from '../editor/useEditStore'
 import { type PageConfig } from '../../config/PageConfig'
 import { EditButton, type EditButtonState } from './EditButton'
 import { addAppNoti } from '@/store/useNotiStore'
+import { Card, CardContent } from '@/components/ui/card'
 import {
   Tooltip,
   TooltipContent,
@@ -11,24 +12,26 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip'
 
-// Toolbar container
+// Toolbar container using shadcn Card
 interface ToolbarContainerProps {
   isEditMode: boolean
   children: React.ReactNode
 }
 
 const ToolbarContainer: React.FC<ToolbarContainerProps> = ({ isEditMode, children }) => (
-  <div
+  <Card
     className={cn(
-      'h-fit w-16 rounded-xl flex flex-col items-center p-3 z-10 border transition-all duration-300',
+      'h-fit w-16 z-10 transition-all duration-300 backdrop-blur-sm',
       'max-sm:absolute max-sm:left-[10px] max-sm:top-[325px]',
       isEditMode
-        ? 'bg-[rgba(20,20,20,0.85)] shadow-lg border-white/10 backdrop-blur-[5px]'
-        : 'bg-[rgba(20,20,20,0.5)] shadow-md border-white/5 backdrop-blur-[3px]'
+        ? 'bg-card/90 shadow-lg border-border'
+        : 'bg-card/50 shadow-md border-border/50'
     )}
   >
-    {children}
-  </div>
+    <CardContent className="flex flex-col items-center p-3">
+      {children}
+    </CardContent>
+  </Card>
 )
 
 // Toolbar section

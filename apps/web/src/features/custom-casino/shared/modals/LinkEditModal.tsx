@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { cn } from '@/lib/utils'
 import { ModalBase } from './shared/ModalBase'
 import { ModalActions } from './shared/ModalActions'
+import { Card, CardContent } from '@/components/ui/card'
 import { type FieldEditModalProps } from './shared/modalTypes'
 import { TextInput } from './shared/FormElements'
 
@@ -119,41 +120,43 @@ const LinkEditModal: React.FC<FieldEditModalProps> = ({
   return (
     <ModalBase isOpen={isOpen} onClose={onClose} title={`Edit ${getDisplayName()} Link`}>
       {linkUrl && (
-        <div className="bg-black/20 rounded-lg p-4 mb-4 flex items-center gap-4 transition-all duration-200 border border-transparent hover:bg-black/30">
-          {/* Link icon */}
-          <div className="w-[42px] h-[42px] rounded-md bg-[#ff5e4f] flex items-center justify-center flex-shrink-0 text-white text-lg">
-            🔗
-          </div>
-          {/* Link info */}
-          <div className="flex-1 overflow-hidden">
-            <a
-              href={displayUrl}
-              target='_blank'
-              rel='noopener noreferrer'
-              className="text-white text-sm break-all block no-underline hover:text-[#410dff] hover:underline"
-            >
-              {displayUrl}
-            </a>
-            {isUrlValid && linkUrl && (
-              <button
-                onClick={handleTestLink}
-                className="bg-transparent border-none text-[#410dff] text-[13px] cursor-pointer p-0 mt-1 hover:underline"
+        <Card className="mb-4 bg-surface-raised border-border hover:bg-surface-overlay transition-all duration-200">
+          <CardContent className="p-4 flex items-center gap-4">
+            {/* Link icon */}
+            <div className="w-[42px] h-[42px] rounded-md bg-primary flex items-center justify-center flex-shrink-0 text-white text-lg">
+              🔗
+            </div>
+            {/* Link info */}
+            <div className="flex-1 overflow-hidden">
+              <a
+                href={displayUrl}
+                target='_blank'
+                rel='noopener noreferrer'
+                className="text-foreground text-sm break-all block no-underline hover:text-secondary hover:underline"
               >
-                Test link
-              </button>
-            )}
-            {linkUrl && !isUrlValid && (
-              <div className="mt-1 text-[#ff5e4f] text-[13px] flex items-center gap-1">
-                ⚠️ Invalid URL format
-              </div>
-            )}
-            {linkUrl && isUrlValid && (
-              <div className="mt-1 text-[#410dff] text-[13px] flex items-center gap-1">
-                ✓ Valid URL
-              </div>
-            )}
-          </div>
-        </div>
+                {displayUrl}
+              </a>
+              {isUrlValid && linkUrl && (
+                <button
+                  onClick={handleTestLink}
+                  className="bg-transparent border-none text-secondary text-[13px] cursor-pointer p-0 mt-1 hover:underline"
+                >
+                  Test link
+                </button>
+              )}
+              {linkUrl && !isUrlValid && (
+                <div className="mt-1 text-destructive text-[13px] flex items-center gap-1">
+                  ⚠️ Invalid URL format
+                </div>
+              )}
+              {linkUrl && isUrlValid && (
+                <div className="mt-1 text-secondary text-[13px] flex items-center gap-1">
+                  ✓ Valid URL
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
       )}
 
       <TextInput
