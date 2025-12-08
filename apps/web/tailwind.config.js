@@ -8,39 +8,13 @@ export default {
   theme: {
   	extend: {
   		colors: {
-  			primary: {
-  				'50': '#f0f9ff',
-  				'100': '#e0f2fe',
-  				'200': '#bae6fd',
-  				'300': '#7dd3fc',
-  				'400': '#38bdf8',
-  				'500': '#0ea5e9',
-  				'600': '#0284c7',
-  				'700': '#0369a1',
-  				'800': '#075985',
-  				'900': '#0c4a6e',
-  				'950': '#082f49',
-  				DEFAULT: 'hsl(var(--primary))',
-  				foreground: 'hsl(var(--primary-foreground))'
-  			},
-  			casino: {
-  				dark: '#0a0a0a',
-  				darker: '#050505',
-  				card: '#1a1a1a',
-  				border: '#2a2a2a',
-  				accent: '#fbbf24',
-  				green: '#10b981',
-  				red: '#ef4444'
-  			},
+  			/* === Core shadcn colors (CSS variable based) === */
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
-  			card: {
-  				DEFAULT: 'hsl(var(--card))',
-  				foreground: 'hsl(var(--card-foreground))'
-  			},
-  			popover: {
-  				DEFAULT: 'hsl(var(--popover))',
-  				foreground: 'hsl(var(--popover-foreground))'
+
+  			primary: {
+  				DEFAULT: 'hsl(var(--primary))',
+  				foreground: 'hsl(var(--primary-foreground))'
   			},
   			secondary: {
   				DEFAULT: 'hsl(var(--secondary))',
@@ -58,9 +32,51 @@ export default {
   				DEFAULT: 'hsl(var(--destructive))',
   				foreground: 'hsl(var(--destructive-foreground))'
   			},
+  			card: {
+  				DEFAULT: 'hsl(var(--card))',
+  				foreground: 'hsl(var(--card-foreground))'
+  			},
+  			popover: {
+  				DEFAULT: 'hsl(var(--popover))',
+  				foreground: 'hsl(var(--popover-foreground))'
+  			},
   			border: 'hsl(var(--border))',
   			input: 'hsl(var(--input))',
   			ring: 'hsl(var(--ring))',
+
+  			/* === Casino Brand Colors (FARE) === */
+  			casino: {
+  				salmon: 'hsl(var(--casino-salmon))',
+  				blue: 'hsl(var(--casino-blue))',
+  				pink: 'hsl(var(--casino-pink))',
+  				peach: 'hsl(var(--casino-peach))',
+  				aqua: 'hsl(var(--casino-aqua))',
+  				gray: 'hsl(var(--casino-gray))',
+  				black: 'hsl(var(--casino-black))',
+  				/* Legacy aliases for backward compatibility */
+  				dark: 'hsl(var(--surface-base))',
+  				darker: 'hsl(var(--casino-black))',
+  			},
+
+  			/* === Semantic Colors === */
+  			success: {
+  				DEFAULT: 'hsl(var(--success))',
+  				soft: 'hsl(var(--success-soft))',
+  			},
+  			warning: 'hsl(var(--warning))',
+  			error: {
+  				DEFAULT: 'hsl(var(--error))',
+  				soft: 'hsl(var(--error-soft))',
+  			},
+
+  			/* === Surface Colors === */
+  			surface: {
+  				base: 'hsl(var(--surface-base))',
+  				raised: 'hsl(var(--surface-raised))',
+  				overlay: 'hsl(var(--surface-overlay))',
+  			},
+
+  			/* === Chart colors (shadcn) === */
   			chart: {
   				'1': 'hsl(var(--chart-1))',
   				'2': 'hsl(var(--chart-2))',
@@ -69,6 +85,22 @@ export default {
   				'5': 'hsl(var(--chart-5))'
   			}
   		},
+
+  		/* === Border Colors === */
+  		borderColor: {
+  			subtle: 'hsl(var(--border-subtle))',
+  			DEFAULT: 'hsl(var(--border-default))',
+  			strong: 'hsl(var(--border-strong))',
+  		},
+
+  		/* === Text Colors (extended) === */
+  		textColor: {
+  			primary: 'hsl(var(--text-primary))',
+  			secondary: 'hsl(var(--text-secondary))',
+  			muted: 'hsl(var(--text-muted))',
+  		},
+
+  		/* === Animations === */
   		animation: {
   			'spin-slow': 'spin 3s linear infinite',
   			'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
@@ -81,6 +113,7 @@ export default {
   			'pulse-text': 'pulseText 1s linear infinite alternate',
   			'line-reveal-left': 'lineReveal 2s ease-out forwards',
   			'line-reveal-right': 'lineReveal 2s ease-out forwards',
+  			'glow-pulse': 'glowPulse 2s ease-in-out infinite',
   		},
   		keyframes: {
   			iconPop: {
@@ -119,14 +152,28 @@ export default {
   				'0%': { transform: 'scaleX(0)' },
   				'100%': { transform: 'scaleX(1)' },
   			},
+  			glowPulse: {
+  				'0%, 100%': { boxShadow: '0 0 20px hsl(var(--casino-salmon) / 0.3)' },
+  				'50%': { boxShadow: '0 0 40px hsl(var(--casino-salmon) / 0.5)' },
+  			},
   		},
+
+  		/* === Border Radius === */
   		borderRadius: {
   			lg: 'var(--radius)',
   			md: 'calc(var(--radius) - 2px)',
   			sm: 'calc(var(--radius) - 4px)'
-  		}
+  		},
+
+  		/* === Box Shadow (Casino glow effects) === */
+  		boxShadow: {
+  			'glow-sm': '0 0 10px hsl(var(--casino-salmon) / 0.2)',
+  			'glow': '0 0 20px hsl(var(--casino-salmon) / 0.3)',
+  			'glow-lg': '0 0 40px hsl(var(--casino-salmon) / 0.4)',
+  			'glow-blue': '0 0 20px hsl(var(--casino-blue) / 0.3)',
+  			'glow-aqua': '0 0 20px hsl(var(--casino-aqua) / 0.4)',
+  		},
   	}
   },
   plugins: [require("tailwindcss-animate")],
 }
-

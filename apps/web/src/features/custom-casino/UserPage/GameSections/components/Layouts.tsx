@@ -14,13 +14,9 @@ export const CarouselLayout = forwardRef<HTMLDivElement, CarouselLayoutProps>(
       ref={ref}
       onScroll={onScroll}
       className={cn(
-        'flex gap-3 mx-auto py-6 overflow-x-auto scroll-smooth',
+        'flex gap-3 mx-auto py-6 overflow-x-auto scroll-smooth scrollbar-xs',
         '-webkit-overflow-scrolling-touch snap-x snap-mandatory',
         'relative flex-nowrap max-w-[850px]',
-        // Custom scrollbar styling
-        '[&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar]:bg-white/5 [&::-webkit-scrollbar]:rounded',
-        '[&::-webkit-scrollbar-thumb]:bg-white/20 [&::-webkit-scrollbar-thumb]:rounded',
-        '[&::-webkit-scrollbar-thumb:hover]:bg-white/30',
         // Child spacing
         '[&>div]:mx-2 [&>div]:overflow-visible [&>div]:flex-none',
         // Remove pseudo-elements

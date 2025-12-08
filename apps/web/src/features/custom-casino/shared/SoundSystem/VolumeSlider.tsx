@@ -1,11 +1,10 @@
 import React, { useState, useMemo, useEffect } from 'react'
-import { styled } from 'styled-components'
+import { cn } from '@/lib/utils'
+import { Slider } from '@/components/ui/slider'
 import { useSound } from './SoundContext'
-import { BORDER_COLORS, BREAKPOINTS } from '@/design'
 import volumeOffIcon from '@/features/custom-casino/assets/svg/volume-off.svg'
 import volumeOnIcon from '@/features/custom-casino/assets/svg/volume-half.svg'
 import volumeFull from '@/features/custom-casino/assets/svg/volume-full.svg'
-import { noUserSelect } from '@/style'
 
 const VOLUME_OFF_ICON_PATH = volumeOffIcon
 const VOLUME_HALF_ICON_PATH = volumeOnIcon
@@ -16,105 +15,16 @@ interface VolumeSliderProps {
   onVolumeChange?: (volume: number) => void
 }
 
-const SliderContainer = styled.div`
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  background-color: transparent;
-  border-color: ${BORDER_COLORS.one};
-  border-style: dashed;
-  border-width: 1px;
-  border-radius: 6px;
-  padding: 5px;
-  ${noUserSelect}
-
-  transition:
-    width 0.3s ease-in-out,
-    border-style 0.3s ease-in-out,
-    background-color 0.3s ease-in-out;
-  overflow: hidden;
-  width: 30px;
-  &:hover {
-    width: 150px;
-    border-style: solid;
-    background-color: #52525226;
-  }
-
-  @media only screen and (max-width: ${BREAKPOINTS.sm}px) {
-    width: 20px;
-  }
-`
-
-const IconButton = styled.button`
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 5px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`
-
-const Icon = styled.img<{ $color: string }>`
-  width: 20px;
-  height: 20px;
-
-  @media only screen and (max-width: ${BREAKPOINTS.sm}px) {
-    width: 12px;
-    height: 12px;
-  }
-`
-
-const SliderInput = styled.input`
-  -webkit-appearance: none;
-  appearance: none;
-  width: 100px;
-  height: 5px;
-  border-radius: 5px;
-  background: #28605c;
-  outline: none;
-  opacity: 0;
-  transition: opacity 0.2s;
-  margin-left: 10px;
-  ${SliderContainer}:hover & {
-    opacity: 1;
-  }
-  &::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
-    height: 12px;
-    width: 12px;
-    top: 7px;
-    border: 1px solid #4af5d3;
-    border-radius: 2px;
-    background: #4af5d350;
-    cursor: pointer;
-  }
-  &::-moz-range-thumb {
-    width: 15px;
-    height: 15px;
-    border-radius: 50%;
-    background: #4caf50;
-    cursor: pointer;
-  }
-`
-
-export const SVolumeSliderWrapper = styled.div`
-  position: absolute;
-  bottom: 10px;
-  left: 10px;
-  z-index: 1000;
-  touch-action: none; // this stops the finger sliding the page to live-entries or chat
-
-  @media only screen and (max-width: ${BREAKPOINTS.sm}px) {
-    top: 10px;
-  }
-`
-
 const VOLUME_STORAGE_KEY = 'audioVolume'
 const MUTE_STORAGE_KEY = 'audioMuted'
 
-export const VolumeSlider: React.FC<VolumeSliderProps> = ({ iconColor = '0', onVolumeChange }) => {
+export const SVolumeSliderWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <div className="absolute bottom-2.5 left-2.5 z-[1000] touch-none max-sm:top-2.5 max-sm:bottom-auto">
+    {children}
+  </div>
+)
+
+export const VolumeSlider: React.FC<VolumeSliderProps> = ({ onVolumeChange }) => {
   const [volume, setVolume] = useState<number>(() => {
     const savedVolume = localStorage.getItem(VOLUME_STORAGE_KEY)
     return savedVolume ? parseFloat(savedVolume) : 0.5
@@ -123,6 +33,7 @@ export const VolumeSlider: React.FC<VolumeSliderProps> = ({ iconColor = '0', onV
     const savedMuteState = localStorage.getItem(MUTE_STORAGE_KEY)
     return savedMuteState ? JSON.parse(savedMuteState) : false
   })
+  const [isHovered, setIsHovered] = useState(false)
   const { setVolume: setGlobalVolume, toggleMute } = useSound()
 
   useEffect(() => {
@@ -139,8 +50,8 @@ export const VolumeSlider: React.FC<VolumeSliderProps> = ({ iconColor = '0', onV
     localStorage.setItem(MUTE_STORAGE_KEY, JSON.stringify(isMuted))
   }, [isMuted])
 
-  const handleVolumeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const newVolume = parseFloat(event.target.value)
+  const handleVolumeChange = (values: number[]) => {
+    const newVolume = values[0]
     setVolume(newVolume)
     setGlobalVolume(newVolume)
     onVolumeChange?.(newVolume)
@@ -166,19 +77,43 @@ export const VolumeSlider: React.FC<VolumeSliderProps> = ({ iconColor = '0', onV
   }, [volume, isMuted])
 
   return (
-    <SliderContainer>
-      <IconButton onClick={handleMuteToggle}>
-        <Icon src={iconSrc} alt='Volume' $color={iconColor} />
-      </IconButton>
-      <SliderInput
-        type='range'
-        min='0'
-        max='1'
-        step='0.01'
-        value={volume}
-        onChange={handleVolumeChange}
-      />
-    </SliderContainer>
+    <div
+      className={cn(
+        'relative inline-flex items-center bg-transparent',
+        'border border-dashed border-border rounded-md p-1.5',
+        'transition-all duration-300 ease-in-out overflow-hidden select-none',
+        'w-[30px] max-sm:w-5',
+        isHovered && 'w-[150px] border-solid bg-white/10'
+      )}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      <button
+        onClick={handleMuteToggle}
+        className="bg-transparent border-none cursor-pointer p-1 flex items-center justify-center"
+      >
+        <img
+          src={iconSrc}
+          alt="Volume"
+          className="w-5 h-5 max-sm:w-3 max-sm:h-3"
+        />
+      </button>
+      <div
+        className={cn(
+          'ml-2 transition-opacity duration-200',
+          isHovered ? 'opacity-100' : 'opacity-0'
+        )}
+      >
+        <Slider
+          value={[volume]}
+          onValueChange={handleVolumeChange}
+          min={0}
+          max={1}
+          step={0.01}
+          className="w-[100px]"
+        />
+      </div>
+    </div>
   )
 }
 

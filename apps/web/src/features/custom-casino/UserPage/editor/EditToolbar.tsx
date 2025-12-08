@@ -4,6 +4,12 @@ import { type ModalType } from '../editor/useEditStore'
 import { type PageConfig } from '../../config/PageConfig'
 import { EditButton, type EditButtonState } from './EditButton'
 import { addAppNoti } from '@/store/useNotiStore'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip'
 
 // Toolbar container
 interface ToolbarContainerProps {
@@ -78,7 +84,7 @@ const ColorControls: React.FC<{ children: React.ReactNode }> = ({ children }) =>
   <div className="flex flex-col items-center gap-3 w-full">{children}</div>
 )
 
-// Color button
+// Color button with tooltip
 interface ColorButtonProps {
   color: string
   onClick: () => void
@@ -86,35 +92,47 @@ interface ColorButtonProps {
 }
 
 const ColorButton: React.FC<ColorButtonProps> = ({ color, onClick, title }) => (
-  <div className="flex flex-col items-center mb-3">
-    <button
-      onClick={onClick}
-      title={title}
-      className="w-8 h-8 rounded-full border-2 border-white/80 cursor-pointer transition-all duration-200 relative overflow-hidden my-2 hover:scale-110 hover:shadow-[0_0_10px_rgba(255,255,255,0.5)]"
-      style={{ backgroundColor: color || '#ffffff' }}
-    >
-      {/* Gradient overlay */}
-      <span className="absolute inset-0 bg-gradient-to-br from-white/30 via-transparent to-transparent" />
-    </button>
-  </div>
+  <Tooltip>
+    <TooltipTrigger asChild>
+      <div className="flex flex-col items-center mb-3">
+        <button
+          onClick={onClick}
+          className="w-8 h-8 rounded-full border-2 border-white/80 cursor-pointer transition-all duration-200 relative overflow-hidden my-2 hover:scale-110 hover:shadow-[0_0_10px_rgba(255,255,255,0.5)]"
+          style={{ backgroundColor: color || '#ffffff' }}
+        >
+          {/* Gradient overlay */}
+          <span className="absolute inset-0 bg-gradient-to-br from-white/30 via-transparent to-transparent" />
+        </button>
+      </div>
+    </TooltipTrigger>
+    <TooltipContent side="right" className="bg-popover border-border">
+      <p className="text-xs">{title}</p>
+    </TooltipContent>
+  </Tooltip>
 )
 
-// Font button
+// Font button with tooltip
 interface FontButtonProps {
   onClick: () => void
   title: string
 }
 
 const FontButton: React.FC<FontButtonProps> = ({ onClick, title }) => (
-  <button
-    onClick={onClick}
-    title={title}
-    className="w-8 h-8 rounded-full border-2 border-white/80 bg-[rgba(40,40,40,0.85)] cursor-pointer transition-all duration-200 relative overflow-hidden my-2 flex items-center justify-center text-white text-lg font-bold hover:scale-110 hover:shadow-[0_0_10px_rgba(255,255,255,0.5)]"
-  >
-    T
-    {/* Gradient overlay */}
-    <span className="absolute inset-0 bg-gradient-to-br from-white/30 via-transparent to-transparent pointer-events-none" />
-  </button>
+  <Tooltip>
+    <TooltipTrigger asChild>
+      <button
+        onClick={onClick}
+        className="w-8 h-8 rounded-full border-2 border-white/80 bg-[rgba(40,40,40,0.85)] cursor-pointer transition-all duration-200 relative overflow-hidden my-2 flex items-center justify-center text-white text-lg font-bold hover:scale-110 hover:shadow-[0_0_10px_rgba(255,255,255,0.5)]"
+      >
+        T
+        {/* Gradient overlay */}
+        <span className="absolute inset-0 bg-gradient-to-br from-white/30 via-transparent to-transparent pointer-events-none" />
+      </button>
+    </TooltipTrigger>
+    <TooltipContent side="right" className="bg-popover border-border">
+      <p className="text-xs">{title}</p>
+    </TooltipContent>
+  </Tooltip>
 )
 
 interface EditToolbarProps {
@@ -261,57 +279,59 @@ export const EditToolbar: React.FC<EditToolbarProps> = ({
   }
 
   return (
-    <ToolbarContainer isEditMode={visualEditMode || isClosing}>
-      {/* Toggle Edit Mode */}
-      <ToolbarSection>
-        <ToolbarLabel>{getButtonLabel()}</ToolbarLabel>
-        <EditButton
-          onClick={handleEditButtonClick}
-          state={
-            isBackendLoading && saveState !== 'saving' && saveState !== 'saved'
-              ? 'saving'
-              : saveState
-          }
-          disabled={isBackendLoading || saveState === 'saving' || isClosing}
-        />
-      </ToolbarSection>
+    <TooltipProvider>
+      <ToolbarContainer isEditMode={visualEditMode || isClosing}>
+        {/* Toggle Edit Mode */}
+        <ToolbarSection>
+          <ToolbarLabel>{getButtonLabel()}</ToolbarLabel>
+          <EditButton
+            onClick={handleEditButtonClick}
+            state={
+              isBackendLoading && saveState !== 'saving' && saveState !== 'saved'
+                ? 'saving'
+                : saveState
+            }
+            disabled={isBackendLoading || saveState === 'saving' || isClosing}
+          />
+        </ToolbarSection>
 
-      {(isEditMode || isClosing) && (
-        <>
-          <ToolbarDivider isClosing={isClosing} />
-          {/* Theme Color Controls */}
-          <ThemeSection isClosing={isClosing}>
-            <ThemeLabel isClosing={isClosing}>Theme</ThemeLabel>
-            <ColorControls>
-              <ColorButton
-                color={pageConfig.colors.themeColor1}
-                onClick={() => openColorModal('themeColor1')}
-                title="Primary Color"
-              />
-              <ColorButton
-                color={pageConfig.colors.themeColor2}
-                onClick={() => openColorModal('themeColor2')}
-                title="Secondary Color"
-              />
-              <ColorButton
-                color={pageConfig.colors.themeColor3}
-                onClick={() => openColorModal('themeColor3')}
-                title="Tertiary Color"
-              />
-            </ColorControls>
-          </ThemeSection>
+        {(isEditMode || isClosing) && (
+          <>
+            <ToolbarDivider isClosing={isClosing} />
+            {/* Theme Color Controls */}
+            <ThemeSection isClosing={isClosing}>
+              <ThemeLabel isClosing={isClosing}>Theme</ThemeLabel>
+              <ColorControls>
+                <ColorButton
+                  color={pageConfig.colors.themeColor1}
+                  onClick={() => openColorModal('themeColor1')}
+                  title="Primary Color"
+                />
+                <ColorButton
+                  color={pageConfig.colors.themeColor2}
+                  onClick={() => openColorModal('themeColor2')}
+                  title="Secondary Color"
+                />
+                <ColorButton
+                  color={pageConfig.colors.themeColor3}
+                  onClick={() => openColorModal('themeColor3')}
+                  title="Tertiary Color"
+                />
+              </ColorControls>
+            </ThemeSection>
 
-          <ToolbarDivider isClosing={isClosing} />
-          {/* Font Selection */}
-          <ThemeSection isClosing={isClosing}>
-            <ThemeLabel isClosing={isClosing}>Font</ThemeLabel>
-            <FontButton
-              onClick={() => handleFontSelect(pageConfig.font)}
-              title="Change Font"
-            />
-          </ThemeSection>
-        </>
-      )}
-    </ToolbarContainer>
+            <ToolbarDivider isClosing={isClosing} />
+            {/* Font Selection */}
+            <ThemeSection isClosing={isClosing}>
+              <ThemeLabel isClosing={isClosing}>Font</ThemeLabel>
+              <FontButton
+                onClick={() => handleFontSelect(pageConfig.font)}
+                title="Change Font"
+              />
+            </ThemeSection>
+          </>
+        )}
+      </ToolbarContainer>
+    </TooltipProvider>
   )
 }

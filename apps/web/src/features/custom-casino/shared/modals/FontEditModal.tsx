@@ -59,7 +59,7 @@ const FontEditModal: React.FC<FieldEditModalProps> = ({
       </div>
 
       {/* Font grid */}
-      <div className="grid grid-cols-2 gap-4 mb-6 max-h-[400px] overflow-y-auto">
+      <div className="grid grid-cols-2 gap-4 mb-6 max-h-[400px] overflow-y-auto scrollbar-thin">
         {fontOptions.map((font, index) => (
           <button
             key={index}

@@ -36,7 +36,7 @@ interface PageContainerProps {
 const PageContainer: React.FC<PageContainerProps> = ({ fontFamily, children }) => (
   <div
     className={cn(
-      'h-[calc(100%-32px)] overflow-y-scroll w-full',
+      'h-[calc(100%-32px)] overflow-y-auto w-full scrollbar-thin',
       'max-[992px]:min-h-[calc(100%-32px)] max-[992px]:mx-auto',
       // Force child elements to inherit font
       '[&_button]:!font-inherit [&_input]:!font-inherit [&_textarea]:!font-inherit',

@@ -4,27 +4,121 @@
 
 @layer base {
   :root {
-    /* Dark purple/blue casino theme */
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --card: 224 71.4% 4.1%;
-    --card-foreground: 210 40% 98%;
-    --popover: 224 71.4% 4.1%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 263.4 70% 50.4%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 215 27.9% 16.9%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 215 27.9% 16.9%;
-    --muted-foreground: 217.9 10.6% 64.9%;
-    --accent: 215 27.9% 16.9%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
+    /* ============================================
+       CASINO THEME - tweakcn compatible
+       ============================================ */
+
+    /* === Core shadcn Variables === */
+    --background: 0 0% 4%;           /* #0a0a0a - Deep black */
+    --foreground: 0 0% 100%;         /* #ffffff - Pure white */
+
+    --card: 228 17% 8%;              /* #121318 - Elevated surface */
+    --card-foreground: 0 0% 100%;
+
+    --popover: 228 17% 8%;
+    --popover-foreground: 0 0% 100%;
+
+    /* Primary: Salmon/Coral - Main brand color */
+    --primary: 5 100% 65%;           /* #ff5e4f - FARE salmon */
+    --primary-foreground: 0 0% 100%;
+
+    /* Secondary: Electric Blue - Accent/Focus */
+    --secondary: 249 100% 53%;       /* #410dff - FARE blue */
+    --secondary-foreground: 0 0% 100%;
+
+    /* Muted: Dark gray surfaces */
+    --muted: 228 17% 13%;            /* #1b1d26 - Border dark */
+    --muted-foreground: 0 0% 67%;    /* #aaaaaa - Muted text */
+
+    /* Accent: Slightly lighter surface */
+    --accent: 225 14% 18%;           /* #2c3142 - Border medium */
+    --accent-foreground: 0 0% 100%;
+
+    /* Destructive: Error states */
+    --destructive: 345 82% 58%;      /* #ff2763 - FARE error */
+    --destructive-foreground: 0 0% 100%;
+
+    /* Border/Input */
+    --border: 228 17% 13%;           /* #1b1d26 */
+    --input: 228 17% 13%;
+    --ring: 249 100% 53%;            /* #410dff - Focus ring */
+
+    --radius: 0.75rem;
+
+    /* === Casino Brand Colors (FARE) === */
+    --casino-salmon: 5 100% 65%;     /* #ff5e4f */
+    --casino-blue: 249 100% 53%;     /* #410dff */
+    --casino-pink: 301 100% 43%;     /* #d900d5 */
+    --casino-peach: 30 100% 81%;     /* #ffcd9e */
+    --casino-aqua: 166 89% 63%;      /* #4af5d3 */
+    --casino-gray: 215 9% 23%;       /* #34383f */
+    --casino-black: 0 0% 4%;         /* #0a0a0a */
+
+    /* === Semantic Colors === */
+    --success: 140 100% 50%;         /* #27ff83 */
+    --success-soft: 122 38% 57%;     /* #66bb6a */
+    --warning: 32 100% 65%;          /* #ffad4d */
+    --error: 345 82% 58%;            /* #ff2763 */
+    --error-soft: 4 82% 63%;         /* #ef5350 */
+
+    /* === Text Hierarchy === */
+    --text-primary: 0 0% 100%;       /* #ffffff */
+    --text-secondary: 0 0% 67%;      /* #aaaaaa */
+    --text-muted: 0 0% 40%;          /* #666666 */
+
+    /* === Border Hierarchy === */
+    --border-subtle: 228 17% 13%;    /* #1b1d26 */
+    --border-default: 225 14% 18%;   /* #2c3142 */
+    --border-strong: 222 12% 27%;    /* #3a4052 */
+
+    /* === Surface Hierarchy === */
+    --surface-base: 0 0% 4%;         /* #0a0a0a */
+    --surface-raised: 228 17% 8%;    /* #121318 */
+    --surface-overlay: 0 0% 8%;      /* #141414 */
+
+    /* === Interactive States === */
+    --hover-overlay: 0 0% 100% / 0.05;
+    --active-overlay: 0 0% 100% / 0.1;
+    --focus-ring: 249 100% 53% / 0.5;
+
+    /* === Component Specific === */
+    --button-primary-bg: var(--casino-salmon);
+    --button-primary-hover: 5 100% 58%;
+    --button-secondary-bg: var(--casino-blue);
+    --button-secondary-hover: 249 100% 60%;
+
+    --modal-backdrop: 0 0% 0% / 0.8;
+    --modal-bg: 228 17% 8%;
+
+    --tile-border: var(--border-subtle);
+    --tile-hover-border: var(--casino-salmon);
+
+    /* === Gradients (as CSS vars for easy theming) === */
+    --gradient-primary: linear-gradient(135deg, hsl(var(--casino-salmon)), hsl(var(--casino-pink)));
+    --gradient-accent: linear-gradient(135deg, hsl(var(--casino-blue)), hsl(var(--casino-pink)));
+  }
+
+  /* Light theme override (if needed in future) */
+  .light {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 5 100% 65%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 249 100% 53%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
-    --border: 215 27.9% 16.9%;
-    --input: 215 27.9% 16.9%;
-    --ring: 263.4 70% 50.4%;
-    --radius: 0.5rem;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 249 100% 53%;
   }
 
   * {
@@ -35,9 +129,40 @@
     @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
   }
+
+  /* === Global Scrollbar Styling === */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(var(--muted-foreground) / 0.3) transparent;
+  }
+
+  /* Webkit scrollbar (Chrome, Safari, Edge) */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: hsl(var(--muted-foreground) / 0.3);
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--muted-foreground) / 0.5);
+  }
+
+  /* Hide scrollbar corner */
+  ::-webkit-scrollbar-corner {
+    background: transparent;
+  }
 }
 
 @layer components {
+  /* === Button Variants === */
   .btn {
     @apply px-4 py-2 rounded-lg font-medium transition-all duration-200;
   }
@@ -50,11 +175,142 @@
     @apply bg-secondary hover:bg-secondary/90 text-secondary-foreground;
   }
 
+  .btn-ghost {
+    @apply bg-transparent hover:bg-white/5 text-foreground;
+  }
+
+  .btn-outline {
+    @apply bg-transparent border border-border hover:border-primary text-foreground;
+  }
+
+  /* === Card Variants === */
   .card {
     @apply bg-card border border-border rounded-xl p-6;
   }
 
+  .card-interactive {
+    @apply card cursor-pointer transition-all duration-200 hover:border-primary/50;
+  }
+
+  /* === Input Styles === */
   .input {
-    @apply bg-background border border-input rounded-lg px-4 py-2 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring;
+    @apply bg-background border border-input rounded-lg px-4 py-2 text-foreground;
+  }
+  .input::placeholder {
+    color: hsl(var(--muted-foreground));
+  }
+  .input:focus {
+    outline: none;
+    border-color: hsl(var(--secondary));
+    box-shadow: 0 0 0 2px hsl(var(--ring) / 0.5);
+  }
+
+  /* === Casino Specific Components === */
+  .casino-tile {
+    @apply bg-surface-raised border border-border-subtle rounded-lg
+           transition-all duration-200
+           hover:border-primary/70 hover:shadow-[0_0_20px_rgba(255,94,79,0.15)];
+  }
+
+  .casino-modal {
+    @apply bg-[hsl(var(--modal-bg))] border border-border rounded-xl;
+  }
+
+  .casino-text-primary {
+    @apply text-[hsl(var(--text-primary))];
+  }
+
+  .casino-text-secondary {
+    @apply text-[hsl(var(--text-secondary))];
+  }
+
+  .casino-text-muted {
+    @apply text-[hsl(var(--text-muted))];
+  }
+
+  /* === Glow Effects === */
+  .glow-primary {
+    @apply shadow-[0_0_20px_rgba(255,94,79,0.3)];
+  }
+
+  .glow-secondary {
+    @apply shadow-[0_0_20px_rgba(65,13,255,0.3)];
+  }
+
+  .glow-success {
+    @apply shadow-[0_0_20px_rgba(39,255,131,0.3)];
+  }
+}
+
+@layer utilities {
+  /* === Casino Color Utilities === */
+  .text-casino-salmon { color: hsl(var(--casino-salmon)); }
+  .text-casino-blue { color: hsl(var(--casino-blue)); }
+  .text-casino-pink { color: hsl(var(--casino-pink)); }
+  .text-casino-peach { color: hsl(var(--casino-peach)); }
+  .text-casino-aqua { color: hsl(var(--casino-aqua)); }
+
+  .bg-casino-salmon { background-color: hsl(var(--casino-salmon)); }
+  .bg-casino-blue { background-color: hsl(var(--casino-blue)); }
+  .bg-casino-pink { background-color: hsl(var(--casino-pink)); }
+  .bg-casino-peach { background-color: hsl(var(--casino-peach)); }
+  .bg-casino-aqua { background-color: hsl(var(--casino-aqua)); }
+
+  .border-casino-salmon { border-color: hsl(var(--casino-salmon)); }
+  .border-casino-blue { border-color: hsl(var(--casino-blue)); }
+  .border-casino-pink { border-color: hsl(var(--casino-pink)); }
+  .border-casino-peach { border-color: hsl(var(--casino-peach)); }
+  .border-casino-aqua { border-color: hsl(var(--casino-aqua)); }
+
+  /* === Surface Utilities === */
+  .bg-surface-base { background-color: hsl(var(--surface-base)); }
+  .bg-surface-raised { background-color: hsl(var(--surface-raised)); }
+  .bg-surface-overlay { background-color: hsl(var(--surface-overlay)); }
+
+  /* === Animation Utilities === */
+  .animate-glow-pulse {
+    animation: glow-pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes glow-pulse {
+    0%, 100% { box-shadow: 0 0 20px rgba(255, 94, 79, 0.3); }
+    50% { box-shadow: 0 0 40px rgba(255, 94, 79, 0.5); }
+  }
+
+  /* === Scrollbar Utilities === */
+
+  /* Hide scrollbar completely but keep functionality */
+  .scrollbar-hidden {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .scrollbar-hidden::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Thin scrollbar variant */
+  .scrollbar-thin {
+    scrollbar-width: thin;
+  }
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  /* Extra thin scrollbar for compact areas */
+  .scrollbar-xs {
+    scrollbar-width: thin;
+  }
+  .scrollbar-xs::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+  }
+  .scrollbar-xs::-webkit-scrollbar-thumb {
+    border-radius: 2px;
+  }
+
+  /* Gutter stable - prevent layout shift */
+  .scrollbar-gutter-stable {
+    scrollbar-gutter: stable;
   }
 }

@@ -242,7 +242,7 @@ const SoundLibrary: React.FC<SoundLibraryProps> = ({
         </div>
       ) : (
         /* Sound Grid */
-        <div className="flex flex-col gap-0.5 overflow-y-auto p-0.5">
+        <div className="flex flex-col gap-0.5 overflow-y-auto p-0.5 scrollbar-thin">
           {filteredSounds.map(sound => (
             <div
               key={sound.id}

@@ -38,8 +38,8 @@ export const ModalBase: React.FC<ModalBaseProps> = ({
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogContent
         className={cn(
-          'bg-casino-dark border-white/10 rounded-xl p-0',
-          'max-h-[85vh] overflow-y-auto overflow-x-hidden',
+          'bg-surface-raised border-border rounded-xl p-0',
+          'max-h-[85vh] overflow-y-auto overflow-x-hidden scrollbar-thin',
           'flex flex-col gap-4',
           'max-[992px]:max-w-[95%] max-[992px]:max-h-[90vh]'
         )}

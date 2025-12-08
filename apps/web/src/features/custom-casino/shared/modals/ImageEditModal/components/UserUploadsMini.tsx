@@ -167,12 +167,7 @@ const UserUploadsMini: React.FC<UserUploadsMiniProps> = ({
             No uploads found matching the selected filter.
           </div>
         ) : (
-          <div className={cn(
-            'grid grid-cols-4 gap-3 mb-3 max-h-[220px] overflow-y-auto pr-1',
-            '[&::-webkit-scrollbar]:w-1.5',
-            '[&::-webkit-scrollbar-track]:bg-black/20 [&::-webkit-scrollbar-track]:rounded',
-            '[&::-webkit-scrollbar-thumb]:bg-[#410dff66] [&::-webkit-scrollbar-thumb]:rounded'
-          )}>
+          <div className="grid grid-cols-4 gap-3 mb-3 max-h-[220px] overflow-y-auto pr-1 scrollbar-xs">
             {filteredImages.map(image => {
               const displayUrl = image.data.url
 

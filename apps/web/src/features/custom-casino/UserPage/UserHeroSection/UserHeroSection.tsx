@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { cn } from '@/lib/utils'
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
 import { type CasinoEntity } from '../../shared/types'
 import { type PageConfig } from '../../config/PageConfig'
 import { useEditStore } from '@/features/custom-casino/UserPage/editor/useEditStore'
@@ -11,6 +12,7 @@ import { detectPlatform } from '../../shared/modals/SocialModal/SocialPlatformIt
 import CroppedImage from '../../shared/ui/CroppedImage'
 import profilePlaceholder from '@/assets/png/profile-pic-placeholder.png'
 import bannerPlaceholder from '@/assets/png/banner-placeholder.png'
+import { FARE_COLORS } from '@/design/colors'
 
 interface UserHeroSectionProps {
   casino: CasinoEntity
@@ -60,19 +62,22 @@ const ProfileSection: React.FC<{ children: React.ReactNode }> = ({ children }) =
   </div>
 )
 
-// Profile picture
+// Profile picture using shadcn Avatar
 interface ProfilePicProps {
   themeColor?: string
   children: React.ReactNode
 }
 
 const ProfilePic: React.FC<ProfilePicProps> = ({ themeColor, children }) => (
-  <div
-    className="w-[90px] h-[90px] rounded-full bg-[#333] shadow-lg relative -top-[5px] flex-shrink-0 overflow-hidden max-sm:w-[70px] max-sm:h-[70px]"
-    style={{ border: `4px solid ${themeColor || '#5f5fff'}` }}
+  <Avatar
+    className="w-[90px] h-[90px] shadow-lg relative -top-[5px] flex-shrink-0 max-sm:w-[70px] max-sm:h-[70px]"
+    style={{
+      border: `4px solid ${themeColor || 'hsl(var(--secondary))'}`,
+      boxShadow: themeColor ? `0 0 20px ${themeColor}40` : undefined,
+    }}
   >
     {children}
-  </div>
+  </Avatar>
 )
 
 // Profile info
@@ -334,13 +339,17 @@ export const UserHeroSection: React.FC<UserHeroSectionProps> = ({
           <EditableContainer isEditable={isEditMode}>
             <ProfilePic themeColor={themeColor}>
               {hasProfileImage ? (
-                <CroppedImage imageData={profileImage} alt="Profile" width="100%" height="100%" />
+                <AvatarImage asChild>
+                  <CroppedImage imageData={profileImage} alt="Profile" width="100%" height="100%" />
+                </AvatarImage>
               ) : (
-                <img
-                  src={profilePlaceholder}
-                  alt="Profile Placeholder"
-                  className="w-full h-full scale-[1.4]"
-                />
+                <AvatarFallback className="bg-muted">
+                  <img
+                    src={profilePlaceholder}
+                    alt="Profile Placeholder"
+                    className="w-full h-full scale-[1.4]"
+                  />
+                </AvatarFallback>
               )}
             </ProfilePic>
             {isEditMode && (

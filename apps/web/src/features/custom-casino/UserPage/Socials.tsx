@@ -1,6 +1,12 @@
 import React from 'react'
 import { cn } from '@/lib/utils'
 import { SVGS } from '@/assets'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip'
 
 // Platform information for social icons
 interface PlatformInfo {
@@ -76,22 +82,23 @@ const SocialIcon: React.FC<SocialIconProps> = ({ href, themeColor, title, childr
   )
 }
 
-// Link text with tooltip
+// Link text with tooltip using shadcn Tooltip
 interface LinkTextProps {
   tooltip: string
   children: React.ReactNode
 }
 
 const LinkText: React.FC<LinkTextProps> = ({ tooltip, children }) => (
-  <div
-    className="whitespace-nowrap overflow-hidden text-ellipsis text-sm text-foreground relative group"
-    data-tooltip={tooltip}
-  >
-    {children}
-    <span className="hidden group-hover:block absolute bottom-[calc(100%+5px)] left-0 bg-black/85 text-white px-2 py-1 rounded text-xs whitespace-nowrap z-[1000]">
-      {tooltip}
-    </span>
-  </div>
+  <Tooltip>
+    <TooltipTrigger asChild>
+      <div className="whitespace-nowrap overflow-hidden text-ellipsis text-sm text-foreground cursor-default">
+        {children}
+      </div>
+    </TooltipTrigger>
+    <TooltipContent side="top" className="bg-popover border-border">
+      <p className="text-xs">{tooltip}</p>
+    </TooltipContent>
+  </Tooltip>
 )
 
 interface SocialsProps {
@@ -180,6 +187,7 @@ export const Socials: React.FC<SocialsProps> = ({
   switch (layoutType) {
     case 'horizontal':
       return (
+        <TooltipProvider>
         <div className="flex gap-2 relative">
           {links.map((link, index) => (
             <SocialIcon
@@ -197,9 +205,11 @@ export const Socials: React.FC<SocialsProps> = ({
             </SocialIcon>
           ))}
         </div>
+        </TooltipProvider>
       )
     case 'vertical':
       return (
+        <TooltipProvider>
         <div className="flex flex-col gap-2 items-start w-full">
           {links.map((link, index) => (
             <SocialIcon
@@ -217,10 +227,12 @@ export const Socials: React.FC<SocialsProps> = ({
             </SocialIcon>
           ))}
         </div>
+        </TooltipProvider>
       )
     case 'showLinks':
     default:
       return (
+        <TooltipProvider>
         <div className="flex flex-col gap-2 items-start w-full">
           {links.map((link, index) => (
             <div
@@ -245,6 +257,7 @@ export const Socials: React.FC<SocialsProps> = ({
             </div>
           ))}
         </div>
+        </TooltipProvider>
       )
   }
 }

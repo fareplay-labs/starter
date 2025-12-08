@@ -122,7 +122,7 @@ const SoundEditModal: React.FC<SoundEditModalProps> = ({
         </div>
 
         {/* Content Area */}
-        <div className="flex-1 overflow-y-auto px-1">
+        <div className="flex-1 overflow-y-auto px-1 scrollbar-thin">
           {activeTab === 'library' ? (
             readyAndAuth && isVerified && publicAddress ? (
               <SoundLibrary

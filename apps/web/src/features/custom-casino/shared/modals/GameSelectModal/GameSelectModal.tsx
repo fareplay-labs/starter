@@ -352,7 +352,7 @@ export const GameSelectModal: React.FC<GameSelectModalProps> = ({
         >
           New Basic Game
         </h3>
-        <div className="flex gap-3 overflow-x-auto pb-2 [&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar-thumb]:bg-white/20 [&::-webkit-scrollbar-thumb]:rounded">
+        <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-xs">
           {basicGames.map((game, _index) => {
             const gameState = creatingGames[game.id]
             const isDisabled = gameState === 'loading' || gameState === 'success'
@@ -417,7 +417,7 @@ export const GameSelectModal: React.FC<GameSelectModalProps> = ({
 
         {/* Your Games Grid */}
         {filteredUserGames.length > 0 ? (
-          <div className="max-h-[400px] overflow-y-auto pr-2 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:bg-white/20 [&::-webkit-scrollbar-thumb]:rounded">
+          <div className="max-h-[400px] overflow-y-auto pr-2 scrollbar-thin">
             <div
               className="grid grid-cols-4 gap-3 max-[992px]:grid-cols-3 max-[640px]:grid-cols-2 max-[640px]:gap-2"
               role='listbox'

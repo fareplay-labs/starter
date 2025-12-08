@@ -1,4 +1,8 @@
 // @ts-nocheck
+// Legacy styled-components for game form compatibility
+// The main KeepSelectionCheckbox component uses shadcn, but game forms
+// import these styled components directly
+
 import { FARE_COLORS, TEXT_COLORS } from '@/design'
 import { styled } from 'styled-components'
 

@@ -1,8 +1,7 @@
-// @ts-nocheck
 import React, { useState, useRef, useMemo, useEffect } from 'react'
 import { type ImageData } from '../../config/PageConfig'
 import { type Area } from 'react-easy-crop'
-import { styled } from 'styled-components'
+import { cn } from '@/lib/utils'
 
 interface CroppedImageProps {
   imageData: string | ImageData | { url: string; crop: Area }
@@ -12,45 +11,37 @@ interface CroppedImageProps {
   className?: string
 }
 
-// Container for the cropped image with specified dimensions
-const ImageContainer = styled.div<{
-  $width?: string | number
-  $height?: string | number
-}>`
-  width: ${props =>
-    typeof props.$width === 'number' ? `${props.$width}px` : props.$width || '100%'};
-  height: ${props =>
-    typeof props.$height === 'number' ? `${props.$height}px` : props.$height || 'auto'};
-  overflow: hidden;
-  position: relative;
-`
-
-// Actual image element that will be positioned and scaled
-const CroppedImg = styled.img`
-  position: absolute;
-  transform-origin: 0 0;
-`
-
 // Type guard for Area format
-const isAreaCrop = (crop: any): crop is Area => {
+const isAreaCrop = (crop: unknown): crop is Area => {
   return (
-    crop &&
-    typeof crop.x === 'number' &&
-    typeof crop.y === 'number' &&
-    typeof crop.width === 'number' &&
-    typeof crop.height === 'number'
+    crop !== null &&
+    typeof crop === 'object' &&
+    'x' in crop &&
+    'y' in crop &&
+    'width' in crop &&
+    'height' in crop &&
+    typeof (crop as Area).x === 'number' &&
+    typeof (crop as Area).y === 'number' &&
+    typeof (crop as Area).width === 'number' &&
+    typeof (crop as Area).height === 'number'
   )
 }
 
 // Type guard for points/zoom format
-const isPointsCrop = (crop: any): crop is { points: number[]; zoom: number } => {
-  return crop && Array.isArray(crop.points) && typeof crop.zoom === 'number'
+const isPointsCrop = (crop: unknown): crop is { points: number[]; zoom: number } => {
+  return (
+    crop !== null &&
+    typeof crop === 'object' &&
+    'points' in crop &&
+    'zoom' in crop &&
+    Array.isArray((crop as { points: number[] }).points) &&
+    typeof (crop as { zoom: number }).zoom === 'number'
+  )
 }
 
 /**
  * Component that displays an image with crop settings applied,
  * supporting both old (points/zoom) and new (Area) formats.
- * Test comment added for verification purposes.
  */
 const CroppedImage: React.FC<CroppedImageProps> = ({
   imageData,
@@ -74,7 +65,7 @@ const CroppedImage: React.FC<CroppedImageProps> = ({
           if (parsed && typeof parsed === 'object' && typeof parsed.url === 'string') {
             return parsed.url
           }
-        } catch (e) {
+        } catch {
           // Silently fail and return the original string
         }
       }
@@ -100,10 +91,20 @@ const CroppedImage: React.FC<CroppedImageProps> = ({
     setIsImageLoaded(true)
   }
 
+  // Container style based on width/height props
+  const containerStyle: React.CSSProperties = {
+    width: typeof width === 'number' ? `${width}px` : width || '100%',
+    height: typeof height === 'number' ? `${height}px` : height || 'auto',
+  }
+
   // If no image, just return an empty container
   if (!imageUrl) {
     return (
-      <ImageContainer $width={width} $height={height} className={className} ref={containerRef} />
+      <div
+        ref={containerRef}
+        className={cn('overflow-hidden relative', className)}
+        style={containerStyle}
+      />
     )
   }
 
@@ -139,7 +140,7 @@ const CroppedImage: React.FC<CroppedImageProps> = ({
               }
             }
           }
-        } catch (e) {
+        } catch {
           // Silently fail and return null
           return null
         }
@@ -162,18 +163,18 @@ const CroppedImage: React.FC<CroppedImageProps> = ({
 
   if (!cropData || !isImageLoaded) {
     return (
-      <ImageContainer $width={width} $height={height} className={className} ref={containerRef}>
+      <div
+        ref={containerRef}
+        className={cn('overflow-hidden relative', className)}
+        style={containerStyle}
+      >
         <img
           src={imageUrl}
           alt={alt}
           onLoad={handleImageLoad}
-          style={{
-            width: '100%',
-            height: '100%',
-            objectFit: 'cover',
-          }}
+          className="w-full h-full object-cover"
         />
-      </ImageContainer>
+      </div>
     )
   }
 
@@ -181,10 +182,10 @@ const CroppedImage: React.FC<CroppedImageProps> = ({
     const containerWidth = containerRef.current?.offsetWidth || 300
     const containerHeight = containerRef.current?.offsetHeight || 200
     // Use forceRerender to ensure calculations update when size changes
-    const _ = forceRerender
+    void forceRerender
 
     try {
-      let transformStyle = {}
+      let transformStyle: React.CSSProperties = {}
 
       if (isAreaCrop(cropData)) {
         const scaleX = containerWidth / cropData.width
@@ -230,7 +231,15 @@ const CroppedImage: React.FC<CroppedImageProps> = ({
         return renderFullImage()
       }
 
-      return <CroppedImg src={imageUrl} alt={alt} style={transformStyle} onLoad={handleImageLoad} />
+      return (
+        <img
+          src={imageUrl}
+          alt={alt}
+          className="absolute origin-top-left"
+          style={transformStyle}
+          onLoad={handleImageLoad}
+        />
+      )
     } catch (error) {
       console.error('Error calculating crop styles:', error)
       return renderFullImage()
@@ -241,19 +250,19 @@ const CroppedImage: React.FC<CroppedImageProps> = ({
     <img
       src={imageUrl}
       alt={alt}
-      style={{
-        width: '100%',
-        height: '100%',
-        objectFit: 'cover',
-      }}
+      className="w-full h-full object-cover"
       onLoad={handleImageLoad}
     />
   )
 
   return (
-    <ImageContainer $width={width} $height={height} className={className} ref={containerRef}>
+    <div
+      ref={containerRef}
+      className={cn('overflow-hidden relative', className)}
+      style={containerStyle}
+    >
       {renderCroppedImage()}
-    </ImageContainer>
+    </div>
   )
 }
 
