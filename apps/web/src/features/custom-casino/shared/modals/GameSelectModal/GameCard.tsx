@@ -1,7 +1,6 @@
 // @ts-nocheck
 import React from 'react'
-import { styled } from 'styled-components'
-import { SPACING, TEXT_COLORS } from '@/design'
+import { cn } from '@/lib/utils'
 import { SVGS } from '@/assets'
 import { AppGameName } from '@/chains/types'
 import { type ThemeColors } from '../shared/modalTypes'
@@ -19,117 +18,6 @@ const GAME_ICONS: Record<AppGameName, string> = {
   [AppGameName.CryptoLaunch_1]: SVGS.cryptoLaunchIcon,
   [AppGameName.Slots_1]: SVGS.slotsIcon,
 }
-
-// Delete button styled component
-const SDeleteButton = styled.button<{ $color: string }>`
-  position: absolute;
-  top: 8px;
-  left: 8px;
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  background-color: rgba(255, 0, 0, 0.1);
-  border: 1px solid rgba(255, 0, 0, 0.3);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  opacity: 0;
-  transform: scale(0.8);
-
-  &:hover {
-    background-color: rgba(255, 0, 0, 0.2);
-    border-color: rgba(255, 0, 0, 0.5);
-    transform: scale(1.1);
-  }
-
-  svg {
-    width: 14px;
-    height: 14px;
-    fill: #ff5555;
-  }
-`
-
-const SGameIconWrapper = styled.div`
-  width: 60px;
-  height: 60px;
-  margin-bottom: ${SPACING.sm}px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: transform 0.2s ease;
-`
-
-const SGameName = styled.div<{ $isSelected: boolean; $textColor?: string }>`
-  color: ${props => (props.$isSelected ? props.$textColor : TEXT_COLORS.one)};
-  font-size: 14px;
-  font-weight: 600;
-  text-align: center;
-  margin-top: auto;
-  transition: transform 0.2s ease;
-`
-
-// Styled components
-const SGameCard = styled.div<{
-  $isSelected: boolean
-  $colors: ThemeColors
-}>`
-  padding: ${SPACING.md}px;
-  border-radius: 8px;
-  background-color: rgba(20, 20, 20, 0.85);
-  border: 2px solid
-    ${props => (props.$isSelected ? props.$colors.themeColor2 : 'rgba(255, 255, 255, 0.1)')};
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  position: relative;
-  overflow: hidden;
-
-  &:hover {
-    ${SDeleteButton} {
-      opacity: 1;
-      transform: scale(1);
-    }
-
-    ${SGameIconWrapper} {
-      transform: scale(1.1);
-    }
-
-    ${SGameName} {
-      transform: scale(1.2);
-    }
-  }
-`
-
-const SGameIcon = styled.img`
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-`
-
-const SCheckmarkIcon = styled.div<{ $isSelected: boolean; $color: string }>`
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background-color: ${props => (props.$isSelected ? props.$color : 'rgba(255, 255, 255, 0.1)')};
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s ease;
-  opacity: ${props => (props.$isSelected ? 1 : 0.5)};
-
-  svg {
-    width: 14px;
-    height: 14px;
-    fill: white;
-  }
-`
 
 // Checkmark SVG
 const CheckmarkSVG = () => (
@@ -190,9 +78,7 @@ export const GameCard: React.FC<GameCardProps> = ({
   }
 
   return (
-    <SGameCard
-      $isSelected={isSelected}
-      $colors={themeColors}
+    <div
       onClick={handleClick}
       role='option'
       aria-selected={isSelected}
@@ -203,26 +89,70 @@ export const GameCard: React.FC<GameCardProps> = ({
           handleClick()
         }
       }}
+      className={cn(
+        'p-4 rounded-lg bg-[rgba(20,20,20,0.85)] border-2 cursor-pointer',
+        'flex flex-col items-center relative overflow-hidden',
+        'transition-all duration-200 group'
+      )}
+      style={{
+        borderColor: isSelected ? themeColors.themeColor2 : 'rgba(255, 255, 255, 0.1)',
+      }}
     >
+      {/* Delete Button */}
       {onDelete && (
-        <SDeleteButton
-          $color={themeColors.themeColor3}
+        <button
           onClick={handleDelete}
           aria-label={`Delete ${name}`}
           title={`Delete ${name}`}
+          className={cn(
+            'absolute top-2 left-2 w-6 h-6 rounded-full',
+            'bg-red-500/10 border border-red-500/30',
+            'flex items-center justify-center cursor-pointer',
+            'transition-all duration-200 opacity-0 scale-75',
+            'hover:bg-red-500/20 hover:border-red-500/50 hover:scale-110',
+            'group-hover:opacity-100 group-hover:scale-100',
+            '[&_svg]:w-3.5 [&_svg]:h-3.5 [&_svg]:fill-[#ff5555]'
+          )}
         >
           <TrashSVG />
-        </SDeleteButton>
+        </button>
       )}
-      <SCheckmarkIcon $isSelected={isSelected} $color={themeColors.themeColor2} aria-hidden='true'>
+
+      {/* Checkmark Icon */}
+      <div
+        className={cn(
+          'absolute top-2 right-2 w-5 h-5 rounded-full',
+          'flex items-center justify-center transition-all duration-200',
+          '[&_svg]:w-3.5 [&_svg]:h-3.5 [&_svg]:fill-white'
+        )}
+        style={{
+          backgroundColor: isSelected ? themeColors.themeColor2 : 'rgba(255, 255, 255, 0.1)',
+          opacity: isSelected ? 1 : 0.5,
+        }}
+        aria-hidden='true'
+      >
         <CheckmarkSVG />
-      </SCheckmarkIcon>
-      <SGameIconWrapper>
-        <SGameIcon src={getIconSrc()} alt={`${name} game icon`} />
-      </SGameIconWrapper>
-      <SGameName $isSelected={isSelected} $textColor={themeColors.themeColor1}>
+      </div>
+
+      {/* Game Icon */}
+      <div className="w-[60px] h-[60px] mb-3 flex items-center justify-center transition-transform duration-200 group-hover:scale-110">
+        <img
+          src={getIconSrc()}
+          alt={`${name} game icon`}
+          className="w-full h-full object-contain"
+        />
+      </div>
+
+      {/* Game Name */}
+      <div
+        className={cn(
+          'text-sm font-semibold text-center mt-auto',
+          'transition-transform duration-200 group-hover:scale-[1.2]'
+        )}
+        style={{ color: isSelected ? themeColors.themeColor1 : '#ffffff' }}
+      >
         {name}
-      </SGameName>
-    </SGameCard>
+      </div>
+    </div>
   )
 }

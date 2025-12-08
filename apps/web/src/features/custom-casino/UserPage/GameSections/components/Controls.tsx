@@ -1,7 +1,5 @@
-// @ts-nocheck
 import React from 'react'
-import { styled } from 'styled-components'
-import { SPACING, BORDER_COLORS, TEXT_COLORS } from '@/design'
+import { cn } from '@/lib/utils'
 import { GearIcon, LayoutIcon, RemoveIcon, type ThemeColors } from '../utils'
 
 // Props interfaces
@@ -30,98 +28,31 @@ interface AddSectionButtonProps {
   onClick?: () => void
 }
 
-// Styled components
-const SSectionControls = styled.div`
-  position: absolute;
-  top: ${SPACING.xl + 20}px;
-  right: 5px;
-  display: flex;
-  gap: ${SPACING.sm}px;
-  z-index: 10;
-`
-
-const SControlButton = styled.button<{ $color?: string }>`
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: rgba(0, 0, 0, 0.7);
-  border: 2px solid ${props => props.$color || BORDER_COLORS.one};
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  color: white;
-  transition: all 0.2s ease;
-
-  &:hover {
-    transform: scale(1.1);
-    background: rgba(40, 40, 40, 0.9);
-  }
-
-  svg {
-    width: 16px;
-    height: 16px;
-    fill: currentColor;
-  }
-`
-
-const SGameControls = styled.div`
-  position: absolute;
-  top: 5px;
-  right: 5px;
-  display: flex;
-  gap: ${SPACING.xs}px;
-  opacity: 0;
-  transition: opacity 0.2s ease;
-  z-index: 10;
-`
-
-const SAddSectionButton = styled.button<{
-  $colors?: ThemeColors
-}>`
-  width: 100%;
-  padding: ${SPACING.md}px;
-  margin: ${SPACING.xl}px 0;
-  border-radius: 12px;
-  background: #0a0a0a;
-  border: 2px dashed ${props => props.$colors?.themeColor1 || BORDER_COLORS.one};
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  color: ${TEXT_COLORS.one};
-  transition: all 0.2s ease;
-  font-size: 16px;
-  font-weight: 600;
-  gap: ${SPACING.md}px;
-  position: relative;
-
-  &:hover {
-    background: rgba(40, 40, 40, 0.3);
-    border-color: ${props => props.$colors?.themeColor2 || BORDER_COLORS.two};
-  }
-
-  svg {
-    width: 20px;
-    height: 20px;
-    fill: currentColor;
-  }
-`
-
-// Component implementations
+// Control button component
 const ControlButton: React.FC<ControlButtonProps> = ({ color, title, onClick, icon }) => (
-  <SControlButton $color={color} title={title} onClick={onClick}>
+  <button
+    title={title}
+    onClick={onClick}
+    className={cn(
+      'w-8 h-8 rounded-full bg-black/70 flex items-center justify-center',
+      'cursor-pointer text-white transition-all duration-200',
+      'hover:scale-110 hover:bg-[rgba(40,40,40,0.9)]',
+      '[&_svg]:w-4 [&_svg]:h-4 [&_svg]:fill-current'
+    )}
+    style={{ border: `2px solid ${color || '#1b1d26'}` }}
+  >
     {icon}
-  </SControlButton>
+  </button>
 )
 
+// Section controls container
 export const SectionControls: React.FC<SectionControlsProps> = ({
   themeColors,
   onLayoutToggle,
   onAddGame,
   onRemoveSection,
 }) => (
-  <SSectionControls>
+  <div className="absolute top-[52px] right-[5px] flex gap-3 z-10">
     <ControlButton
       color={themeColors.themeColor2}
       title='Change Layout'
@@ -140,22 +71,44 @@ export const SectionControls: React.FC<SectionControlsProps> = ({
       onClick={onRemoveSection}
       icon={<RemoveIcon />}
     />
-  </SSectionControls>
+  </div>
 )
 
+// Game controls (shown on hover)
 export const GameControls: React.FC<GameControlsProps> = ({ themeColors, onEdit, gameName }) => (
-  <SGameControls>
+  <div className="absolute top-[5px] right-[5px] flex gap-2 opacity-0 transition-opacity duration-200 z-10">
     <ControlButton
       color={themeColors.themeColor2}
       title={gameName || 'Edit Game'}
       onClick={onEdit}
       icon={<GearIcon />}
     />
-  </SGameControls>
+  </div>
 )
 
+// Add section button
 export const AddSectionButton: React.FC<AddSectionButtonProps> = ({ colors, onClick }) => (
-  <SAddSectionButton $colors={colors} onClick={onClick}>
+  <button
+    onClick={onClick}
+    className={cn(
+      'w-full p-4 my-8 rounded-xl bg-casino-dark flex items-center justify-center',
+      'cursor-pointer text-white transition-all duration-200',
+      'text-base font-semibold gap-4 relative',
+      'hover:bg-[rgba(40,40,40,0.3)]',
+      '[&_svg]:w-5 [&_svg]:h-5 [&_svg]:fill-current'
+    )}
+    style={{
+      border: `2px dashed ${colors?.themeColor1 || '#1b1d26'}`,
+    }}
+    onMouseOver={(e) => {
+      if (colors?.themeColor2) {
+        e.currentTarget.style.borderColor = colors.themeColor2
+      }
+    }}
+    onMouseOut={(e) => {
+      e.currentTarget.style.borderColor = colors?.themeColor1 || '#1b1d26'
+    }}
+  >
     <GearIcon /> Add New Section
-  </SAddSectionButton>
+  </button>
 )

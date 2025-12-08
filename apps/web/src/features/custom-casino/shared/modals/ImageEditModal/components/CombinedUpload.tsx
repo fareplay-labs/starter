@@ -1,18 +1,6 @@
 // @ts-nocheck
 import React, { useState, useEffect, useCallback } from 'react'
-import {
-  CombinedUploadContainer,
-  InputSection,
-  DividerContainer,
-  DividerLine,
-  DividerText,
-  PreviewContainer,
-  ThumbnailPreview,
-  TagsContainer,
-  UploadButtonContainer,
-  UploadButton,
-  LeftSection,
-} from '../styles/uploadSectionStyles'
+import { cn } from '@/lib/utils'
 import FileUpload from './FileUpload'
 import UrlInput from './UrlInput'
 import TagSelector from './TagSelector'
@@ -80,7 +68,7 @@ const CombinedUpload: React.FC<CombinedUploadProps> = ({
 
   const renderInputMode = () => (
     <>
-      <InputSection>
+      <div className="overflow-hidden transition-all duration-300">
         <UrlInput
           value={urlValue}
           onChange={onUrlChange}
@@ -88,49 +76,53 @@ const CombinedUpload: React.FC<CombinedUploadProps> = ({
           inputRef={urlInputRef}
           disabled={disabled}
         />
-        <DividerContainer>
-          <DividerLine />
-          <DividerText>or</DividerText>
-          <DividerLine />
-        </DividerContainer>
-      </InputSection>
+        {/* Divider */}
+        <div className="flex items-center text-[0.9em] transition-all duration-300 my-4 overflow-hidden">
+          <div className="flex-1 h-px bg-[#3a4052]" />
+          <span className="px-3 text-[#aaaaaa]">or</span>
+          <div className="flex-1 h-px bg-[#3a4052]" />
+        </div>
+      </div>
       <FileUpload onFileUpload={onFileSelected} />
     </>
   )
 
   const renderPreviewMode = () => (
-    <PreviewContainer>
-      <LeftSection>
-        <ThumbnailPreview>
-          {thumbnailUrl && (
-            <img src={thumbnailUrl} alt='Upload preview' />
-          )}
-        </ThumbnailPreview>
-        <UploadButtonContainer>
-          <UploadButton
+    <div className="flex flex-row transition-opacity duration-300">
+      {/* Left Section */}
+      <div className="flex flex-col items-center w-[30%] h-auto mr-4">
+        {/* Thumbnail Preview */}
+        <div className="flex-[0_0_100px] flex justify-center items-center [&_img]:max-h-[100px] [&_img]:w-auto [&_img]:max-w-full [&_img]:object-contain [&_img]:rounded [&_img]:border [&_img]:border-[#1b1d26]">
+          {thumbnailUrl && <img src={thumbnailUrl} alt='Upload preview' />}
+        </div>
+        {/* Upload Button Container */}
+        <div className="flex items-center justify-center">
+          <button
             onClick={handleUploadClick}
             disabled={disabled || uploadStatus === 'uploading' || selectedTags.length === 0}
-            $status={uploadStatus}
+            className={cn(
+              'bg-black/80 text-[#4af5d3] border border-[#4af5d3] rounded py-0.5 px-4',
+              'text-base cursor-pointer transition-all duration-200',
+              'shadow-[0_0_10px_rgba(0,255,0,0.59),inset_0_0_5px_rgba(0,255,0,0.59)]',
+              'uppercase tracking-wider',
+              'hover:bg-black/90 hover:shadow-[0_0_10px_#00ff00,inset_0_0_3px_#00ff00] hover:[text-shadow:0_0_5px_#00ff00]',
+              'disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none',
+              uploadStatus === 'uploading' && 'cursor-not-allowed'
+            )}
           >
             {uploadStatus === 'uploading' ? 'Uploading...' : 'Upload'}
-          </UploadButton>
-        </UploadButtonContainer>
+          </button>
+        </div>
+        {/* File Info */}
         {selectedFile && (
-          <div
-            style={{
-              fontSize: '0.8em',
-              marginTop: '8px',
-              color: '#777',
-              textAlign: 'center',
-            }}
-          >
-            {selectedFile.type.split('/')[1].toUpperCase()} •{' '}
-            {formatFileSize(selectedFile.size)}
+          <div className="text-[0.8em] mt-2 text-[#777] text-center">
+            {selectedFile.type.split('/')[1].toUpperCase()} • {formatFileSize(selectedFile.size)}
           </div>
         )}
-      </LeftSection>
+      </div>
 
-      <TagsContainer>
+      {/* Tags Container */}
+      <div className="flex-1 mr-0">
         <TagSelector
           initialSelectedTags={['all', ...suggestedTags]}
           suggestedTags={[]}
@@ -138,17 +130,17 @@ const CombinedUpload: React.FC<CombinedUploadProps> = ({
           onChange={handleTagChange}
           maxUserTags={2}
         />
-      </TagsContainer>
-    </PreviewContainer>
+      </div>
+    </div>
   )
 
   return (
-    <CombinedUploadContainer>
+    <div className="flex flex-col justify-center border border-[#1b1d26] rounded-lg p-3 bg-transparent overflow-hidden min-h-[165px] h-[175px]">
       {isPreviewMode ? renderPreviewMode() : renderInputMode()}
       {errorMessage && (
-        <div style={{ color: 'red', marginTop: '8px', fontSize: '0.9em' }}>{errorMessage}</div>
+        <div className="text-red-500 mt-2 text-[0.9em]">{errorMessage}</div>
       )}
-    </CombinedUploadContainer>
+    </div>
   )
 }
 

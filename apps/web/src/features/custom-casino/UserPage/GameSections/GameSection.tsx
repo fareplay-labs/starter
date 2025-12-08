@@ -1,6 +1,6 @@
-// @ts-nocheck
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { cn } from '@/lib/utils'
 import { type CustomCasinoGame } from '../../shared/types'
 import {
   SectionTitle,
@@ -17,11 +17,34 @@ import {
   GameDescription,
   FancyTileWrapper,
   HoverGameName,
-  STileContent,
+  TileContent,
 } from './components'
 import { useInfiniteCarouselCenter } from './hooks/useInfiniteCarouselCenter'
-import { GameTileContainer, SSection } from '../styles'
 import { type GameSectionProps } from './types'
+
+// Section container
+const Section: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <section className="my-8 relative bg-transparent pt-8">
+    {children}
+  </section>
+)
+
+// Game tile container
+interface GameTileContainerProps {
+  layout?: string
+  children: React.ReactNode
+}
+
+const GameTileContainer: React.FC<GameTileContainerProps> = ({ layout, children }) => (
+  <div
+    className={cn(
+      'relative overflow-visible flex justify-center items-center max-w-[140px] mx-2 flex-none',
+      layout === 'smallTiles' ? 'pb-6' : 'pb-0'
+    )}
+  >
+    {children}
+  </div>
+)
 
 // Component implementation
 export const GameSection: React.FC<GameSectionProps> = ({
@@ -68,7 +91,8 @@ export const GameSection: React.FC<GameSectionProps> = ({
 
   const renderGameTile = (game: CustomCasinoGame, index: number, absIndex: number) => {
     const tileContent = (
-      <STileContent
+      <TileContent
+        layout={validLayout}
         onMouseEnter={() => validLayout === 'smallTiles' && setHoveredGameId(game.id)}
         onMouseLeave={() => validLayout === 'smallTiles' && setHoveredGameId(null)}
       >
@@ -94,11 +118,10 @@ export const GameSection: React.FC<GameSectionProps> = ({
 
         {validLayout === 'smallTiles' && (
           <HoverGameName
-            $textColor={themeColors.themeColor1}
-            $isVisible={hoveredGameId === game.id}
-          >
-            {game.name}
-          </HoverGameName>
+            name={game.name}
+            textColor={themeColors.themeColor1}
+            isVisible={hoveredGameId === game.id}
+          />
         )}
 
         {validLayout === 'largeTiles' && game.config?.description && (
@@ -115,15 +138,10 @@ export const GameSection: React.FC<GameSectionProps> = ({
             gameName={game.name}
           />
         )}
-      </STileContent>
+      </TileContent>
     )
 
     const tileProps = {
-      $borderColor: themeColors.themeColor1,
-      $hoverColors: {
-        secondary: themeColors.themeColor2,
-        tertiary: themeColors.themeColor3,
-      },
       onClick: () => handleGameClick(game),
       'aria-label': `Play ${game.name}`,
       style: { background: 'rgba(10, 10, 10, 0.65)' },
@@ -135,18 +153,17 @@ export const GameSection: React.FC<GameSectionProps> = ({
       : LargeTile
 
     // Use absIndex for the centered class if over 5
-    const className =
-      validLayout === 'carousel' && shouldDuplicate && absIndex === centerIndex ? 'centered' : undefined
+    const isCentered = validLayout === 'carousel' && shouldDuplicate && absIndex === centerIndex
 
     return (
-      <GameTileContainer key={`${game.id}-${absIndex}`} $layout={validLayout}>
+      <GameTileContainer key={`${game.id}-${absIndex}`} layout={validLayout}>
         <FancyTileWrapper
           themeColor={themeColors.themeColor1}
           secondaryColor={themeColors.themeColor2}
           tertiaryColor={themeColors.themeColor3}
           index={index}
         >
-          <TileComponent {...tileProps} className={className}>
+          <TileComponent {...tileProps} isCentered={isCentered}>
             {tileContent}
           </TileComponent>
         </FancyTileWrapper>
@@ -160,7 +177,7 @@ export const GameSection: React.FC<GameSectionProps> = ({
     : LargeTilesLayout
 
   return (
-    <SSection>
+    <Section>
       {isEditMode && (
         <SectionControls
           themeColors={themeColors}
@@ -188,7 +205,7 @@ export const GameSection: React.FC<GameSectionProps> = ({
           {games.map((game, idx) => renderGameTile(game, idx, idx))}
         </LayoutComponent>
       }
-    </SSection>
+    </Section>
   )
 }
 

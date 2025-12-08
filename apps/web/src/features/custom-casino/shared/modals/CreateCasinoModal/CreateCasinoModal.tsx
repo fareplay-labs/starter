@@ -1,9 +1,8 @@
 // @ts-nocheck
 import React, { useState } from 'react'
-import { styled } from 'styled-components'
+import { cn } from '@/lib/utils'
 import { ModalBase } from '../shared/ModalBase'
 import { ModalActions } from '../shared/ModalActions'
-import { SPACING, FARE_COLORS, TEXT_COLORS } from '@/design'
 
 interface CreateCasinoModalProps {
   isOpen: boolean
@@ -11,67 +10,6 @@ interface CreateCasinoModalProps {
   onSelectAI?: () => void
   username: string
 }
-
-// Styled Components
-const ModalContent = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: ${SPACING.lg}px;
-`
-
-const OptionContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: ${SPACING.lg}px;
-
-  @media (min-width: 768px) {
-    flex-direction: row;
-  }
-`
-
-const OptionCard = styled.div<{ $selected?: boolean }>`
-  flex: 1;
-  padding: ${SPACING.lg}px;
-  border-radius: 12px;
-  /* Use a slightly stronger backdrop than the old rgba(30,30,30,0.4) to match other modals */
-  background-color: rgba(20, 20, 20, 0.85);
-  border: 2px solid ${props => (props.$selected ? FARE_COLORS.salmon : 'rgba(255, 255, 255, 0.08)')};
-  cursor: pointer;
-  transition: all 0.2s ease;
-
-  &:hover {
-    border-color: ${props => (props.$selected ? FARE_COLORS.salmon : 'rgba(255, 255, 255, 0.25)')};
-    transform: translateY(-2px);
-  }
-
-  &:active {
-    transform: translateY(0);
-  }
-`
-
-const OptionTitle = styled.h3`
-  margin: 0 0 ${SPACING.sm}px 0;
-  color: ${TEXT_COLORS.one};
-  text-align: center;
-`
-
-const OptionDivider = styled.div`
-  height: 1px;
-  background-color: rgba(255, 255, 255, 0.1);
-  margin: ${SPACING.sm}px 0;
-`
-
-const OptionDescription = styled.p`
-  margin: 0;
-  color: ${TEXT_COLORS.two};
-  text-align: center;
-`
-
-// Subtle intro text at top of the modal
-const IntroText = styled.p`
-  margin: 0;
-  color: ${TEXT_COLORS.two};
-`
 
 export const CreateCasinoModal: React.FC<CreateCasinoModalProps> = ({
   isOpen,
@@ -105,27 +43,51 @@ export const CreateCasinoModal: React.FC<CreateCasinoModalProps> = ({
 
   // Render the selection page
   const renderSelectionPage = () => (
-    <ModalContent>
-      <IntroText>Choose how you want to create your casino:</IntroText>
-      <OptionContainer>
-        <OptionCard $selected={selected === 'ai'} onClick={() => handleOptionSelect('ai')}>
-          <OptionTitle>AI Designer</OptionTitle>
-          <OptionDivider />
-          <OptionDescription>
+    <div className="flex flex-col gap-6">
+      {/* Intro Text */}
+      <p className="m-0 text-[#aaaaaa]">Choose how you want to create your casino:</p>
+
+      {/* Option Container */}
+      <div className="flex flex-col gap-6 md:flex-row">
+        {/* AI Designer Option */}
+        <div
+          onClick={() => handleOptionSelect('ai')}
+          className={cn(
+            'flex-1 p-6 rounded-xl bg-[rgba(20,20,20,0.85)] cursor-pointer',
+            'transition-all duration-200 border-2',
+            selected === 'ai' ? 'border-[#ff5e4f]' : 'border-white/[0.08]',
+            selected !== 'ai' && 'hover:border-white/25 hover:-translate-y-0.5',
+            'active:translate-y-0'
+          )}
+        >
+          <h3 className="m-0 mb-3 text-white text-center">AI Designer</h3>
+          <div className="h-px bg-white/10 my-3" />
+          <p className="m-0 text-[#aaaaaa] text-center">
             {aiEnabled
               ? 'Let our AI create a unique casino design for you based on your preferences.'
               : 'AI-assisted design is coming soon.'}
-          </OptionDescription>
-        </OptionCard>
-        <OptionCard $selected={selected === 'manual'} onClick={() => handleOptionSelect('manual')}>
-          <OptionTitle>Manual Setup</OptionTitle>
-          <OptionDivider />
-          <OptionDescription>
+          </p>
+        </div>
+
+        {/* Manual Setup Option */}
+        <div
+          onClick={() => handleOptionSelect('manual')}
+          className={cn(
+            'flex-1 p-6 rounded-xl bg-[rgba(20,20,20,0.85)] cursor-pointer',
+            'transition-all duration-200 border-2',
+            selected === 'manual' ? 'border-[#ff5e4f]' : 'border-white/[0.08]',
+            selected !== 'manual' && 'hover:border-white/25 hover:-translate-y-0.5',
+            'active:translate-y-0'
+          )}
+        >
+          <h3 className="m-0 mb-3 text-white text-center">Manual Setup</h3>
+          <div className="h-px bg-white/10 my-3" />
+          <p className="m-0 text-[#aaaaaa] text-center">
             Design your casino manually with complete control over all aspects.
-          </OptionDescription>
-        </OptionCard>
-      </OptionContainer>
-    </ModalContent>
+          </p>
+        </div>
+      </div>
+    </div>
   )
 
   return (

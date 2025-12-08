@@ -1,77 +1,9 @@
-// @ts-nocheck
 import React, { useState, useEffect } from 'react'
+import { cn } from '@/lib/utils'
 import { ModalBase } from './shared/ModalBase'
 import { ModalActions } from './shared/ModalActions'
-import { styled } from 'styled-components'
-import { SPACING, TEXT_COLORS, BORDER_COLORS } from '@/design'
 import { fontOptions, applyFontToPage } from '../utils/fontUtils'
 import { type FieldEditModalProps } from './shared/modalTypes'
-
-// Font option grid
-const SFontGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: ${SPACING.md}px;
-  margin-bottom: ${SPACING.lg}px;
-  max-height: 400px;
-  overflow-y: auto;
-`
-
-// Font option card - with class to exempt from global font override
-const SFontOption = styled.button<{ $isSelected?: boolean; $fontFamily: string }>`
-  background-color: rgba(0, 0, 0, 0.2);
-  border: 2px solid ${props => (props.$isSelected ? 'white' : BORDER_COLORS.one)};
-  border-radius: 8px;
-  padding: ${SPACING.md}px;
-  text-align: center;
-  cursor: pointer;
-  color: ${TEXT_COLORS.one};
-  transition: all 0.2s ease;
-  height: 80px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  &:hover {
-    background-color: rgba(255, 255, 255, 0.05);
-  }
-
-  /* Increase specificity so this wins over broad page-level rules
-     that force font inheritance on buttons */
-  && {
-    font-family: ${props => props.$fontFamily} !important;
-  }
-`
-
-// Font preview
-const SFontPreview = styled.div<{ $fontFamily: string }>`
-  padding: ${SPACING.md}px;
-  background-color: rgba(0, 0, 0, 0.2);
-  border-radius: 8px;
-  margin-bottom: ${SPACING.md}px;
-  font-family: ${props => props.$fontFamily};
-`
-
-// Preview title
-const SPreviewTitle = styled.h3`
-  color: ${TEXT_COLORS.two};
-  font-size: 14px;
-  margin-bottom: ${SPACING.sm}px;
-`
-
-// Preview text
-const SPreviewText = styled.p`
-  color: ${TEXT_COLORS.one};
-  font-size: 18px;
-  margin: 0;
-`
-
-// Preview caption
-const SPreviewCaption = styled.p`
-  color: ${TEXT_COLORS.two};
-  font-size: 12px;
-  margin-top: ${SPACING.sm}px;
-`
 
 /**
  * Modal for selecting fonts
@@ -114,27 +46,36 @@ const FontEditModal: React.FC<FieldEditModalProps> = ({
 
   return (
     <ModalBase isOpen={isOpen} onClose={onClose} title='Choose a Font' maxWidth='600px'>
-      <SFontPreview $fontFamily={selectedFont}>
-        <SPreviewTitle>Font Preview</SPreviewTitle>
-        <SPreviewText>Fareplay is a decentralizedWeb3 crypto casino </SPreviewText>
-        <SPreviewCaption>
+      {/* Font preview */}
+      <div
+        className="p-4 bg-black/20 rounded-lg mb-4"
+        style={{ fontFamily: selectedFont }}
+      >
+        <h3 className="text-[#aaaaaa] text-sm mb-3">Font Preview</h3>
+        <p className="text-white text-lg m-0">Fareplay is a decentralized Web3 crypto casino</p>
+        <p className="text-[#aaaaaa] text-xs mt-3">
           Current selection: <strong>{getFontLabel(selectedFont)}</strong>
-        </SPreviewCaption>
-      </SFontPreview>
+        </p>
+      </div>
 
-      <SFontGrid>
+      {/* Font grid */}
+      <div className="grid grid-cols-2 gap-4 mb-6 max-h-[400px] overflow-y-auto">
         {fontOptions.map((font, index) => (
-          <SFontOption
+          <button
             key={index}
-            className="font-selector-button"
-            $fontFamily={font.value}
-            $isSelected={selectedFont === font.value}
+            className={cn(
+              'font-selector-button bg-black/20 rounded-lg p-4 text-center cursor-pointer',
+              'text-white transition-all duration-200 h-20 flex items-center justify-center',
+              'hover:bg-white/5 border-2',
+              selectedFont === font.value ? 'border-white' : 'border-[#1b1d26]'
+            )}
+            style={{ fontFamily: `${font.value} !important` }}
             onClick={() => handleFontSelect(font.value)}
           >
             {font.label}
-          </SFontOption>
+          </button>
         ))}
-      </SFontGrid>
+      </div>
 
       <ModalActions onCancel={onClose} onConfirm={handleSave} />
     </ModalBase>

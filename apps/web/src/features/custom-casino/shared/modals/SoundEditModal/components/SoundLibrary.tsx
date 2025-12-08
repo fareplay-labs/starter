@@ -1,10 +1,9 @@
 // @ts-nocheck
 import React, { useState, useEffect } from 'react'
-import { styled } from 'styled-components'
+import { cn } from '@/lib/utils'
 import { type StoredSound, type SoundData } from '../../../types/sound.types'
 import { createSoundService } from '../../../services/soundService'
 import { addAppNoti } from '@/store/useNotiStore'
-import { SPACING } from '@/design'
 
 interface SoundLibraryProps {
   onSoundSelect: (sound: SoundData) => void
@@ -105,7 +104,6 @@ const SoundLibrary: React.FC<SoundLibraryProps> = ({
         console.error('Audio playback error:', e)
         setPreviewingSound(null)
         setCurrentAudio(null)
-        // Only show alert for actual errors, not user interactions
       }
 
       audio
@@ -118,7 +116,6 @@ const SoundLibrary: React.FC<SoundLibraryProps> = ({
           console.error('Audio play() failed:', error)
           setPreviewingSound(null)
           setCurrentAudio(null)
-          // Only show alert for permission/autoplay issues, not other errors
           if (error.name === 'NotAllowedError') {
             console.warn('Audio autoplay was prevented by browser')
           }
@@ -182,393 +179,176 @@ const SoundLibrary: React.FC<SoundLibraryProps> = ({
 
   if (loading) {
     return (
-      <SLoadingContainer>
-        <SLoadingSpinner>⏳</SLoadingSpinner>
+      <div className="flex flex-col items-center justify-center h-[200px] text-[#aaa] gap-4">
+        <div className="text-2xl animate-spin">⏳</div>
         <div>Loading your sounds...</div>
-      </SLoadingContainer>
+      </div>
     )
   }
 
   if (error) {
     return (
-      <SErrorContainer>
+      <div className="flex flex-col items-center justify-center h-[200px] text-[#ff6666] gap-4 text-center">
         <div>Failed to load sounds: {error}</div>
-        <SRetryButton onClick={loadSounds}>Retry</SRetryButton>
-      </SErrorContainer>
+        <button
+          onClick={loadSounds}
+          className="py-2 px-4 bg-[#5f5fff] border-none rounded text-white cursor-pointer text-sm hover:bg-[#7f7fff]"
+        >
+          Retry
+        </button>
+      </div>
     )
   }
 
   return (
-    <SLibraryContainer>
+    <div className="flex flex-col h-full">
+      {/* Search Container (when not hidden) */}
       {!hideSearchControls && (
-        <SSearchContainer>
-          <SSearchInput
+        <div className="flex justify-between items-center mb-4 gap-4">
+          <input
             type='text'
             placeholder='Search sounds...'
             value={searchTerm}
             onChange={e => setSearchTerm(e.target.value)}
+            className={cn(
+              'flex-1 py-2 px-3 bg-black/30 border border-white/20 rounded-md',
+              'text-white text-sm',
+              'focus:outline-none focus:border-[#5f5fff]',
+              'placeholder:text-[#aaa]'
+            )}
           />
-          <SSoundCount>
+          <div className="text-[#aaa] text-xs whitespace-nowrap">
             {filteredSounds.length} sound{filteredSounds.length !== 1 ? 's' : ''}
-          </SSoundCount>
-        </SSearchContainer>
+          </div>
+        </div>
       )}
 
-      {filteredSounds.length === 0 ?
-        <SEmptyState>
-          {activeSearchTerm ?
+      {/* Empty State */}
+      {filteredSounds.length === 0 ? (
+        <div className="flex flex-col items-center justify-center h-[200px] text-[#aaa] text-center gap-3">
+          {activeSearchTerm ? (
             <>
-              <SEmptyIcon>🔍</SEmptyIcon>
+              <div className="text-5xl mb-4">🔍</div>
               <div>No sounds match your search</div>
-              <SEmptySubtext>Try a different search term</SEmptySubtext>
+              <div className="text-xs text-[#777]">Try a different search term</div>
             </>
-          : <>
-              <SEmptyIcon>🎵</SEmptyIcon>
+          ) : (
+            <>
+              <div className="text-5xl mb-4">🎵</div>
               <div>No sounds uploaded yet</div>
-              <SEmptySubtext>Upload some audio files to get started</SEmptySubtext>
+              <div className="text-xs text-[#777]">Upload some audio files to get started</div>
             </>
-          }
-        </SEmptyState>
-      : <SSoundGrid>
+          )}
+        </div>
+      ) : (
+        /* Sound Grid */
+        <div className="flex flex-col gap-0.5 overflow-y-auto p-0.5">
           {filteredSounds.map(sound => (
-            <SSoundCard
+            <div
               key={sound.id}
-              $isSelected={isSelectedSound(sound)}
               onClick={() => onSoundSelect(sound.data)}
+              className={cn(
+                'flex items-center gap-4 py-3 px-4 rounded-md',
+                'transition-all duration-200 cursor-pointer',
+                isSelectedSound(sound)
+                  ? 'bg-[rgba(95,95,255,0.1)]'
+                  : 'bg-transparent hover:bg-white/5'
+              )}
             >
-              <SRadioButton
+              {/* Radio Button */}
+              <input
                 type='radio'
                 name='sound-selection'
                 checked={isSelectedSound(sound)}
                 onChange={() => onSoundSelect(sound.data)}
                 onClick={e => e.stopPropagation()}
+                className={cn(
+                  'w-4 h-4 mr-4 cursor-pointer appearance-none',
+                  'border-2 border-white/30 rounded-full bg-transparent relative',
+                  'checked:border-[#5f5fff] checked:bg-[#5f5fff]',
+                  'checked:after:content-[""] checked:after:absolute checked:after:top-1/2 checked:after:left-1/2',
+                  'checked:after:-translate-x-1/2 checked:after:-translate-y-1/2',
+                  'checked:after:w-1.5 checked:after:h-1.5 checked:after:rounded-full checked:after:bg-white',
+                  'hover:border-white/50',
+                  'focus:outline-none focus:shadow-[0_0_0_2px_rgba(95,95,255,0.3)]'
+                )}
               />
 
-              <SSoundMainInfo>
-                <SSoundName title={sound.data.name || sound.filename}>
+              {/* Sound Main Info */}
+              <div className="flex-1 min-w-0">
+                <div
+                  className="text-white text-sm font-medium overflow-hidden text-ellipsis whitespace-nowrap mb-0.5"
+                  title={sound.data.name || sound.filename}
+                >
                   {sound.data.name || sound.filename.replace(/\.[^/.]+$/, '')}
-                </SSoundName>
-                <SSoundMeta>
-                  <SSoundMetaItem>{formatDuration(sound.data.duration)}</SSoundMetaItem>
-                  <SSeparator>|</SSeparator>
-                  <SSoundMetaItem>{formatFileSize(sound.data.fileSize)}</SSoundMetaItem>
-                  <SSeparator>|</SSeparator>
-                  <SSoundMetaItem>{Math.round((sound.data.volume || 0.7) * 100)}%</SSoundMetaItem>
-                </SSoundMeta>
-              </SSoundMainInfo>
+                </div>
+                <div className="flex items-center gap-2 text-xs text-[#aaa]">
+                  <span className="whitespace-nowrap">{formatDuration(sound.data.duration)}</span>
+                  <span className="text-white/30 font-light">|</span>
+                  <span className="whitespace-nowrap">{formatFileSize(sound.data.fileSize)}</span>
+                  <span className="text-white/30 font-light">|</span>
+                  <span className="whitespace-nowrap">{Math.round((sound.data.volume || 0.7) * 100)}%</span>
+                </div>
+              </div>
 
-              <SSoundTags>
-                {isCurrentSound(sound) && <SCurrentTag>(current)</SCurrentTag>}
-                <SSoundFormat>{sound.data.format?.toUpperCase() || 'Unknown'}</SSoundFormat>
-              </SSoundTags>
+              {/* Tags */}
+              <div className="flex gap-2 items-center">
+                {isCurrentSound(sound) && (
+                  <div className="text-[#ffa500] text-[10px] font-medium lowercase whitespace-nowrap">
+                    (current)
+                  </div>
+                )}
+                <div className="bg-[rgba(95,95,255,0.2)] text-[#5f5fff] py-1 px-2 rounded text-[10px] font-semibold uppercase whitespace-nowrap">
+                  {sound.data.format?.toUpperCase() || 'Unknown'}
+                </div>
+              </div>
 
-              <SSoundActions>
-                <SActionButton
+              {/* Actions */}
+              <div className="flex gap-2 items-center">
+                <button
                   onClick={e => {
                     e.stopPropagation()
                     handlePreview(sound)
                   }}
                   title='Preview sound'
-                  $isActive={previewingSound === sound.id}
+                  className={cn(
+                    'bg-transparent border-none cursor-pointer p-1.5 rounded',
+                    'text-base font-semibold transition-all duration-200',
+                    'flex items-center justify-center w-8 h-8 flex-shrink-0',
+                    previewingSound === sound.id
+                      ? 'text-[#5f5fff]'
+                      : 'text-[#aaa]',
+                    'hover:bg-[rgba(95,95,255,0.1)] hover:text-[#5f5fff]',
+                    'focus:outline-none focus:bg-[rgba(95,95,255,0.1)]',
+                    'active:scale-95'
+                  )}
                 >
                   {previewingSound === sound.id ? '⏸' : '▶'}
-                </SActionButton>
-                <SActionButton
+                </button>
+                <button
                   onClick={e => {
                     e.stopPropagation()
                     handleDelete(sound)
                   }}
                   title='Delete sound'
-                  $isDelete
+                  className={cn(
+                    'bg-transparent border-none cursor-pointer p-1.5 rounded',
+                    'text-[#ff6666] text-base font-semibold transition-all duration-200',
+                    'flex items-center justify-center w-8 h-8 flex-shrink-0',
+                    'hover:bg-[rgba(255,59,48,0.1)]',
+                    'focus:outline-none focus:bg-[rgba(255,59,48,0.1)]',
+                    'active:scale-95'
+                  )}
                 >
                   🗑️
-                </SActionButton>
-              </SSoundActions>
-            </SSoundCard>
+                </button>
+              </div>
+            </div>
           ))}
-        </SSoundGrid>
-      }
-    </SLibraryContainer>
+        </div>
+      )}
+    </div>
   )
 }
-
-const SLibraryContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-`
-
-const SSearchContainer = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: ${SPACING.md}px;
-  gap: ${SPACING.md}px;
-`
-
-const SSearchInput = styled.input`
-  flex: 1;
-  padding: 8px 12px;
-  background-color: rgba(0, 0, 0, 0.3);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 6px;
-  color: white;
-  font-size: 14px;
-
-  &:focus {
-    outline: none;
-    border-color: #5f5fff;
-  }
-
-  &::placeholder {
-    color: #aaa;
-  }
-`
-
-const SSoundCount = styled.div`
-  color: #aaa;
-  font-size: 12px;
-  white-space: nowrap;
-`
-
-const SLoadingContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 200px;
-  color: #aaa;
-  gap: ${SPACING.md}px;
-`
-
-const SLoadingSpinner = styled.div`
-  font-size: 24px;
-  animation: spin 1s linear infinite;
-
-  @keyframes spin {
-    from {
-      transform: rotate(0deg);
-    }
-    to {
-      transform: rotate(360deg);
-    }
-  }
-`
-
-const SErrorContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 200px;
-  color: #ff6666;
-  gap: ${SPACING.md}px;
-  text-align: center;
-`
-
-const SRetryButton = styled.button`
-  padding: 8px 16px;
-  background-color: #5f5fff;
-  border: none;
-  border-radius: 4px;
-  color: white;
-  cursor: pointer;
-  font-size: 14px;
-
-  &:hover {
-    background-color: #7f7fff;
-  }
-`
-
-const SEmptyState = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 200px;
-  color: #aaa;
-  text-align: center;
-  gap: ${SPACING.sm}px;
-`
-
-const SEmptyIcon = styled.div`
-  font-size: 48px;
-  margin-bottom: ${SPACING.md}px;
-`
-
-const SEmptySubtext = styled.div`
-  font-size: 12px;
-  color: #777;
-`
-
-const SSoundGrid = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  overflow-y: auto;
-  padding: 2px;
-`
-
-const SSoundCard = styled.div<{ $isSelected: boolean }>`
-  display: flex;
-  align-items: center;
-  gap: ${SPACING.md}px;
-  padding: 12px ${SPACING.md}px;
-  background-color: ${props => (props.$isSelected ? 'rgba(95, 95, 255, 0.1)' : 'transparent')};
-  border-radius: 6px;
-  transition: all 0.2s ease;
-  cursor: pointer;
-
-  &:hover {
-    background-color: ${props =>
-      props.$isSelected ? 'rgba(95, 95, 255, 0.15)' : 'rgba(255, 255, 255, 0.05)'};
-  }
-`
-
-const SSoundMainInfo = styled.div`
-  flex: 1;
-  min-width: 0;
-`
-
-const SSoundName = styled.div`
-  color: white;
-  font-size: 14px;
-  font-weight: 500;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  margin-bottom: 2px;
-`
-
-const SSoundMeta = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 12px;
-  color: #aaa;
-`
-
-const SSoundMetaItem = styled.span`
-  white-space: nowrap;
-`
-
-const SSeparator = styled.span`
-  color: rgba(255, 255, 255, 0.3);
-  font-weight: 300;
-`
-
-const SRadioButton = styled.input`
-  width: 16px;
-  height: 16px;
-  margin-right: ${SPACING.md}px;
-  cursor: pointer;
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-radius: 50%;
-  background-color: transparent;
-  position: relative;
-
-  &:checked {
-    border-color: #5f5fff;
-    background-color: #5f5fff;
-  }
-
-  &:checked::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background-color: white;
-  }
-
-  &:hover {
-    border-color: rgba(255, 255, 255, 0.5);
-  }
-
-  &:focus {
-    outline: none;
-    box-shadow: 0 0 0 2px rgba(95, 95, 255, 0.3);
-  }
-`
-
-const SSoundTags = styled.div`
-  display: flex;
-  gap: 8px;
-  align-items: center;
-`
-
-const SCurrentTag = styled.div`
-  color: #ffa500;
-  font-size: 10px;
-  font-weight: 500;
-  text-transform: lowercase;
-  white-space: nowrap;
-`
-
-const SSoundFormat = styled.div`
-  background-color: rgba(95, 95, 255, 0.2);
-  color: #5f5fff;
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 10px;
-  font-weight: 600;
-  text-transform: uppercase;
-  white-space: nowrap;
-`
-
-const SSoundActions = styled.div`
-  display: flex;
-  gap: 8px;
-  align-items: center;
-`
-
-const SActionButton = styled.button<{ $isActive?: boolean; $isDelete?: boolean }>`
-  background: transparent;
-  border: none;
-  color: ${props =>
-    props.$isDelete ? '#ff6666'
-    : props.$isActive ? '#5f5fff'
-    : '#aaa'};
-  cursor: pointer;
-  padding: 6px;
-  border-radius: 4px;
-  font-size: 16px;
-  font-weight: 600;
-  transition: all 0.2s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  line-height: 1;
-  flex-shrink: 0;
-
-  &:hover {
-    background-color: ${props =>
-      props.$isDelete ? 'rgba(255, 59, 48, 0.1)'
-      : props.$isActive ? 'rgba(95, 95, 255, 0.1)'
-      : 'rgba(95, 95, 255, 0.1)'};
-    color: ${props =>
-      props.$isDelete ? '#ff6666'
-      : props.$isActive ? '#5f5fff'
-      : '#5f5fff'};
-  }
-
-  &:focus {
-    outline: none;
-    background-color: ${props =>
-      props.$isDelete ? 'rgba(255, 59, 48, 0.1)' : 'rgba(95, 95, 255, 0.1)'};
-  }
-
-  &:active {
-    transform: scale(0.95);
-  }
-`
 
 export default SoundLibrary

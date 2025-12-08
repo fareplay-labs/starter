@@ -1,44 +1,43 @@
-// @ts-nocheck
-import { styled } from 'styled-components'
+import { Loader2 } from 'lucide-react'
+import { cn } from '@/lib/utils'
 import { PageWrapper } from '@/pages/style'
-import { SContent, SPageContainer } from './styles'
 
-const SLoaderContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 50vh;
-  gap: 16px;
-`
+// Page container component
+interface PageContainerProps {
+  fontFamily: string
+  children: React.ReactNode
+}
 
-const SLoaderSpinner = styled.div`
-  border: 4px solid rgba(255, 255, 255, 0.1);
-  border-radius: 50%;
-  border-top: 4px solid #ff5e4f;
-  width: 40px;
-  height: 40px;
-  animation: spin 1s linear infinite;
-  @keyframes spin {
-    0% {
-      transform: rotate(0deg);
-    }
-    100% {
-      transform: rotate(360deg);
-    }
-  }
-`
+const PageContainer: React.FC<PageContainerProps> = ({ fontFamily, children }) => (
+  <div
+    className={cn(
+      'h-[calc(100%-32px)] overflow-y-scroll w-full',
+      'max-[992px]:min-h-[calc(100%-32px)] max-[992px]:mx-auto'
+    )}
+    style={{ fontFamily }}
+  >
+    {children}
+  </div>
+)
+
+// Content wrapper
+const Content: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <div className="w-full min-w-0 max-w-[100vw] mx-auto max-[992px]:max-w-full">
+    {children}
+  </div>
+)
+
 export const LoadingUserPage = () => {
   return (
     <PageWrapper>
-      <SPageContainer $fontFamily='Arial, Helvetica, sans-serif'>
-        <SContent>
-          <SLoaderContainer>
-            <SLoaderSpinner />
-            <div>Loading user casino data...</div>
-          </SLoaderContainer>
-        </SContent>
-      </SPageContainer>
+      <PageContainer fontFamily='Arial, Helvetica, sans-serif'>
+        <Content>
+          <div className="flex flex-col items-center justify-center min-h-[50vh] gap-4">
+            <Loader2 className="h-10 w-10 animate-spin text-casino-accent" />
+            <p className="text-muted-foreground">Loading user casino data...</p>
+          </div>
+        </Content>
+      </PageContainer>
     </PageWrapper>
   )
 }

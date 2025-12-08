@@ -1,128 +1,152 @@
-// @ts-nocheck
-import { styled } from 'styled-components'
-import { SPACING } from '@/design'
-import { FancyBorder } from '@/features/custom-casino/FancyBorders/v2'
 import React from 'react'
+import { cn } from '@/lib/utils'
+import { FancyBorder } from '@/features/custom-casino/FancyBorders/v2'
 
-// Base tile styling
-const SBaseTile = styled.div<{
-  $borderColor?: string
-  $hoverColors?: { secondary: string; tertiary: string }
-}>`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: ${SPACING.md}px;
-  border-radius: 12px;
-  background: rgba(26, 26, 26, 0.65);
-  border: none;
-  cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-  position: relative;
-  overflow: visible;
-  box-sizing: border-box;
+// Base tile component
+interface BaseTileProps {
+  children: React.ReactNode
+  className?: string
+  onClick?: () => void
+  style?: React.CSSProperties
+  'aria-label'?: string
+}
 
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0) 50%);
-    z-index: 0;
-  }
-
-  > * {
-    position: relative;
-    z-index: 1;
-    transition: transform 0.3s ease;
-  }
-
-  &:hover {
-    background: rgba(26, 26, 26, 0.75);
-
-    > * {
-      transform: scale(1.05);
-    }
-  }
-`
+const BaseTile: React.FC<BaseTileProps> = ({ children, className, onClick, style, 'aria-label': ariaLabel }) => (
+  <div
+    onClick={onClick}
+    style={style}
+    aria-label={ariaLabel}
+    className={cn(
+      'flex flex-col items-center justify-center p-4 rounded-xl',
+      'bg-[rgba(26,26,26,0.65)] border-none cursor-pointer',
+      'transition-all duration-300 ease-[cubic-bezier(0.25,0.8,0.25,1)]',
+      'relative overflow-visible box-border',
+      // Gradient overlay via before pseudo
+      'before:content-[""] before:absolute before:inset-0',
+      'before:bg-gradient-to-br before:from-white/[0.03] before:via-transparent before:to-transparent',
+      'before:z-0',
+      // Children positioning
+      '[&>*]:relative [&>*]:z-[1] [&>*]:transition-transform [&>*]:duration-300',
+      // Hover state
+      'hover:bg-[rgba(26,26,26,0.75)] hover:[&>*]:scale-105',
+      className
+    )}
+  >
+    {children}
+  </div>
+)
 
 // Carousel tile
-export const CarouselTile = styled(SBaseTile)`
-  width: 140px;
-  min-width: 140px;
-  height: 180px;
-  scroll-snap-align: center;
-  scroll-snap-align: center inline; /* Safari fallback */
-  padding: ${SPACING.md}px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  overflow: visible;
+interface CarouselTileProps {
+  children: React.ReactNode
+  className?: string
+  isCentered?: boolean
+  onClick?: () => void
+  style?: React.CSSProperties
+  'aria-label'?: string
+}
 
-  /* Ensure content is visible */
-  > * {
-    overflow: visible;
-  }
-
-  &.centered {
-    will-change: transform, width, height;
-    height: 200px;
-    width: 160px;
-    z-index: 2;
-    transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-  }
-`
+export const CarouselTile: React.FC<CarouselTileProps> = ({
+  children,
+  className,
+  isCentered = false,
+  onClick,
+  style,
+  'aria-label': ariaLabel
+}) => (
+  <BaseTile
+    onClick={onClick}
+    style={style}
+    aria-label={ariaLabel}
+    className={cn(
+      'w-[140px] min-w-[140px] h-[180px] snap-center p-4',
+      '[&>*]:overflow-visible',
+      isCentered && 'will-change-transform h-[200px] w-[160px] z-[2] transition-transform duration-300 ease-[cubic-bezier(0.25,0.8,0.25,1)]',
+      className
+    )}
+  >
+    {children}
+  </BaseTile>
+)
 
 // Small tile
-export const SmallTile = styled(SBaseTile)`
-  width: 100%;
-  aspect-ratio: 1;
-  padding: ${SPACING.sm}px;
-  transition: all 0.2s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+interface SmallTileProps {
+  children: React.ReactNode
+  className?: string
+  onClick?: () => void
+  style?: React.CSSProperties
+  'aria-label'?: string
+  isCentered?: boolean
+}
 
-  /* Remove any margins or padding that might affect centering */
-  > * {
-    margin: 0;
-    padding: 0;
-  }
-`
+export const SmallTile: React.FC<SmallTileProps> = ({ children, className, onClick, style, 'aria-label': ariaLabel }) => (
+  <BaseTile
+    onClick={onClick}
+    style={style}
+    aria-label={ariaLabel}
+    className={cn(
+      'w-full aspect-square p-3 transition-all duration-200',
+      '[&>*]:m-0 [&>*]:p-0',
+      className
+    )}
+  >
+    {children}
+  </BaseTile>
+)
 
 // Large tile
-export const LargeTile = styled(SBaseTile)`
-  width: 100%;
-  height: 260px;
-  padding: ${SPACING.xl}px;
-  display: flex;
-  gap: ${SPACING.lg}px;
-  align-items: center;
-  justify-content: center;
-`
+interface LargeTileProps {
+  children: React.ReactNode
+  className?: string
+  onClick?: () => void
+  style?: React.CSSProperties
+  'aria-label'?: string
+  isCentered?: boolean
+}
 
-// Wrapper component for game tiles that includes controls
-export const GameTileWrapper = styled.div`
-  position: relative;
+export const LargeTile: React.FC<LargeTileProps> = ({ children, className, onClick, style, 'aria-label': ariaLabel }) => (
+  <BaseTile
+    onClick={onClick}
+    style={style}
+    aria-label={ariaLabel}
+    className={cn(
+      'w-full h-[260px] p-8 gap-6',
+      className
+    )}
+  >
+    {children}
+  </BaseTile>
+)
 
-  &:hover > div:last-child {
-    opacity: 1;
-  }
-`
+// Game tile wrapper
+interface GameTileWrapperProps {
+  children: React.ReactNode
+  className?: string
+}
+
+export const GameTileWrapper: React.FC<GameTileWrapperProps> = ({ children, className }) => (
+  <div
+    className={cn(
+      'relative',
+      '[&:hover>div:last-child]:opacity-100',
+      className
+    )}
+  >
+    {children}
+  </div>
+)
 
 // Enhanced GameTileWrapper with FancyBorder
-export const FancyTileWrapper: React.FC<{
+interface FancyTileWrapperProps {
   children: React.ReactNode
   themeColor?: string
   secondaryColor?: string
   tertiaryColor?: string
   className?: string
   index?: number
-}> = ({
+}
+
+export const FancyTileWrapper: React.FC<FancyTileWrapperProps> = ({
   children,
   themeColor = '#ff5e4f',
   secondaryColor,

@@ -1,7 +1,6 @@
 // @ts-nocheck
 import React from 'react'
-import { styled } from 'styled-components'
-import { SPACING, BREAKPOINTS } from '@/design'
+import { cn } from '@/lib/utils'
 import UploadItem from './UploadItem'
 
 interface UserFile {
@@ -18,32 +17,19 @@ interface UploadGridProps {
   onDelete: (filenameOrId: string) => void
 }
 
-// Styled components
-const SGridContainer = styled.div`
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: ${SPACING.xs}px;
-  padding: ${SPACING.xs}px;
-
-  @media (min-width: ${BREAKPOINTS.sm}px) {
-    grid-template-columns: repeat(4, 1fr);
-  }
-
-  @media (min-width: ${BREAKPOINTS.md}px) {
-    grid-template-columns: repeat(5, 1fr);
-  }
-
-  @media (min-width: ${BREAKPOINTS.lg}px) {
-    grid-template-columns: repeat(6, 1fr);
-  }
-`
-
 /**
  * Grid display of user uploaded images
  */
 const UploadGrid: React.FC<UploadGridProps> = ({ files, selectedUrl, onSelect, onDelete }) => {
   return (
-    <SGridContainer>
+    <div
+      className={cn(
+        'grid grid-cols-3 gap-2 p-2',
+        'min-[992px]:grid-cols-4',
+        'min-[1200px]:grid-cols-5',
+        'min-[1440px]:grid-cols-6'
+      )}
+    >
       {files.map(file => (
         <UploadItem
           key={file.id}
@@ -53,7 +39,7 @@ const UploadGrid: React.FC<UploadGridProps> = ({ files, selectedUrl, onSelect, o
           onDelete={() => onDelete(file.id)}
         />
       ))}
-    </SGridContainer>
+    </div>
   )
 }
 

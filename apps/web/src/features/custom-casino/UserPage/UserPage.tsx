@@ -1,6 +1,6 @@
-// @ts-nocheck
 import React, { useEffect } from 'react'
 import { useSearchParams, useParams } from 'react-router-dom'
+import { cn } from '@/lib/utils'
 
 // Components and Utilities
 import { UserHeroSection } from './UserHeroSection/UserHeroSection'
@@ -10,9 +10,6 @@ import { EditToolbar } from './editor/EditToolbar'
 import { useEditStore } from '@/features/custom-casino/UserPage/editor/useEditStore'
 // Backend Integration
 import { useBackendService } from '../backend/hooks'
-
-// Styles
-import { SUserPage, SContent, SHeroLayout, SHeroMainContent, SPageContainer } from './styles'
 
 import { applyFontToPage, usePreloadFonts } from '../shared/utils/fontUtils'
 
@@ -29,6 +26,65 @@ import { useConfigEditor } from './hooks/useConfigEditor'
 import { useConfigSaver } from './hooks/useConfigSaver'
 import { useSectionActions } from './hooks/useSectionActions'
 import { serializeSectionsForConfig } from './utils/SerializeSectionForConfig'
+
+// Layout components
+interface PageContainerProps {
+  fontFamily: string
+  children: React.ReactNode
+}
+
+const PageContainer: React.FC<PageContainerProps> = ({ fontFamily, children }) => (
+  <div
+    className={cn(
+      'h-[calc(100%-32px)] overflow-y-scroll w-full',
+      'max-[992px]:min-h-[calc(100%-32px)] max-[992px]:mx-auto',
+      // Force child elements to inherit font
+      '[&_button]:!font-inherit [&_input]:!font-inherit [&_textarea]:!font-inherit',
+      '[&_select]:!font-inherit [&_h1]:!font-inherit [&_h2]:!font-inherit',
+      '[&_h3]:!font-inherit [&_h4]:!font-inherit [&_h5]:!font-inherit',
+      '[&_h6]:!font-inherit [&_p]:!font-inherit [&_span]:!font-inherit',
+      '[&_div]:!font-inherit [&_a]:!font-inherit',
+      '[&_.game-card]:!font-inherit [&_.section-title]:!font-inherit',
+      '[&_.modal-content]:!font-inherit [&_.user-hero]:!font-inherit'
+    )}
+    style={{
+      fontFamily: `${fontFamily} !important`,
+    }}
+  >
+    {children}
+  </div>
+)
+
+const UserPageGrid: React.FC<{ children: React.ReactNode; className?: string }> = ({ children, className }) => (
+  <div
+    className={cn(
+      'w-[95%] min-h-screen text-white p-0 pt-4 justify-center',
+      'grid grid-cols-[auto_4fr] gap-6 mx-auto',
+      'max-[992px]:flex',
+      className
+    )}
+  >
+    {children}
+  </div>
+)
+
+const Content: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <div className="w-full min-w-0 max-w-[100vw] mx-auto max-[992px]:max-w-full">
+    {children}
+  </div>
+)
+
+const HeroLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <div className="relative w-full mb-8">
+    {children}
+  </div>
+)
+
+const HeroMainContent: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <div className="w-full">
+    {children}
+  </div>
+)
 
 export const UserPage: React.FC = () => {
   const [searchParams, _setSearchParams] = useSearchParams()
@@ -95,7 +151,7 @@ export const UserPage: React.FC = () => {
 
   return (
     <PageWrapper className='custom-casino'>
-      <SPageContainer $fontFamily={casino.config.font || 'Arial, Helvetica, sans-serif'}>
+      <PageContainer fontFamily={casino.config.font || 'Arial, Helvetica, sans-serif'}>
         <style id='dynamic-font-style'>{`
         /* Global font application */
         :root {
@@ -110,7 +166,7 @@ export const UserPage: React.FC = () => {
           /* Font selector buttons maintain their own fonts */
         }
       `}</style>
-        <SUserPage className='user-page-content'>
+        <UserPageGrid className='user-page-content'>
           {/* Edit Toolbar */}
           <EditToolbar
             isEditMode={isEditMode}
@@ -120,19 +176,19 @@ export const UserPage: React.FC = () => {
             saveConfig={saveConfig}
             isBackendLoading={isLoading}
           />{' '}
-          <SContent>
+          <Content>
             {/* Hero layout with toolbar */}
-            <SHeroLayout>
+            <HeroLayout>
               {/* Hero Section */}
-              <SHeroMainContent>
+              <HeroMainContent>
                 <UserHeroSection
                   casino={casino}
                   isEditMode={isEditMode}
                   onEdit={handleEdit}
                   config={casino.config}
                 />
-              </SHeroMainContent>
-            </SHeroLayout>
+              </HeroMainContent>
+            </HeroLayout>
             {/* Game Sections */}
             <GameSections
               sections={transformedSections}
@@ -181,8 +237,8 @@ export const UserPage: React.FC = () => {
             {/* Edit Modals */}
             <EditModals onSave={handleEdit} availableGames={casino.games} userId={userId} />
 
-          </SContent>
-        </SUserPage>
+          </Content>
+        </UserPageGrid>
 
         {/* Onboarding Modal */}
         <CreateCasinoModal
@@ -190,7 +246,7 @@ export const UserPage: React.FC = () => {
           onClose={closeOnboarding}
           username={userId}
         />
-      </SPageContainer>
+      </PageContainer>
     </PageWrapper>
   )
 }

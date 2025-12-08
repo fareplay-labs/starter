@@ -1,82 +1,8 @@
-// @ts-nocheck
 import React, { useState, useEffect } from 'react'
+import { cn } from '@/lib/utils'
 import { ModalBase } from './shared/ModalBase'
 import { ModalActions } from './shared/ModalActions'
-import { styled } from 'styled-components'
-import { SPACING } from '@/design'
 import { type FieldEditModalProps } from './shared/modalTypes'
-
-// Color input container
-const SColorInputContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: ${SPACING.md}px;
-  width: 100%;
-  margin-bottom: ${SPACING.md}px;
-`
-
-// Color picker container
-const SColorPickerWrapper = styled.div`
-  position: relative;
-  width: 100%;
-  display: flex;
-  align-items: center;
-  gap: ${SPACING.md}px;
-`
-
-// Color preview
-const SColorPreview = styled.div<{ $color: string }>`
-  width: 40px;
-  height: 40px;
-  border-radius: 8px;
-  background-color: ${props => props.$color};
-  border: 2px solid rgba(255, 255, 255, 0.1);
-`
-
-// Color input
-const SColorInput = styled.input<{ $isValid: boolean }>`
-  width: 70%;
-  padding: ${SPACING.sm}px;
-  background-color: rgba(0, 0, 0, 0.3);
-  border: 1px solid
-    ${props => (props.$isValid ? 'rgba(255, 255, 255, 0.1)' : 'rgba(255, 80, 80, 0.7)')};
-  border-radius: 4px;
-  color: white;
-  font-family: monospace;
-`
-
-// Native color picker
-const SColorPicker = styled.input`
-  -webkit-appearance: none;
-  appearance: none;
-  width: 40px;
-  height: 40px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-
-  &::-webkit-color-swatch-wrapper {
-    padding: 0;
-  }
-  &::-webkit-color-swatch {
-    border: none;
-    border-radius: 8px;
-  }
-`
-
-// Label
-const SLabel = styled.label`
-  font-size: 14px;
-  color: rgba(255, 255, 255, 0.7);
-  margin-bottom: ${SPACING.xs}px;
-`
-
-// Error message
-const SErrorMessage = styled.div`
-  color: rgba(255, 80, 80, 0.9);
-  font-size: 12px;
-  margin-top: ${SPACING.xs}px;
-`
 
 /**
  * Validates if a string is a valid color format (hex, rgb, rgba)
@@ -166,28 +92,50 @@ const ColorEditModal: React.FC<FieldEditModalProps> = ({
 
   return (
     <ModalBase isOpen={isOpen} onClose={onClose} title={`Edit ${getDisplayName()}`}>
-      <SColorInputContainer>
-        <SLabel htmlFor='color-input'>Choose a color:</SLabel>
-        <SColorPickerWrapper>
-          <SColorPreview $color={isValid ? colorValue : '#ff5050'} />
-          <SColorInput
+      <div className="flex flex-col gap-4 w-full mb-4">
+        <label htmlFor='color-input' className="text-sm text-white/70 mb-2">
+          Choose a color:
+        </label>
+        <div className="relative w-full flex items-center gap-4">
+          {/* Color preview */}
+          <div
+            className="w-10 h-10 rounded-lg border-2 border-white/10"
+            style={{ backgroundColor: isValid ? colorValue : '#ff5050' }}
+          />
+          {/* Color text input */}
+          <input
             id='color-input'
             type='text'
             value={colorValue}
             onChange={handleColorChange}
-            $isValid={isValid}
             aria-invalid={!isValid}
             aria-describedby={!isValid ? 'color-error' : undefined}
+            className={cn(
+              'w-[70%] p-3 bg-black/30 rounded text-white font-mono',
+              'border transition-colors duration-200',
+              isValid ? 'border-white/10' : 'border-red-500/70'
+            )}
           />
-          <SColorPicker
+          {/* Native color picker */}
+          <input
             type='color'
             value={isValid ? colorValue : '#ff5050'}
             onChange={handleColorChange}
             aria-label='Color picker'
+            className={cn(
+              'w-10 h-10 border-none rounded-lg cursor-pointer',
+              'appearance-none',
+              '[&::-webkit-color-swatch-wrapper]:p-0',
+              '[&::-webkit-color-swatch]:border-none [&::-webkit-color-swatch]:rounded-lg'
+            )}
           />
-        </SColorPickerWrapper>
-        {!isValid && <SErrorMessage id='color-error'>{errorMessage}</SErrorMessage>}
-      </SColorInputContainer>
+        </div>
+        {!isValid && (
+          <div id='color-error' className="text-red-400/90 text-xs mt-2">
+            {errorMessage}
+          </div>
+        )}
+      </div>
 
       <ModalActions onCancel={onClose} onConfirm={handleSave} disabled={!isValid} />
     </ModalBase>

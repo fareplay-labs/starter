@@ -1,7 +1,5 @@
-// @ts-nocheck
 import React from 'react'
-import { styled } from 'styled-components'
-import { SPACING, TEXT_COLORS } from '@/design'
+import { cn } from '@/lib/utils'
 import { SVGS } from '@/assets'
 
 // Platform information for social icons
@@ -41,83 +39,60 @@ const SOCIAL_PLATFORMS: Record<string, PlatformInfo> = {
   },
 }
 
-const SSocialIcon = styled.a<{ $themeColor?: string }>`
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: rgba(40, 40, 40, 0.85);
-  border: 2px solid ${props => props.$themeColor || 'rgba(255, 255, 255, 0.8)'};
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s ease-in-out;
+// Social icon link component
+interface SocialIconProps {
+  href: string
+  themeColor?: string
+  title?: string
+  children: React.ReactNode
+}
 
-  &:hover {
-    transform: translateY(-4px);
-    filter: brightness(1.2);
-    box-shadow: ${props =>
-      props.$themeColor ?
-        `0 4px 8px rgba(0, 0, 0, 0.3), 0 0 0 1px ${props.$themeColor}`
-      : '0 4px 8px rgba(0, 0, 0, 0.3)'};
-  }
+const SocialIcon: React.FC<SocialIconProps> = ({ href, themeColor, title, children }) => {
+  const borderColor = themeColor || 'rgba(255, 255, 255, 0.8)'
 
-  svg {
-    width: 18px;
-    height: 18px;
-    fill: ${TEXT_COLORS.one};
-  }
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      title={title}
+      className="w-8 h-8 rounded-full bg-[rgba(40,40,40,0.85)] flex items-center justify-center transition-all duration-200 ease-in-out hover:-translate-y-1 hover:brightness-125 [&_img]:w-[18px] [&_img]:h-[18px] [&_img]:brightness-125"
+      style={{
+        border: `2px solid ${borderColor}`,
+      }}
+      onMouseEnter={(e) => {
+        if (themeColor) {
+          e.currentTarget.style.boxShadow = `0 4px 8px rgba(0, 0, 0, 0.3), 0 0 0 1px ${themeColor}`
+        } else {
+          e.currentTarget.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.3)'
+        }
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.boxShadow = ''
+      }}
+    >
+      {children}
+    </a>
+  )
+}
 
-  img {
-    width: 18px;
-    height: 18px;
-    filter: brightness(1.2);
-  }
-`
+// Link text with tooltip
+interface LinkTextProps {
+  tooltip: string
+  children: React.ReactNode
+}
 
-const SSocialIconsWrapper = styled.div`
-  display: flex;
-  gap: ${SPACING.xs}px;
-  position: relative;
-`
-
-const SVerticalSocials = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: ${SPACING.xs}px;
-  align-items: flex-start;
-  width: 100%;
-`
-
-const SSocialsWithLinksWrapper = styled.div`
-  display: grid;
-  grid-template-columns: 32px 1fr;
-  gap: ${SPACING.xs}px;
-  align-items: center;
-  width: 100%;
-`
-
-const SLinkText = styled.div`
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  font-size: 0.9rem;
-  color: ${TEXT_COLORS.one};
-  position: relative;
-
-  &:hover::after {
-    content: attr(data-tooltip);
-    position: absolute;
-    bottom: calc(100% + 5px);
-    left: 0;
-    background: rgba(0, 0, 0, 0.85);
-    color: white;
-    padding: 4px 8px;
-    border-radius: 4px;
-    font-size: 0.8rem;
-    white-space: nowrap;
-    z-index: 1000;
-  }
-`
+const LinkText: React.FC<LinkTextProps> = ({ tooltip, children }) => (
+  <div
+    className="whitespace-nowrap overflow-hidden text-ellipsis text-sm text-foreground relative group"
+    data-tooltip={tooltip}
+  >
+    {children}
+    <span className="hidden group-hover:block absolute bottom-[calc(100%+5px)] left-0 bg-black/85 text-white px-2 py-1 rounded text-xs whitespace-nowrap z-[1000]">
+      {tooltip}
+    </span>
+  </div>
+)
 
 interface SocialsProps {
   layoutType: string
@@ -202,85 +177,74 @@ export const Socials: React.FC<SocialsProps> = ({
     }
   }
 
-  // Log the rendering mode we're choosing
-
   switch (layoutType) {
     case 'horizontal':
       return (
-        <SSocialIconsWrapper>
-          {links.map((link, index) => {
-            return (
-              <SSocialIcon
-                key={link.platform + index}
-                href={getFormattedUrl(link.url)}
-                target='_blank'
-                rel='noopener noreferrer'
-                $themeColor={getThemeColor(index)}
-                title={link.url}
-              >
-                <img
-                  src={getPlatformIcon(link.platform)}
-                  alt={link.platform}
-                  width='18'
-                  height='18'
-                />
-              </SSocialIcon>
-            )
-          })}
-        </SSocialIconsWrapper>
+        <div className="flex gap-2 relative">
+          {links.map((link, index) => (
+            <SocialIcon
+              key={link.platform + index}
+              href={getFormattedUrl(link.url)}
+              themeColor={getThemeColor(index)}
+              title={link.url}
+            >
+              <img
+                src={getPlatformIcon(link.platform)}
+                alt={link.platform}
+                width="18"
+                height="18"
+              />
+            </SocialIcon>
+          ))}
+        </div>
       )
     case 'vertical':
       return (
-        <SVerticalSocials>
-          {links.map((link, index) => {
-            return (
-              <SSocialIcon
-                key={link.platform + index}
-                href={getFormattedUrl(link.url)}
-                target='_blank'
-                rel='noopener noreferrer'
-                $themeColor={getThemeColor(index)}
-                title={link.url}
-              >
-                <img
-                  src={getPlatformIcon(link.platform)}
-                  alt={link.platform}
-                  width='18'
-                  height='18'
-                />
-              </SSocialIcon>
-            )
-          })}
-        </SVerticalSocials>
+        <div className="flex flex-col gap-2 items-start w-full">
+          {links.map((link, index) => (
+            <SocialIcon
+              key={link.platform + index}
+              href={getFormattedUrl(link.url)}
+              themeColor={getThemeColor(index)}
+              title={link.url}
+            >
+              <img
+                src={getPlatformIcon(link.platform)}
+                alt={link.platform}
+                width="18"
+                height="18"
+              />
+            </SocialIcon>
+          ))}
+        </div>
       )
     case 'showLinks':
     default:
       return (
-        <SVerticalSocials>
-          {links.map((link, index) => {
-            return (
-              <SSocialsWithLinksWrapper key={link.platform + index}>
-                <SSocialIcon
-                  href={getFormattedUrl(link.url)}
-                  target='_blank'
-                  rel='noopener noreferrer'
-                  $themeColor={getThemeColor(index)}
-                  title={link.url}
-                >
-                  <img
-                    src={getPlatformIcon(link.platform)}
-                    alt={link.platform}
-                    width='18'
-                    height='18'
-                  />
-                </SSocialIcon>
-                <SLinkText data-tooltip={link.url}>
-                  {getDisplayText(link.platform, link.url)}
-                </SLinkText>
-              </SSocialsWithLinksWrapper>
-            )
-          })}
-        </SVerticalSocials>
+        <div className="flex flex-col gap-2 items-start w-full">
+          {links.map((link, index) => (
+            <div
+              key={link.platform + index}
+              className="grid grid-cols-[32px_1fr] gap-2 items-center w-full"
+            >
+              <SocialIcon
+                href={getFormattedUrl(link.url)}
+                themeColor={getThemeColor(index)}
+                title={link.url}
+              >
+                <img
+                  src={getPlatformIcon(link.platform)}
+                  alt={link.platform}
+                  width="18"
+                  height="18"
+                />
+              </SocialIcon>
+              <LinkText tooltip={link.url}>
+                {getDisplayText(link.platform, link.url)}
+              </LinkText>
+            </div>
+          ))}
+        </div>
       )
   }
 }

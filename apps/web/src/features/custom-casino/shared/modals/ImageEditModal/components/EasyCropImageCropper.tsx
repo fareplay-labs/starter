@@ -1,8 +1,7 @@
 // @ts-nocheck
 import React, { useState, useCallback, useEffect } from 'react'
 import Cropper, { type Area } from 'react-easy-crop'
-import { styled } from 'styled-components'
-import { SPACING, FARE_COLORS } from '@/design'
+import { cn } from '@/lib/utils'
 
 // Helper function remains the same
 const createSafeImageUrl = (url: string): string => {
@@ -32,82 +31,6 @@ interface EasyCropImageCropperProps {
   onCropEnd?: () => void
 }
 
-// --- Styled Components ---
-const CropperWrapper = styled.div`
-  width: 100%;
-  margin-bottom: ${SPACING.lg}px;
-  display: flex;
-  flex-direction: column;
-  gap: ${SPACING.sm}px;
-`
-
-const ImageContainer = styled.div`
-  position: relative;
-  width: 100%;
-  height: 300px; /* Or adjust as needed */
-  background-color: #191919; /* Match old boundary color */
-  border-radius: 12px;
-  overflow: hidden;
-
-  /* react-easy-crop specific styles */
-  .reactEasyCrop_Container {
-    width: 100%;
-    height: 100%;
-  }
-
-  .reactEasyCrop_CropArea {
-    border: 2px solid ${FARE_COLORS.pink};
-    box-shadow: 0 0 0 999px rgba(0, 0, 0, 0.5);
-    color: rgba(255, 255, 255, 0.5); /* Grid line color */
-  }
-
-  /* Instructions hint */
-  &::after {
-    content: 'Scroll to zoom, drag to position';
-    position: absolute;
-    bottom: 10px;
-    right: 10px;
-    background: rgba(0, 0, 0, 0.5);
-    color: white;
-    padding: 4px 8px;
-    border-radius: 4px;
-    font-size: 12px;
-    pointer-events: none;
-    z-index: 1; /* Ensure it's above the crop area shadow */
-  }
-`
-
-const LoadingOverlay = styled.div`
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  background-color: rgba(0, 0, 0, 0.6);
-  color: white;
-  z-index: 10;
-`
-
-const Spinner = styled.div`
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  border: 3px solid rgba(255, 255, 255, 0.3);
-  border-top-color: white;
-  animation: spin 1s linear infinite;
-  margin-bottom: ${SPACING.sm}px;
-
-  @keyframes spin {
-    to {
-      transform: rotate(360deg);
-    }
-  }
-`
-
 // --- Component Implementation ---
 const EasyCropImageCropper: React.FC<EasyCropImageCropperProps> = ({
   imageUrl,
@@ -135,7 +58,6 @@ const EasyCropImageCropper: React.FC<EasyCropImageCropperProps> = ({
   )
 
   const handleMediaLoaded = useCallback(() => {
-    // console.log('Media Loaded')
     setInternalLoading(false)
     onImageLoad?.()
   }, [onImageLoad])
@@ -166,13 +88,28 @@ const EasyCropImageCropper: React.FC<EasyCropImageCropperProps> = ({
   }, [initialZoom])
 
   return (
-    <CropperWrapper>
-      <ImageContainer>
+    <div className="w-full mb-6 flex flex-col gap-3">
+      {/* Image Container */}
+      <div
+        className={cn(
+          'relative w-full h-[300px] bg-[#191919] rounded-xl overflow-hidden',
+          // react-easy-crop specific styles
+          '[&_.reactEasyCrop_Container]:w-full [&_.reactEasyCrop_Container]:h-full',
+          '[&_.reactEasyCrop_CropArea]:border-2 [&_.reactEasyCrop_CropArea]:border-[#d900d5]',
+          '[&_.reactEasyCrop_CropArea]:shadow-[0_0_0_999px_rgba(0,0,0,0.5)]',
+          '[&_.reactEasyCrop_CropArea]:text-white/50',
+          // Instructions hint via pseudo-element styling
+          'after:content-["Scroll_to_zoom,_drag_to_position"]',
+          'after:absolute after:bottom-2.5 after:right-2.5',
+          'after:bg-black/50 after:text-white after:py-1 after:px-2',
+          'after:rounded after:text-xs after:pointer-events-none after:z-[1]'
+        )}
+      >
         {(isLoading || internalLoading) && (
-          <LoadingOverlay>
-            <Spinner />
+          <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/60 text-white z-10">
+            <div className="w-10 h-10 rounded-full border-[3px] border-white/30 border-t-white animate-spin mb-3" />
             <span>Loading Image...</span>
-          </LoadingOverlay>
+          </div>
         )}
         {safeImageUrl && (
           <Cropper
@@ -195,14 +132,12 @@ const EasyCropImageCropper: React.FC<EasyCropImageCropperProps> = ({
           />
         )}
         {!safeImageUrl && !isLoading && (
-          <LoadingOverlay style={{ backgroundColor: 'rgba(0,0,0,0.2)' }}>
+          <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/20 text-white z-10">
             <span>No image selected</span>
-          </LoadingOverlay>
+          </div>
         )}
-      </ImageContainer>
-      {/* Add zoom/rotation controls here if needed */}
-      {/* Example: <input type="range" value={zoom} min={1} max={3} step={0.1} onChange={(e) => setZoom(Number(e.target.value))} /> */}
-    </CropperWrapper>
+      </div>
+    </div>
   )
 }
 

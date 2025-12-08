@@ -1,7 +1,5 @@
-// @ts-nocheck
 import React, { useState, useRef, useEffect } from 'react'
-import { styled, keyframes, css } from 'styled-components'
-import { TEXT_COLORS } from '@/design'
+import { cn } from '@/lib/utils'
 import { useEditStore } from '@/features/custom-casino/UserPage/editor/useEditStore'
 import { EditCircle } from '@/features/custom-casino/UserPage/editor/EditCircle'
 
@@ -16,128 +14,28 @@ interface EditableTextProps {
   className?: string
 }
 
-const pulse = keyframes`
-  0% {
-    opacity: 0.6;
-    scale: 0.98;
-    transform: translateY(0);
-  }
-  50% {
-    opacity: 0.8;
-    scale: 1;
-    transform: translateY(-1px);
+// Character counter component
+const CharCounter: React.FC<{ current: number; max: number; isNearLimit: boolean }> = ({
+  current,
+  max,
+  isNearLimit,
+}) => (
+  <div
+    className={cn(
+      'absolute -bottom-[18px] right-[5px] text-xs pointer-events-none bg-black/50 px-1 py-0.5 rounded',
+      isNearLimit ? 'text-red-400' : 'text-white/50'
+    )}
+  >
+    {current}/{max}
+  </div>
+)
 
-
-  }
-  100% {
-    opacity: 1;
-    scale: 1.02;
-    transform: translateY(-2px);
-
-  }
-`
-
-const TextWrapper = styled.div<{ $isEditing: boolean; $shouldPulse: boolean }>`
-  position: relative;
-  min-width: 50px;
-  min-height: 22px;
-  word-break: break-word;
-  transition: all 0.2s ease;
-  width: 100%;
-  font-size: inherit;
-  font-weight: inherit;
-  line-height: inherit;
-  padding: 0;
-  border-radius: 4px;
-  background-color: transparent;
-  height: auto;
-  overflow: visible;
-
-  ${props =>
-    props.$isEditing &&
-    `
-    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.15);
-  `}
-  &:hover {
-    ${props =>
-      props.$shouldPulse &&
-      css`
-        animation: 1s linear 0s infinite alternate ${pulse};
-      `}
-  }
-`
-
-const TextInput = styled.input`
-  background: transparent;
-  border: none;
-  color: ${TEXT_COLORS.one};
-  font-size: inherit;
-  font-family: inherit;
-  font-weight: inherit;
-  width: 100%;
-  padding: 0;
-  margin: 0;
-  line-height: inherit;
-
-  &:focus {
-    outline: none;
-  }
-`
-
-const TextArea = styled.textarea`
-  background: transparent;
-  border: none;
-  color: ${TEXT_COLORS.one};
-  font-size: inherit;
-  font-family: inherit;
-  font-weight: inherit;
-  width: 100%;
-  padding: 0;
-  margin: 0;
-  resize: none;
-  min-height: 1.3em;
-  line-height: inherit;
-  height: 100%;
-  overflow: hidden; /* Prevent scrollbars */
-  display: block;
-
-  &:focus {
-    outline: none;
-  }
-`
-
-const CharCounter = styled.div<{ $isNearLimit: boolean }>`
-  position: absolute;
-  bottom: -18px;
-  right: 5px;
-  font-size: 12px;
-  color: ${props => (props.$isNearLimit ? '#ff6b6b' : 'rgba(255, 255, 255, 0.5)')};
-  pointer-events: none;
-  background: rgba(0, 0, 0, 0.5);
-  padding: 2px 4px;
-  border-radius: 4px;
-`
-
-const EditIndicatorWrapper = styled.div`
-  position: absolute;
-  left: -32px;
-  top: 50%;
-  transform: translateY(-90%);
-  pointer-events: none;
-  
-  button {
-    pointer-events: none;
-    width: 30px;
-    height: 30px;
-    animation: none;
-    position: static;
-    
-    svg {
-      width: 20px;
-      height: 20px;
-    }
-  }
-`
+// Edit indicator wrapper
+const EditIndicatorWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <div className="absolute -left-8 top-1/2 -translate-y-[90%] pointer-events-none [&_button]:pointer-events-none [&_button]:w-[30px] [&_button]:h-[30px] [&_button]:animate-none [&_button]:static [&_button_svg]:w-5 [&_button_svg]:h-5">
+    {children}
+  </div>
+)
 
 const EditableText: React.FC<EditableTextProps> = ({
   fieldName = '',
@@ -231,12 +129,15 @@ const EditableText: React.FC<EditableTextProps> = ({
 
   const isNearLimit = maxLength ? editValue.length > maxLength * 0.8 : false
 
+  // Base input styles
+  const inputStyles = 'bg-transparent border-none text-white text-inherit font-inherit font-[inherit] w-full p-0 m-0 leading-inherit focus:outline-none'
+
   const renderContent = () => {
     if (isEditing) {
       if (multiline) {
         return (
-          <>
-            <TextArea
+          <div className="relative">
+            <textarea
               ref={inputRef as React.RefObject<HTMLTextAreaElement>}
               value={editValue}
               onChange={handleChange}
@@ -244,44 +145,46 @@ const EditableText: React.FC<EditableTextProps> = ({
               onKeyDown={handleKeyDown}
               maxLength={maxLength}
               autoFocus
-              rows={1} // Start with 1 row
+              rows={1}
+              className={cn(inputStyles, 'resize-none min-h-[1.3em] h-full overflow-hidden block')}
               style={textHeight ? { height: `${textHeight}px` } : {}}
             />
             {maxLength && (
-              <CharCounter $isNearLimit={isNearLimit}>
-                {editValue.length}/{maxLength}
-              </CharCounter>
+              <CharCounter current={editValue.length} max={maxLength} isNearLimit={isNearLimit} />
             )}
-          </>
+          </div>
         )
       } else {
         return (
-          <>
-            <TextInput
+          <div className="relative">
+            <input
               ref={inputRef as React.RefObject<HTMLInputElement>}
-              type='text'
+              type="text"
               value={editValue}
               onChange={handleChange}
               onBlur={handleBlur}
               onKeyDown={handleKeyDown}
               maxLength={maxLength}
               autoFocus
+              className={inputStyles}
             />
             {maxLength && (
-              <CharCounter $isNearLimit={isNearLimit}>
-                {editValue.length}/{maxLength}
-              </CharCounter>
+              <CharCounter current={editValue.length} max={maxLength} isNearLimit={isNearLimit} />
             )}
-          </>
+          </div>
         )
       }
     } else {
       return (
-        <TextWrapper
+        <div
           ref={wrapperRef}
-          className={className}
-          $isEditing={isEditing}
-          $shouldPulse={isEditMode && !isEditing}
+          className={cn(
+            'relative min-w-[50px] min-h-[22px] break-words transition-all duration-200 w-full',
+            'text-inherit font-inherit leading-inherit p-0 rounded bg-transparent h-auto overflow-visible',
+            isEditing && 'shadow-[0_0_0_1px_rgba(255,255,255,0.15)]',
+            isEditMode && !isEditing && 'hover:animate-pulse-text',
+            className
+          )}
           onClick={handleClick}
           style={{
             cursor: isEditMode && !isEditing ? 'text' : 'default',
@@ -293,7 +196,7 @@ const EditableText: React.FC<EditableTextProps> = ({
             </EditIndicatorWrapper>
           )}
           {editValue || placeholder}
-        </TextWrapper>
+        </div>
       )
     }
   }

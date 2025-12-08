@@ -1,9 +1,8 @@
 // @ts-nocheck
 import React, { useState } from 'react'
-import { styled } from 'styled-components'
+import { cn } from '@/lib/utils'
 import { ModalBase } from '../shared/ModalBase'
 import { type SoundData } from '../../types/sound.types'
-import { SPACING } from '@/design'
 import SoundLibrary from './components/SoundLibrary'
 import SoundUpload from './components/SoundUpload'
 import VolumeControl from './components/VolumeControl'
@@ -63,43 +62,67 @@ const SoundEditModal: React.FC<SoundEditModalProps> = ({
 
   return (
     <ModalBase isOpen={isOpen} onClose={onClose} title='' maxWidth='800px'>
-      <SModalContent>
-        <STitleSection>
-          <SMainTitle>Choose Sound</SMainTitle>
-          <SSubtitle>{context}</SSubtitle>
-        </STitleSection>
-        <STabAndSearchContainer>
-          <STabContainer>
-            <STab
-              className={activeTab === 'library' ? 'active' : ''}
+      <div className="flex flex-col h-[500px] w-full">
+        {/* Title Section */}
+        <div className="text-center mb-4">
+          <h1 className="text-white text-[1.75rem] font-semibold m-0 mb-1 leading-tight">Choose Sound</h1>
+          <div className="text-[#aaa] text-base font-normal m-0">{context}</div>
+        </div>
+
+        {/* Tab and Search Container */}
+        <div className="flex justify-between items-end border-b border-white/10 mb-4">
+          {/* Tabs */}
+          <div className="flex">
+            <button
               onClick={() => setActiveTab('library')}
+              className={cn(
+                'bg-transparent border-none text-[#aaa] py-3 px-6',
+                'cursor-pointer text-sm font-medium border-b-2 border-transparent transition-all duration-200',
+                'hover:text-white',
+                'focus:outline-none focus:shadow-[0_0_0_2px_rgba(95,95,255,0.3)]',
+                activeTab === 'library' && 'text-[#5f5fff] border-b-[#5f5fff]'
+              )}
             >
               Library
-            </STab>
-            <STab
-              className={activeTab === 'upload' ? 'active' : ''}
+            </button>
+            <button
               onClick={() => setActiveTab('upload')}
+              className={cn(
+                'bg-transparent border-none text-[#aaa] py-3 px-6',
+                'cursor-pointer text-sm font-medium border-b-2 border-transparent transition-all duration-200',
+                'hover:text-white',
+                'focus:outline-none focus:shadow-[0_0_0_2px_rgba(95,95,255,0.3)]',
+                activeTab === 'upload' && 'text-[#5f5fff] border-b-[#5f5fff]'
+              )}
             >
               Upload
-            </STab>
-          </STabContainer>
+            </button>
+          </div>
 
+          {/* Search Controls (only for library tab) */}
           {activeTab === 'library' && (
-            <SSearchControls>
-              <SSearchInput
+            <div className="flex items-center gap-4 pb-1.5">
+              <input
                 type='text'
                 placeholder='Search sounds...'
                 value={searchTerm}
                 onChange={e => setSearchTerm(e.target.value)}
+                className={cn(
+                  'py-2 px-3 bg-black/30 border border-white/20 rounded-md',
+                  'text-white text-sm w-[200px]',
+                  'focus:outline-none focus:border-[#5f5fff]',
+                  'placeholder:text-[#aaa]'
+                )}
               />
-              <SSoundCount>
+              <div className="text-[#aaa] text-xs whitespace-nowrap min-w-[60px] text-right">
                 {filteredCount} sound{filteredCount !== 1 ? 's' : ''}
-              </SSoundCount>
-            </SSearchControls>
+              </div>
+            </div>
           )}
-        </STabAndSearchContainer>
+        </div>
 
-        <SContentArea>
+        {/* Content Area */}
+        <div className="flex-1 overflow-y-auto px-1">
           {activeTab === 'library' ? (
             readyAndAuth && isVerified && publicAddress ? (
               <SoundLibrary
@@ -113,217 +136,59 @@ const SoundEditModal: React.FC<SoundEditModalProps> = ({
                 onFilteredCountChange={setFilteredCount}
               />
             ) : (
-              <SUnauthedMsg>Connect your wallet to browse your sounds.</SUnauthedMsg>
+              <div className="text-[#aaa] text-center py-4">Connect your wallet to browse your sounds.</div>
             )
           ) : readyAndAuth && isVerified && publicAddress ? (
             <SoundUpload onUploadComplete={handleUploadComplete} userId={publicAddress} />
           ) : (
-            <SUnauthedMsg>Connect your wallet to upload sounds.</SUnauthedMsg>
+            <div className="text-[#aaa] text-center py-4">Connect your wallet to upload sounds.</div>
           )}
-        </SContentArea>
+        </div>
 
+        {/* Volume Section */}
         {selectedSound && (
-          <SVolumeSection>
-            <SVolumeHeader>
-              <SSoundName>Selected: {selectedSound.name || 'Unknown'}</SSoundName>
-            </SVolumeHeader>
+          <div className="border-t border-white/10 py-4">
+            <div className="mb-4">
+              <div className="text-white text-sm font-medium">Selected: {selectedSound.name || 'Unknown'}</div>
+            </div>
             <VolumeControl
               volume={selectedSound.volume || 0.7}
               onChange={handleVolumeChange}
               label='Sound Volume'
             />
-          </SVolumeSection>
+          </div>
         )}
 
-        <SFooter>
-          <SCancelButton onClick={onClose}>Cancel</SCancelButton>
-          <SSelectButton onClick={handleSelect} disabled={!selectedSound}>
+        {/* Footer */}
+        <div className="flex justify-end gap-3 pt-4 border-t border-white/10">
+          <button
+            onClick={onClose}
+            className={cn(
+              'py-2.5 px-5 bg-transparent border border-white/20 rounded-md',
+              'text-[#aaa] text-sm cursor-pointer transition-all duration-200',
+              'hover:border-white/40 hover:text-white',
+              'focus:outline-none focus:shadow-[0_0_0_2px_rgba(255,255,255,0.3)]'
+            )}
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleSelect}
+            disabled={!selectedSound}
+            className={cn(
+              'py-2.5 px-5 border-none rounded-md text-sm font-medium transition-all duration-200',
+              selectedSound
+                ? 'bg-[#5f5fff] text-white cursor-pointer hover:bg-[#7f7fff] focus:shadow-[0_0_0_2px_rgba(95,95,255,0.5)] active:translate-y-px'
+                : 'bg-[rgba(95,95,255,0.3)] text-[#aaa] cursor-not-allowed',
+              'focus:outline-none'
+            )}
+          >
             Select Sound
-          </SSelectButton>
-        </SFooter>
-      </SModalContent>
+          </button>
+        </div>
+      </div>
     </ModalBase>
   )
 }
-
-const SModalContent = styled.div`
-  display: flex;
-  flex-direction: column;
-  height: 500px;
-  width: 100%;
-`
-
-const STitleSection = styled.div`
-  text-align: center;
-  margin-bottom: ${SPACING.md}px;
-`
-
-const SMainTitle = styled.h1`
-  color: #ffffff;
-  font-size: 1.75rem;
-  font-weight: 600;
-  margin: 0 0 4px 0;
-  line-height: 1.2;
-`
-
-const SSubtitle = styled.div`
-  color: #aaa;
-  font-size: 1rem;
-  font-weight: 400;
-  margin: 0;
-`
-
-const STabAndSearchContainer = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  margin-bottom: ${SPACING.md}px;
-`
-
-const STabContainer = styled.div`
-  display: flex;
-`
-
-const SSearchControls = styled.div`
-  display: flex;
-  align-items: center;
-  gap: ${SPACING.md}px;
-  padding-bottom: 6px;
-`
-
-const SSearchInput = styled.input`
-  padding: 8px 12px;
-  background-color: rgba(0, 0, 0, 0.3);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 6px;
-  color: white;
-  font-size: 14px;
-  width: 200px;
-
-  &:focus {
-    outline: none;
-    border-color: #5f5fff;
-  }
-
-  &::placeholder {
-    color: #aaa;
-  }
-`
-
-const SSoundCount = styled.div`
-  color: #aaa;
-  font-size: 12px;
-  white-space: nowrap;
-  min-width: 60px;
-  text-align: right;
-`
-
-const STab = styled.button`
-  background: transparent;
-  border: none;
-  color: #aaa;
-  padding: 12px 24px;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 500;
-  border-bottom: 2px solid transparent;
-  transition: all 0.2s ease;
-
-  &:hover {
-    color: white;
-  }
-
-  &.active {
-    color: #5f5fff;
-    border-bottom-color: #5f5fff;
-  }
-
-  &:focus {
-    outline: none;
-    box-shadow: 0 0 0 2px rgba(95, 95, 255, 0.3);
-  }
-`
-
-const SContentArea = styled.div`
-  flex: 1;
-  overflow-y: auto;
-  padding: 0 4px;
-`
-
-const SVolumeSection = styled.div`
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  padding: ${SPACING.md}px 0;
-`
-
-const SVolumeHeader = styled.div`
-  margin-bottom: ${SPACING.md}px;
-`
-
-const SSoundName = styled.div`
-  color: white;
-  font-size: 14px;
-  font-weight: 500;
-`
-
-const SFooter = styled.div`
-  display: flex;
-  justify-content: flex-end;
-  gap: 12px;
-  padding-top: ${SPACING.md}px;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-`
-
-const SUnauthedMsg = styled.div`
-  color: #aaa;
-  text-align: center;
-  padding: ${SPACING.md}px 0;
-`
-
-const SCancelButton = styled.button`
-  padding: 10px 20px;
-  background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 6px;
-  color: #aaa;
-  cursor: pointer;
-  font-size: 14px;
-  transition: all 0.2s ease;
-
-  &:hover {
-    border-color: rgba(255, 255, 255, 0.4);
-    color: white;
-  }
-
-  &:focus {
-    outline: none;
-    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.3);
-  }
-`
-
-const SSelectButton = styled.button<{ disabled: boolean }>`
-  padding: 10px 20px;
-  background-color: ${props => (props.disabled ? 'rgba(95, 95, 255, 0.3)' : '#5f5fff')};
-  border: none;
-  border-radius: 6px;
-  color: ${props => (props.disabled ? '#aaa' : 'white')};
-  cursor: ${props => (props.disabled ? 'not-allowed' : 'pointer')};
-  font-size: 14px;
-  font-weight: 500;
-  transition: all 0.2s ease;
-
-  &:hover:not(:disabled) {
-    background-color: #7f7fff;
-  }
-
-  &:focus {
-    outline: none;
-    box-shadow: 0 0 0 2px rgba(95, 95, 255, 0.5);
-  }
-
-  &:active:not(:disabled) {
-    transform: translateY(1px);
-  }
-`
 
 export default SoundEditModal

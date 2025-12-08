@@ -71,7 +71,54 @@ export default {
   		},
   		animation: {
   			'spin-slow': 'spin 3s linear infinite',
-  			'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite'
+  			'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+  			'icon-pop': 'iconPop 0.5s ease forwards',
+  			'loading-dots': 'loadingDots 1.5s infinite',
+  			'fade-in': 'fadeIn 0.3s ease forwards',
+  			'fade-out': 'fadeOut 0.3s ease forwards',
+  			'edit-circle-pop': 'editCirclePop 0.3s ease forwards',
+  			'edit-circle-pulse': 'editCirclePulse 2s ease-in-out infinite',
+  			'pulse-text': 'pulseText 1s linear infinite alternate',
+  			'line-reveal-left': 'lineReveal 2s ease-out forwards',
+  			'line-reveal-right': 'lineReveal 2s ease-out forwards',
+  		},
+  		keyframes: {
+  			iconPop: {
+  				'0%': { transform: 'scale(0)', opacity: '0' },
+  				'50%': { transform: 'scale(1.2)', opacity: '1' },
+  				'100%': { transform: 'scale(1)', opacity: '1' },
+  			},
+  			loadingDots: {
+  				'0%': { content: '"."' },
+  				'33%': { content: '".."' },
+  				'66%': { content: '"..."' },
+  				'100%': { content: '"."' },
+  			},
+  			fadeIn: {
+  				'0%': { opacity: '0' },
+  				'100%': { opacity: '1' },
+  			},
+  			fadeOut: {
+  				'0%': { opacity: '1' },
+  				'100%': { opacity: '0' },
+  			},
+  			editCirclePop: {
+  				'0%': { transform: 'scale(0)', opacity: '0' },
+  				'100%': { transform: 'scale(1)', opacity: '1' },
+  			},
+  			editCirclePulse: {
+  				'0%, 100%': { boxShadow: '0 0 0 0 rgba(255, 255, 255, 0.4)' },
+  				'50%': { boxShadow: '0 0 0 8px rgba(255, 255, 255, 0)' },
+  			},
+  			pulseText: {
+  				'0%': { opacity: '0.6', transform: 'scale(0.98) translateY(0)' },
+  				'50%': { opacity: '0.8', transform: 'scale(1) translateY(-1px)' },
+  				'100%': { opacity: '1', transform: 'scale(1.02) translateY(-2px)' },
+  			},
+  			lineReveal: {
+  				'0%': { transform: 'scaleX(0)' },
+  				'100%': { transform: 'scaleX(1)' },
+  			},
   		},
   		borderRadius: {
   			lg: 'var(--radius)',

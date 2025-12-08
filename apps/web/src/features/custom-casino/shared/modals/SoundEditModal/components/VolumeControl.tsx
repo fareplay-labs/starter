@@ -1,7 +1,6 @@
 // @ts-nocheck
 import React from 'react'
-import { styled } from 'styled-components'
-import { SPACING } from '@/design'
+import { cn } from '@/lib/utils'
 
 interface VolumeControlProps {
   volume: number // 0-1 range
@@ -24,15 +23,17 @@ const VolumeControl: React.FC<VolumeControlProps> = ({
   const volumePercentage = Math.round(volume * 100)
 
   return (
-    <SVolumeContainer>
-      <SVolumeHeader>
-        <SVolumeLabel>{label}</SVolumeLabel>
-        <SVolumeValue>{volumePercentage}%</SVolumeValue>
-      </SVolumeHeader>
+    <div className="flex flex-col gap-3">
+      {/* Volume Header */}
+      <div className="flex justify-between items-center">
+        <label className="text-xs text-[#aaa] uppercase tracking-wide font-semibold">{label}</label>
+        <div className="text-xs text-[#5f5fff] font-semibold">{volumePercentage}%</div>
+      </div>
 
-      <SVolumeSliderContainer>
-        <SVolumeIcon>🔇</SVolumeIcon>
-        <SVolumeSlider
+      {/* Volume Slider Container */}
+      <div className="flex items-center gap-3">
+        <div className="text-sm text-[#aaa]">🔇</div>
+        <input
           type='range'
           min='0'
           max='1'
@@ -40,137 +41,44 @@ const VolumeControl: React.FC<VolumeControlProps> = ({
           value={volume}
           onChange={handleChange}
           disabled={disabled}
+          className={cn(
+            'flex-1 h-1 rounded-sm outline-none appearance-none transition-opacity duration-200',
+            'bg-gradient-to-r from-[#5f5fff] to-[#5f5fff]',
+            disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer',
+            // Webkit slider thumb
+            '[&::-webkit-slider-thumb]:appearance-none',
+            '[&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4',
+            '[&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[#5f5fff]',
+            '[&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white',
+            '[&::-webkit-slider-thumb]:shadow-[0_2px_4px_rgba(0,0,0,0.2)]',
+            '[&::-webkit-slider-thumb]:transition-all [&::-webkit-slider-thumb]:duration-200',
+            '[&::-webkit-slider-thumb]:cursor-pointer',
+            '[&::-webkit-slider-thumb:hover]:bg-[#7f7fff] [&::-webkit-slider-thumb:hover]:scale-110',
+            '[&::-webkit-slider-thumb:active]:scale-95',
+            '[&:focus::-webkit-slider-thumb]:shadow-[0_0_0_3px_rgba(95,95,255,0.3)]',
+            // Disabled webkit thumb
+            '[&:disabled::-webkit-slider-thumb]:bg-[#666] [&:disabled::-webkit-slider-thumb]:cursor-not-allowed',
+            // Firefox slider thumb
+            '[&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:h-4',
+            '[&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-[#5f5fff]',
+            '[&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white',
+            '[&::-moz-range-thumb]:shadow-[0_2px_4px_rgba(0,0,0,0.2)]',
+            '[&::-moz-range-thumb]:transition-all [&::-moz-range-thumb]:duration-200',
+            '[&::-moz-range-thumb]:cursor-pointer',
+            '[&::-moz-range-thumb:hover]:bg-[#7f7fff] [&::-moz-range-thumb:hover]:scale-110',
+            '[&:focus::-moz-range-thumb]:shadow-[0_0_0_3px_rgba(95,95,255,0.3)]',
+            '[&::-moz-range-track]:h-1 [&::-moz-range-track]:bg-[#333] [&::-moz-range-track]:rounded-sm',
+            // Disabled firefox thumb
+            '[&:disabled::-moz-range-thumb]:bg-[#666] [&:disabled::-moz-range-thumb]:cursor-not-allowed'
+          )}
+          style={{
+            background: `linear-gradient(to right, #5f5fff 0%, #5f5fff ${volumePercentage}%, #333 ${volumePercentage}%, #333 100%)`,
+          }}
         />
-        <SVolumeIcon>🔊</SVolumeIcon>
-      </SVolumeSliderContainer>
-    </SVolumeContainer>
+        <div className="text-sm text-[#aaa]">🔊</div>
+      </div>
+    </div>
   )
 }
-
-const SVolumeContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: ${SPACING.sm}px;
-`
-
-const SVolumeHeader = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-`
-
-const SVolumeLabel = styled.label`
-  font-size: 12px;
-  color: #aaa;
-  text-transform: uppercase;
-  letter-spacing: 0.8px;
-  font-weight: 600;
-`
-
-const SVolumeValue = styled.div`
-  font-size: 12px;
-  color: #5f5fff;
-  font-weight: 600;
-`
-
-const SVolumeSliderContainer = styled.div`
-  display: flex;
-  align-items: center;
-  gap: ${SPACING.sm}px;
-`
-
-const SVolumeIcon = styled.div`
-  font-size: 14px;
-  color: #aaa;
-`
-
-const SVolumeSlider = styled.input`
-  flex: 1;
-  height: 4px;
-  background: linear-gradient(
-    to right,
-    #333 0%,
-    #333 var(--progress, 70%),
-    #5f5fff var(--progress, 70%),
-    #5f5fff 100%
-  );
-  border-radius: 2px;
-  outline: none;
-  opacity: ${props => (props.disabled ? 0.5 : 1)};
-  cursor: ${props => (props.disabled ? 'not-allowed' : 'pointer')};
-  transition: opacity 0.2s ease;
-
-  /* Custom progress calculation */
-  --progress: ${props => `${parseFloat(String(props.value || 0)) * 100}%`};
-
-  /* Webkit styles */
-  &::-webkit-slider-thumb {
-    appearance: none;
-    width: 16px;
-    height: 16px;
-    border-radius: 50%;
-    background: #5f5fff;
-    cursor: pointer;
-    border: 2px solid #fff;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-    transition: all 0.2s ease;
-  }
-
-  &::-webkit-slider-thumb:hover {
-    background: #7f7fff;
-    transform: scale(1.1);
-  }
-
-  &::-webkit-slider-thumb:active {
-    transform: scale(0.95);
-  }
-
-  /* Firefox styles */
-  &::-moz-range-thumb {
-    width: 16px;
-    height: 16px;
-    border-radius: 50%;
-    background: #5f5fff;
-    cursor: pointer;
-    border: 2px solid #fff;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-    transition: all 0.2s ease;
-  }
-
-  &::-moz-range-thumb:hover {
-    background: #7f7fff;
-    transform: scale(1.1);
-  }
-
-  &::-moz-range-track {
-    height: 4px;
-    background: #333;
-    border-radius: 2px;
-  }
-
-  &:focus {
-    &::-webkit-slider-thumb {
-      box-shadow: 0 0 0 3px rgba(95, 95, 255, 0.3);
-    }
-
-    &::-moz-range-thumb {
-      box-shadow: 0 0 0 3px rgba(95, 95, 255, 0.3);
-    }
-  }
-
-  &:disabled {
-    cursor: not-allowed;
-
-    &::-webkit-slider-thumb {
-      background: #666;
-      cursor: not-allowed;
-    }
-
-    &::-moz-range-thumb {
-      background: #666;
-      cursor: not-allowed;
-    }
-  }
-`
 
 export default VolumeControl

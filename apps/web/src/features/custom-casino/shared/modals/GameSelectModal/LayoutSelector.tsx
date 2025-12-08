@@ -1,187 +1,56 @@
 // @ts-nocheck
 import React from 'react'
-import { styled } from 'styled-components'
-import { SPACING, TEXT_COLORS, BORDER_COLORS, BREAKPOINTS } from '@/design'
+import { cn } from '@/lib/utils'
 import { useIsBreakpoint } from '@/hooks/common/useIsBreakpoint'
-
-// Layout section container
-const SLayoutSection = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: ${SPACING.md}px;
-  margin-bottom: ${SPACING.xl}px;
-  padding: ${SPACING.lg}px;
-  background: rgba(0, 0, 0, 0.2);
-  border-radius: 12px;
-
-  @media (max-width: ${BREAKPOINTS.sm}px) {
-  margin-bottom: 0;
-`
-
-// Layout section title
-const SLayoutTitle = styled.h3`
-  color: ${TEXT_COLORS.one};
-  font-size: 16px;
-  margin: 0;
-  text-align: center;
-`
-
-// Layout options container
-const SLayoutOptions = styled.div`
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: ${SPACING.md}px;
-
-  @media (max-width: ${BREAKPOINTS.sm}px) {
-    display: flex;
-    flex-direction: column;
-    gap: ${SPACING.sm}px;
-  }
-`
-
-// Individual layout option
-const SLayoutOption = styled.button<{ $isSelected?: boolean; $themeColor?: string }>`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: ${SPACING.sm}px;
-  padding: ${SPACING.md}px;
-  background: transparent;
-  border: 1px solid
-    ${props => (props.$isSelected ? props.$themeColor || BORDER_COLORS.one : BORDER_COLORS.one)};
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-
-  &:hover {
-    border-color: ${props => props.$themeColor || BORDER_COLORS.two};
-  }
-
-  span {
-    color: ${props => (props.$isSelected ? props.$themeColor || TEXT_COLORS.one : TEXT_COLORS.two)};
-    font-size: 14px;
-    transform: translateY(0.6px);
-    transition: color 0.2s ease, transform 0.2s ease;
-
-    &:hover {
-    font-weight: 600;
-    transform: scale(1.02);
-  }
-`
-
-// Layout preview container
-const SLayoutPreview = styled.div`
-  width: 100%;
-  min-height: 60px;
-  background: rgba(10, 10, 10, 0.7);
-  border-radius: 4px;
-  margin-top: 8px;
-  padding: 4px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-`
-
-// Shared tile/card hover/transition CSS
-const tileHoverTransition = `
-  transition:
-    transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
-    background 0.35s cubic-bezier(0.22, 1, 0.36, 1);
-  &:hover {
-    transform: scale(1.05);
-    background: rgba(255, 255, 255, 0.45);
-    box-shadow: 0 4px 16px rgba(71, 69, 69, 0.7);
-  }
-`
-
-const SCarouselPreview = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-
-  .card {
-    height: 40px;
-    width: 30px;
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 4px;
-    margin: 0 2px;
-    flex-shrink: 0;
-    ${tileHoverTransition}
-  }
-
-  .main-card {
-    height: 50px;
-    width: 38px;
-    background: rgba(255, 255, 255, 0.4);
-    z-index: 2;
-    ${tileHoverTransition}
-  }
-`
-
-// Small tiles preview mockup
-const SSmallTilesPreview = styled.div`
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 14px;
-  width: 75%;
-
-  .tile {
-    height: 26px;
-    aspect-ratio: 1;
-    display: inline-block;
-    justify-self: center;
-    background: rgba(255, 255, 255, 0.25);
-    border-radius: 3px;
-    ${tileHoverTransition}
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  }
-`
-
-// Large tiles preview mockup
-const SLargeTilesPreview = styled.div`
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 8px;
-  width: 75%;
-
-  .tile {
-    height: 40px;
-    background: rgba(255, 255, 255, 0.25);
-    border-radius: 3px;
-    ${tileHoverTransition}
-  }
-`
 
 // Layout options type
 export type LayoutType = 'carousel' | 'smallTiles' | 'largeTiles'
 
-// Layout preview components
+// Carousel Preview
 const CarouselPreview = () => (
-  <SCarouselPreview>
-    <div className='card' style={{ transform: 'translateX(18px) scale(0.8)' }}></div>
-    <div className='card' style={{ transform: 'translateX(8px)' }}></div>
-    <div className='card main-card'></div>
-    <div className='card' style={{ transform: 'translateX(-8px)' }}></div>
-    <div className='card' style={{ transform: 'translateX(-18px) scale(0.8)' }}></div>
-  </SCarouselPreview>
+  <div className="flex items-center justify-center w-full">
+    <div
+      className="h-10 w-[30px] bg-white/20 rounded mr-0.5 flex-shrink-0 transition-all duration-300 hover:scale-105 hover:bg-white/45 hover:shadow-lg"
+      style={{ transform: 'translateX(18px) scale(0.8)' }}
+    />
+    <div
+      className="h-10 w-[30px] bg-white/20 rounded mr-0.5 flex-shrink-0 transition-all duration-300 hover:scale-105 hover:bg-white/45 hover:shadow-lg"
+      style={{ transform: 'translateX(8px)' }}
+    />
+    <div className="h-[50px] w-[38px] bg-white/40 rounded mr-0.5 flex-shrink-0 z-[2] transition-all duration-300 hover:scale-105 hover:bg-white/45 hover:shadow-lg" />
+    <div
+      className="h-10 w-[30px] bg-white/20 rounded mr-0.5 flex-shrink-0 transition-all duration-300 hover:scale-105 hover:bg-white/45 hover:shadow-lg"
+      style={{ transform: 'translateX(-8px)' }}
+    />
+    <div
+      className="h-10 w-[30px] bg-white/20 rounded mr-0.5 flex-shrink-0 transition-all duration-300 hover:scale-105 hover:bg-white/45 hover:shadow-lg"
+      style={{ transform: 'translateX(-18px) scale(0.8)' }}
+    />
+  </div>
 )
 
+// Small Tiles Preview
 const SmallTilesPreview = () => (
-  <SSmallTilesPreview>
+  <div className="grid grid-cols-4 gap-3.5 w-3/4">
     {Array.from({ length: 8 }).map((_, i) => (
-      <div className='tile' key={i}></div>
+      <div
+        key={i}
+        className="h-[26px] aspect-square justify-self-center bg-white/25 rounded-sm shadow-sm transition-all duration-300 hover:scale-105 hover:bg-white/45 hover:shadow-lg"
+      />
     ))}
-  </SSmallTilesPreview>
+  </div>
 )
 
+// Large Tiles Preview
 const LargeTilesPreview = () => (
-  <SLargeTilesPreview>
+  <div className="grid grid-cols-4 gap-2 w-3/4">
     {Array.from({ length: 8 }).map((_, i) => (
-      <div className='tile' key={i}></div>
+      <div
+        key={i}
+        className="h-10 bg-white/25 rounded-sm transition-all duration-300 hover:scale-105 hover:bg-white/45 hover:shadow-lg"
+      />
     ))}
-  </SLargeTilesPreview>
+  </div>
 )
 
 // LayoutSelector props interface
@@ -200,42 +69,54 @@ export const LayoutSelector: React.FC<LayoutSelectorProps> = ({
   themeColor,
 }) => {
   const isMobileScreen = useIsBreakpoint('sm')
+
+  const layouts = [
+    { key: 'carousel', label: 'Carousel', Preview: CarouselPreview },
+    { key: 'smallTiles', label: 'Small Tiles', Preview: SmallTilesPreview },
+    { key: 'largeTiles', label: 'Large Tiles', Preview: LargeTilesPreview },
+  ]
+
   return (
-    <SLayoutSection>
-      <SLayoutTitle>Select Layout</SLayoutTitle>
-      <SLayoutOptions>
-        {[
-          {
-            key: 'carousel',
-            label: 'Carousel',
-            Preview: CarouselPreview,
-          },
-          {
-            key: 'smallTiles',
-            label: 'Small Tiles',
-            Preview: SmallTilesPreview,
-          },
-          {
-            key: 'largeTiles',
-            label: 'Large Tiles',
-            Preview: LargeTilesPreview,
-          },
-        ].map(({ key, label, Preview }) => (
-          <SLayoutOption
-            key={key}
-            onClick={() => onLayoutChange(key as LayoutType)}
-            $isSelected={selectedLayout === key}
-            $themeColor={themeColor}
-          >
-            <span>{label}</span>
-            {!isMobileScreen && (
-              <SLayoutPreview>
-                <Preview />
-              </SLayoutPreview>
-            )}
-          </SLayoutOption>
-        ))}
-      </SLayoutOptions>
-    </SLayoutSection>
+    <div className="flex flex-col gap-4 mb-8 p-6 bg-black/20 rounded-xl max-[992px]:mb-0">
+      {/* Title */}
+      <h3 className="text-white text-base m-0 text-center">Select Layout</h3>
+
+      {/* Layout Options */}
+      <div className="grid grid-cols-3 gap-4 max-[992px]:flex max-[992px]:flex-col max-[992px]:gap-3">
+        {layouts.map(({ key, label, Preview }) => {
+          const isSelected = selectedLayout === key
+
+          return (
+            <button
+              key={key}
+              onClick={() => onLayoutChange(key as LayoutType)}
+              className={cn(
+                'flex flex-col items-center gap-3 p-4 bg-transparent rounded-lg',
+                'cursor-pointer transition-all duration-200 border',
+                isSelected ? 'border-current' : 'border-[#1b1d26]',
+                !isSelected && 'hover:border-[#2c3142]'
+              )}
+              style={{ borderColor: isSelected ? themeColor : undefined }}
+            >
+              <span
+                className={cn(
+                  'text-sm transition-all duration-200',
+                  isSelected ? 'text-current' : 'text-[#aaaaaa]',
+                  'hover:font-semibold hover:scale-[1.02]'
+                )}
+                style={{ color: isSelected ? themeColor : undefined }}
+              >
+                {label}
+              </span>
+              {!isMobileScreen && (
+                <div className="w-full min-h-[60px] bg-[rgba(10,10,10,0.7)] rounded mt-2 p-1 flex items-center justify-center overflow-hidden">
+                  <Preview />
+                </div>
+              )}
+            </button>
+          )
+        })}
+      </div>
+    </div>
   )
 }

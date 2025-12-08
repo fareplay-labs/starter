@@ -1,11 +1,10 @@
 // @ts-nocheck
 import React, { useState, useCallback } from 'react'
-import { styled } from 'styled-components'
+import { cn } from '@/lib/utils'
 import { type SoundUploadProgress } from '../../../types/sound.types'
 import { createSoundService } from '../../../services/soundService'
 import { MediaStorageApi } from '../../../services/mediaStorageApi'
 import { addAppNoti } from '@/store/useNotiStore'
-import { SPACING } from '@/design'
 
 interface SoundUploadProps {
   onUploadComplete: (soundIds: string[]) => void
@@ -71,9 +70,9 @@ const SoundUpload: React.FC<SoundUploadProps> = ({ onUploadComplete, userId }) =
           // Update status to uploading
           setUploads(prev =>
             prev.map(upload =>
-              upload.fileId === uploadProgress.fileId ?
-                { ...upload, status: 'uploading', progress: 10 }
-              : upload
+              upload.fileId === uploadProgress.fileId
+                ? { ...upload, status: 'uploading', progress: 10 }
+                : upload
             )
           )
 
@@ -82,9 +81,9 @@ const SoundUpload: React.FC<SoundUploadProps> = ({ onUploadComplete, userId }) =
             const progressInterval = setInterval(() => {
               setUploads(prev =>
                 prev.map(upload =>
-                  upload.fileId === uploadProgress.fileId && upload.progress < 90 ?
-                    { ...upload, progress: upload.progress + 10 }
-                  : upload
+                  upload.fileId === uploadProgress.fileId && upload.progress < 90
+                    ? { ...upload, progress: upload.progress + 10 }
+                    : upload
                 )
               )
             }, 100)
@@ -99,9 +98,9 @@ const SoundUpload: React.FC<SoundUploadProps> = ({ onUploadComplete, userId }) =
               // Mark as completed
               setUploads(prev =>
                 prev.map(upload =>
-                  upload.fileId === uploadProgress.fileId ?
-                    { ...upload, status: 'completed', progress: 100 }
-                  : upload
+                  upload.fileId === uploadProgress.fileId
+                    ? { ...upload, status: 'completed', progress: 100 }
+                    : upload
                 )
               )
             } else {
@@ -111,13 +110,13 @@ const SoundUpload: React.FC<SoundUploadProps> = ({ onUploadComplete, userId }) =
             // Mark as failed
             setUploads(prev =>
               prev.map(upload =>
-                upload.fileId === uploadProgress.fileId ?
-                  {
-                    ...upload,
-                    status: 'failed',
-                    error: error instanceof Error ? error.message : 'Upload failed',
-                  }
-                : upload
+                upload.fileId === uploadProgress.fileId
+                  ? {
+                      ...upload,
+                      status: 'failed',
+                      error: error instanceof Error ? error.message : 'Upload failed',
+                    }
+                  : upload
               )
             )
           }
@@ -175,204 +174,94 @@ const SoundUpload: React.FC<SoundUploadProps> = ({ onUploadComplete, userId }) =
     [handleFiles]
   )
 
+  const getProgressColor = (status: string) => {
+    switch (status) {
+      case 'completed': return '#00ff00'
+      case 'failed': return '#ff0000'
+      case 'uploading': return '#ffa500'
+      default: return '#5f5fff'
+    }
+  }
+
   return (
-    <SUploadContainer>
-      <SDropZone
+    <div className="flex flex-col gap-4 h-full">
+      {/* Drop Zone */}
+      <div
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
-        $isDragOver={isDragOver}
-        $isUploading={isUploading}
+        className={cn(
+          'border-2 border-dashed rounded-xl p-8 text-center transition-all duration-200',
+          isDragOver && 'border-[#5f5fff] bg-[rgba(95,95,255,0.1)]',
+          isUploading && 'border-[#ffa500] cursor-not-allowed opacity-70',
+          !isDragOver && !isUploading && 'border-white/30 bg-white/5 cursor-pointer'
+        )}
       >
-        <SUploadIcon>🎵</SUploadIcon>
-        <SUploadText>{isUploading ? 'Uploading...' : 'Drag & drop audio files here'}</SUploadText>
-        <SUploadSubtext>
+        <div className="text-5xl mb-4">🎵</div>
+        <div className="text-white text-lg font-medium mb-3">
+          {isUploading ? 'Uploading...' : 'Drag & drop audio files here'}
+        </div>
+        <div className="text-[#aaa] text-sm mb-4">
           or{' '}
-          <SBrowseButton as='label' htmlFor='file-input'>
+          <label
+            htmlFor='file-input'
+            className="text-[#5f5fff] cursor-pointer underline hover:text-[#7f7fff]"
+          >
             browse files
-          </SBrowseButton>
-        </SUploadSubtext>
-        <SFileInput
+          </label>
+        </div>
+        <input
           id='file-input'
           type='file'
           multiple
           accept='.mp3,.wav,audio/mp3,audio/mpeg,audio/wav'
           onChange={handleFileSelect}
           disabled={isUploading}
+          className="hidden"
         />
-        <SSupportedFormats>Supported formats: MP3, WAV • Max size: 5MB • Max duration: 8 seconds</SSupportedFormats>
-      </SDropZone>
+        <div className="text-[#777] text-xs mt-3">
+          Supported formats: MP3, WAV • Max size: 5MB • Max duration: 8 seconds
+        </div>
+      </div>
 
+      {/* Upload Progress */}
       {uploads.length > 0 && (
-        <SUploadProgress>
-          <SProgressHeader>Upload Progress</SProgressHeader>
+        <div className="bg-black/30 rounded-lg p-4">
+          <div className="text-white text-sm font-semibold mb-4">Upload Progress</div>
           {uploads.map(upload => (
-            <SProgressItem key={upload.fileId}>
-              <SProgressInfo>
-                <SProgressFilename>{upload.filename}</SProgressFilename>
-                <SProgressStatus $status={upload.status}>
+            <div key={upload.fileId} className="mb-3 last:mb-0">
+              <div className="flex justify-between items-center mb-1">
+                <div className="text-[#aaa] text-xs flex-1 text-left overflow-hidden text-ellipsis whitespace-nowrap">
+                  {upload.filename}
+                </div>
+                <div
+                  className="text-xs"
+                  style={{ color: getProgressColor(upload.status) }}
+                >
                   {upload.status === 'completed' && '✓'}
                   {upload.status === 'failed' && '✗'}
                   {upload.status === 'uploading' && '⏳'}
                   {upload.status === 'pending' && '⏸'}
-                </SProgressStatus>
-              </SProgressInfo>
-              <SProgressBar>
-                <SProgressFill $progress={upload.progress} $status={upload.status} />
-              </SProgressBar>
-              {upload.error && <SProgressError>{upload.error}</SProgressError>}
-            </SProgressItem>
+                </div>
+              </div>
+              <div className="h-1 bg-white/10 rounded overflow-hidden">
+                <div
+                  className="h-full transition-[width] duration-300"
+                  style={{
+                    width: `${upload.progress}%`,
+                    backgroundColor: getProgressColor(upload.status),
+                  }}
+                />
+              </div>
+              {upload.error && (
+                <div className="text-[#ff6666] text-[11px] mt-0.5">{upload.error}</div>
+              )}
+            </div>
           ))}
-        </SUploadProgress>
+        </div>
       )}
-    </SUploadContainer>
+    </div>
   )
 }
-
-const SUploadContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: ${SPACING.md}px;
-  height: 100%;
-`
-
-const SDropZone = styled.div<{ $isDragOver: boolean; $isUploading: boolean }>`
-  border: 2px dashed
-    ${props =>
-      props.$isDragOver ? '#5f5fff'
-      : props.$isUploading ? '#ffa500'
-      : 'rgba(255, 255, 255, 0.3)'};
-  border-radius: 12px;
-  padding: ${SPACING.xl}px;
-  text-align: center;
-  background-color: ${props =>
-    props.$isDragOver ? 'rgba(95, 95, 255, 0.1)' : 'rgba(255, 255, 255, 0.05)'};
-  transition: all 0.2s ease;
-  cursor: ${props => (props.$isUploading ? 'not-allowed' : 'pointer')};
-  opacity: ${props => (props.$isUploading ? 0.7 : 1)};
-`
-
-const SUploadIcon = styled.div`
-  font-size: 48px;
-  margin-bottom: ${SPACING.md}px;
-`
-
-const SUploadText = styled.div`
-  color: white;
-  font-size: 18px;
-  font-weight: 500;
-  margin-bottom: ${SPACING.sm}px;
-`
-
-const SUploadSubtext = styled.div`
-  color: #aaa;
-  font-size: 14px;
-  margin-bottom: ${SPACING.md}px;
-`
-
-const SBrowseButton = styled.span`
-  color: #5f5fff;
-  cursor: pointer;
-  text-decoration: underline;
-
-  &:hover {
-    color: #7f7fff;
-  }
-`
-
-const SFileInput = styled.input`
-  display: none;
-`
-
-const SSupportedFormats = styled.div`
-  color: #777;
-  font-size: 12px;
-  margin-top: ${SPACING.sm}px;
-`
-
-const SUploadProgress = styled.div`
-  background-color: rgba(0, 0, 0, 0.3);
-  border-radius: 8px;
-  padding: ${SPACING.md}px;
-`
-
-const SProgressHeader = styled.div`
-  color: white;
-  font-size: 14px;
-  font-weight: 600;
-  margin-bottom: ${SPACING.md}px;
-`
-
-const SProgressItem = styled.div`
-  margin-bottom: ${SPACING.sm}px;
-
-  &:last-child {
-    margin-bottom: 0;
-  }
-`
-
-const SProgressInfo = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 4px;
-`
-
-const SProgressFilename = styled.div`
-  color: #aaa;
-  font-size: 12px;
-  flex: 1;
-  text-align: left;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-`
-
-const SProgressStatus = styled.div<{ $status: string }>`
-  font-size: 12px;
-  color: ${props => {
-    switch (props.$status) {
-      case 'completed':
-        return '#00ff00'
-      case 'failed':
-        return '#ff0000'
-      case 'uploading':
-        return '#ffa500'
-      default:
-        return '#aaa'
-    }
-  }};
-`
-
-const SProgressBar = styled.div`
-  height: 4px;
-  background-color: rgba(255, 255, 255, 0.1);
-  border-radius: 2px;
-  overflow: hidden;
-`
-
-const SProgressFill = styled.div<{ $progress: number; $status: string }>`
-  height: 100%;
-  width: ${props => props.$progress}%;
-  background-color: ${props => {
-    switch (props.$status) {
-      case 'completed':
-        return '#00ff00'
-      case 'failed':
-        return '#ff0000'
-      case 'uploading':
-        return '#ffa500'
-      default:
-        return '#5f5fff'
-    }
-  }};
-  transition: width 0.3s ease;
-`
-
-const SProgressError = styled.div`
-  color: #ff6666;
-  font-size: 11px;
-  margin-top: 2px;
-`
 
 export default SoundUpload

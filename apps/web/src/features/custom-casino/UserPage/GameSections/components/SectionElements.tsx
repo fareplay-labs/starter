@@ -1,7 +1,5 @@
-// @ts-nocheck
 import React from 'react'
-import { styled, keyframes } from 'styled-components'
-import { SPACING, TEXT_COLORS, BORDER_COLORS } from '@/design'
+import { cn } from '@/lib/utils'
 import { type ThemeColors } from '../utils'
 import EditableText from '../../editor/EditableText'
 
@@ -14,49 +12,46 @@ interface SectionTitleProps {
   onEdit?: (field: string, value: string) => void
 }
 
-// Animation keyframes
-const lineRevealAnimation = keyframes`
-  0% {
-    transform: scaleX(0);
+// Title container
+const TitleContainer: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <div className="flex items-center justify-center mx-auto mb-8 w-full relative">
+    {children}
+  </div>
+)
+
+// Title line with gradient
+interface TitleLineProps {
+  colors?: ThemeColors
+  position: 'left' | 'right'
+}
+
+const TitleLine: React.FC<TitleLineProps> = ({ colors, position }) => {
+  // Build gradient based on position
+  const getGradient = () => {
+    if (!colors) return '#1b1d26'
+    if (position === 'right') {
+      return `linear-gradient(90deg, ${colors.themeColor3}, ${colors.themeColor2}, ${colors.themeColor1})`
+    }
+    return `linear-gradient(90deg, ${colors.themeColor1}, ${colors.themeColor2}, ${colors.themeColor3})`
   }
-  100% {
-    transform: scaleX(1);
-  }
-`
 
-// Styled components
-const STitleContainer = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0 auto ${SPACING.xl}px;
-  width: 100%;
-  position: relative;
-`
+  return (
+    <div
+      className={cn(
+        'h-0.5 flex-1 animate-line-reveal-left',
+        position === 'left' ? 'origin-right' : 'origin-left'
+      )}
+      style={{ background: getGradient() }}
+    />
+  )
+}
 
-const STitleLine = styled.div<{
-  $colors?: ThemeColors
-  $position?: 'left' | 'right'
-}>`
-  height: 2px;
-  background: ${props =>
-    props.$colors ?
-      props.$position === 'right' ?
-        `linear-gradient(90deg, ${props.$colors.themeColor3}, ${props.$colors.themeColor2}, ${props.$colors.themeColor1})`
-      : `linear-gradient(90deg, ${props.$colors.themeColor1}, ${props.$colors.themeColor2}, ${props.$colors.themeColor3})`
-    : BORDER_COLORS.one};
-  flex: 1;
-  transform-origin: ${props => (props.$position === 'left' ? 'right' : 'left')};
-  animation: ${lineRevealAnimation} 2s ease-out forwards;
-`
-
-const STitle = styled.div`
-  color: ${TEXT_COLORS.one};
-  margin: 0 ${SPACING.lg}px;
-  font-size: 24px;
-  text-align: center;
-  white-space: nowrap;
-`
+// Title text
+const Title: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <div className="text-white mx-6 text-2xl text-center whitespace-nowrap">
+    {children}
+  </div>
+)
 
 // Component implementation
 export const SectionTitle: React.FC<SectionTitleProps> = ({
@@ -66,9 +61,9 @@ export const SectionTitle: React.FC<SectionTitleProps> = ({
   fieldName,
   onEdit,
 }) => (
-  <STitleContainer>
-    <STitleLine $colors={themeColors} $position='left' />
-    <STitle>
+  <TitleContainer>
+    <TitleLine colors={themeColors} position='left' />
+    <Title>
       {isEditMode && fieldName && onEdit ?
         <EditableText
           fieldName={fieldName}
@@ -78,7 +73,7 @@ export const SectionTitle: React.FC<SectionTitleProps> = ({
           className='section-title'
         />
       : title}
-    </STitle>
-    <STitleLine $colors={themeColors} $position='right' />
-  </STitleContainer>
+    </Title>
+    <TitleLine colors={themeColors} position='right' />
+  </TitleContainer>
 )

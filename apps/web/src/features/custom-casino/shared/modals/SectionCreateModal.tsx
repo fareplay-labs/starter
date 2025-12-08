@@ -1,33 +1,8 @@
-// @ts-nocheck
 import React, { useState, useEffect } from 'react'
-import { styled } from 'styled-components'
-import { SPACING, BORDER_COLORS } from '@/design'
 import { type SectionCreateModalProps } from './shared/modalTypes'
 import { ModalBase } from './shared/ModalBase'
 import { ModalActions } from './shared/ModalActions'
 import { useSectionManagement } from '@/features/custom-casino/backend/hooks/useSectionManagement'
-
-// Styled components for input fields
-const InputContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: ${SPACING.sm}px;
-`
-
-const InputLabel = styled.label`
-  color: #aaaaaa;
-  font-size: 0.9rem;
-`
-
-const TextInput = styled.input`
-  background-color: #1a1a1a;
-  border: 1px solid ${BORDER_COLORS.two};
-  border-radius: 6px;
-  color: #ffffff;
-  padding: ${SPACING.sm}px;
-  font-size: 1rem;
-  width: 100%;
-`
 
 /**
  * Generates a unique section ID using a combination of timestamp and random string
@@ -64,7 +39,7 @@ const SectionCreateModal: React.FC<SectionCreateModalProps> = ({
         try {
           // Call the real-time API to create the section
           const sectionId = await createSection(userId, sectionTitle, 'smallTiles')
-          
+
           if (sectionId) {
             // Create the section data with the real ID from the backend
             const newSection = {
@@ -73,7 +48,7 @@ const SectionCreateModal: React.FC<SectionCreateModalProps> = ({
               gameIds: [],
               layout: 'smallTiles' as const,
             }
-            
+
             // Update local state
             onSave('sections', JSON.stringify([newSection]))
           } else {
@@ -97,23 +72,26 @@ const SectionCreateModal: React.FC<SectionCreateModalProps> = ({
         // We're creating a new section, so just pass the new section
         onSave('sections', JSON.stringify([newSection]))
       }
-      
+
       onClose()
     }
   }
 
   return (
     <ModalBase isOpen={isOpen} onClose={onClose} title='Create New Section'>
-      <InputContainer>
-        <InputLabel htmlFor='section-title'>Section Title</InputLabel>
-        <TextInput
+      <div className="flex flex-col gap-3">
+        <label htmlFor='section-title' className="text-[#aaaaaa] text-[0.9rem]">
+          Section Title
+        </label>
+        <input
           id='section-title'
           type='text'
           placeholder='Enter section title'
           value={sectionTitle}
           onChange={e => setSectionTitle(e.target.value)}
+          className="bg-[#1a1a1a] border border-[#2c3142] rounded-md text-white p-3 text-base w-full"
         />
-      </InputContainer>
+      </div>
       <ModalActions
         onCancel={onClose}
         onConfirm={handleSave}

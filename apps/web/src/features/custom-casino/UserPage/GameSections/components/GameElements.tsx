@@ -1,12 +1,8 @@
-// @ts-nocheck
-import React from 'react'
-import { useState } from 'react'
-import { styled, keyframes } from 'styled-components'
-import { SPACING, TEXT_COLORS } from '@/design'
+import React, { useState } from 'react'
+import { cn } from '@/lib/utils'
 import { SVGS } from '@/assets'
 import { GAME_ICONS, hexToRgba } from '../utils'
 import { type AppGameName } from '@/chains/types'
-import { noUserSelect } from '@/style'
 
 // Props interfaces
 interface GameIconProps {
@@ -27,81 +23,18 @@ interface GameDescriptionProps {
   textColor?: string
 }
 
-// Styled components
-const SGameIcon = styled.div<{ $size?: 'small' | 'medium' | 'large' }>`
-  width: ${props =>
-    props.$size === 'small' ? '48px'
-    : props.$size === 'large' ? '120px'
-    : '64px'};
-  height: ${props =>
-    props.$size === 'small' ? '48px'
-    : props.$size === 'large' ? '120px'
-    : '64px'};
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 4px;
-  /* Fixed height container to prevent layout shifts */
-  min-height: ${props =>
-    props.$size === 'small' ? '48px'
-    : props.$size === 'large' ? '120px'
-    : '64px'};
+// Size mappings
+const iconSizes = {
+  small: 'w-12 h-12 min-h-[48px]',
+  medium: 'w-16 h-16 min-h-[64px]',
+  large: 'w-[120px] h-[120px] min-h-[120px]',
+}
 
-  img {
-    width: 80%;
-    height: 80%;
-    object-fit: contain;
-    transition: transform 0.3s ease;
-    max-width: 100%;
-    max-height: 100%;
-  }
-`
-
-const SGameName = styled.div<{
-  $textColor?: string
-  $size?: 'small' | 'medium' | 'large'
-}>`
-  color: ${props => props.$textColor || '#fff'};
-  font-size: ${props =>
-    props.$size === 'small' ? '14px'
-    : props.$size === 'large' ? '20px'
-    : '16px'};
-  font-weight: ${props =>
-    props.$size === 'large' ? '700'
-    : props.$size === 'medium' ? '600'
-    : '500'};
-  text-align: center;
-  width: 100%;
-  white-space: normal;
-  line-height: 1.2;
-  padding: 0;
-  transition: transform 0.3s ease;
-  overflow: visible;
-  display: block;
-  /* Limit to 2 lines max */
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  max-height: 2.6em;
-`
-
-const SGameDescription = styled.div<{
-  $textColor?: string
-}>`
-  color: ${props =>
-    props.$textColor ? hexToRgba(props.$textColor, 0.8) : 'rgba(255, 255, 255, 0.8)'};
-  font-size: 16px;
-  text-align: center;
-  margin-top: ${SPACING.sm}px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  line-height: 1.4;
-  max-height: 44px;
-  width: 100%;
-`
+const nameSizes = {
+  small: 'text-sm font-medium',
+  medium: 'text-base font-semibold',
+  large: 'text-xl font-bold',
+}
 
 // Component implementations
 export const GameIcon: React.FC<GameIconProps> = ({ icon, type, size = 'medium', alt }) => {
@@ -122,77 +55,79 @@ export const GameIcon: React.FC<GameIconProps> = ({ icon, type, size = 'medium',
   }
 
   return (
-    <SGameIcon $size={size}>
-      <img src={getImageSource()} alt={alt} onError={handleImageError} />
-    </SGameIcon>
+    <div className={cn('flex items-center justify-center mb-1', iconSizes[size])}>
+      <img
+        src={getImageSource()}
+        alt={alt}
+        onError={handleImageError}
+        className="w-[80%] h-[80%] object-contain transition-transform duration-300 max-w-full max-h-full"
+      />
+    </div>
   )
 }
 
 export const GameName: React.FC<GameNameProps> = ({ name, textColor, size = 'medium' }) => (
-  <SGameName $textColor={textColor} $size={size}>
+  <div
+    className={cn(
+      'text-center w-full whitespace-normal leading-tight p-0 transition-transform duration-300',
+      'line-clamp-2 max-h-[2.6em]',
+      nameSizes[size]
+    )}
+    style={{ color: textColor || '#fff' }}
+  >
     {name}
-  </SGameName>
+  </div>
 )
 
 export const GameDescription: React.FC<GameDescriptionProps> = ({ description, textColor }) => (
-  <SGameDescription $textColor={textColor}>{description}</SGameDescription>
+  <div
+    className="text-base text-center mt-3 overflow-hidden text-ellipsis line-clamp-2 leading-relaxed max-h-[44px] w-full"
+    style={{ color: textColor ? hexToRgba(textColor, 0.8) : 'rgba(255, 255, 255, 0.8)' }}
+  >
+    {description}
+  </div>
 )
 
-// Animation for game name hover
-const scaleIn = keyframes`
-  from {
-    opacity: 0;
-    transform: translateX(-50%) scale(0.8) translateY(-5px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(-50%) scale(1) translateY(0);
-  }
-`
-
-const scaleOut = keyframes`
-  from {
-    opacity: 1;
-    transform: translateX(-50%) scale(1) translateY(0);
-  }
-  to {
-    opacity: 0;
-    transform: translateX(-50%) scale(0.8) translateY(-5px);
-  }
-`
-
 // Hover name component for small tiles
-export const HoverGameName = styled.div<{
-  $textColor?: string
-  $isVisible: boolean
-}>`
-  position: absolute;
-  bottom: -38px;
-  left: 50%;
-  transform: translateX(-50%);
-  color: ${TEXT_COLORS.one};
-  font-size: 14px;
-  font-weight: 500;
-  text-align: center;
-  white-space: nowrap;
-  animation: ${props => (props.$isVisible ? scaleIn : scaleOut)} 0.2s ease forwards;
-  animation-fill-mode: forwards;
-  opacity: ${props => (props.$isVisible ? 1 : 0)};
-  z-index: 10;
-  max-width: 120px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  font-family: inherit;
-`
+interface HoverGameNameProps {
+  name: string
+  textColor?: string
+  isVisible: boolean
+}
 
-export const STileContent = styled.div<{ $layout?: string }>`
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: ${props => (props.$layout === 'carousel' ? '4px' : `${SPACING.sm}px`)};
-  position: relative;
-  ${noUserSelect}
-`
+export const HoverGameName: React.FC<HoverGameNameProps> = ({ name, isVisible }) => (
+  <div
+    className={cn(
+      'absolute -bottom-[38px] left-1/2 -translate-x-1/2 text-white text-sm font-medium text-center',
+      'whitespace-nowrap z-10 max-w-[120px] overflow-hidden text-ellipsis font-inherit',
+      'transition-all duration-200',
+      isVisible ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-[0.8] -translate-y-[5px]'
+    )}
+  >
+    {name}
+  </div>
+)
+
+// Tile content wrapper
+interface TileContentProps {
+  layout?: string
+  children: React.ReactNode
+  onMouseEnter?: () => void
+  onMouseLeave?: () => void
+}
+
+export const TileContent: React.FC<TileContentProps> = ({ layout, children, onMouseEnter, onMouseLeave }) => (
+  <div
+    className={cn(
+      'w-full h-full flex flex-col justify-center items-center relative select-none',
+      layout === 'carousel' ? 'gap-1' : 'gap-3'
+    )}
+    onMouseEnter={onMouseEnter}
+    onMouseLeave={onMouseLeave}
+  >
+    {children}
+  </div>
+)
+
+// Keep the old export name for backwards compatibility
+export const STileContent = TileContent

@@ -1,7 +1,5 @@
-// @ts-nocheck
-import React from 'react'
-import { styled } from 'styled-components'
-import { BORDER_COLORS, BREAKPOINTS, SPACING, TEXT_COLORS } from '@/design'
+import React, { useState } from 'react'
+import { cn } from '@/lib/utils'
 import { SVGS } from '@/assets'
 import { type CustomCasinoGame } from '../../shared/types'
 import { AppGameName } from '@/chains/types'
@@ -17,100 +15,126 @@ interface GameTilesProps {
   }
 }
 
-const SSection = styled.section`
-  margin: ${SPACING.xl}px 0;
-`
+// Section container
+const Section: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <section className="my-8">
+    {children}
+  </section>
+)
 
-const STitleContainer = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0 0 ${SPACING.xl}px 0;
-  width: 100%;
-`
+// Title container with lines
+interface TitleContainerProps {
+  colors?: { themeColor1: string; themeColor2: string; themeColor3: string }
+  children: React.ReactNode
+}
 
-const STitleLine = styled.div<{
-  $colors?: { themeColor1: string; themeColor2: string; themeColor3: string }
-  $position?: 'left' | 'right'
-}>`
-  height: 2px;
-  background: ${props =>
-    props.$colors ?
-      props.$position === 'right' ?
-        `linear-gradient(90deg, ${props.$colors.themeColor3}, ${props.$colors.themeColor2}, ${props.$colors.themeColor1})`
-      : `linear-gradient(90deg, ${props.$colors.themeColor1}, ${props.$colors.themeColor2}, ${props.$colors.themeColor3})`
-    : BORDER_COLORS.one};
-  flex: 1;
-`
+const TitleContainer: React.FC<TitleContainerProps> = ({ colors, children }) => (
+  <div className="flex items-center justify-center mb-8 w-full">
+    <TitleLine colors={colors} position='left' />
+    {children}
+    <TitleLine colors={colors} position='right' />
+  </div>
+)
 
-const STitle = styled.h2`
-  color: ${TEXT_COLORS.one};
-  margin: 0 ${SPACING.lg}px;
-  font-size: 24px;
-  text-align: center;
-  white-space: nowrap;
-`
+// Title line with gradient
+interface TitleLineProps {
+  colors?: { themeColor1: string; themeColor2: string; themeColor3: string }
+  position: 'left' | 'right'
+}
 
-const SGamesGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: ${SPACING.lg}px;
-
-  @media (max-width: ${BREAKPOINTS.md}px) {
-    grid-template-columns: repeat(4, 1fr);
+const TitleLine: React.FC<TitleLineProps> = ({ colors, position }) => {
+  const getGradient = () => {
+    if (!colors) return '#1b1d26'
+    if (position === 'right') {
+      return `linear-gradient(90deg, ${colors.themeColor3}, ${colors.themeColor2}, ${colors.themeColor1})`
+    }
+    return `linear-gradient(90deg, ${colors.themeColor1}, ${colors.themeColor2}, ${colors.themeColor3})`
   }
 
-  @media (max-width: ${BREAKPOINTS.sm}px) {
-    grid-template-columns: repeat(3, 1fr);
-    gap: ${SPACING.md}px;
-  }
-`
+  return (
+    <div
+      className="h-0.5 flex-1"
+      style={{ background: getGradient() }}
+    />
+  )
+}
 
-const SGameTile = styled.div<{
-  $borderColor?: string
-  $hoverColors?: { secondary: string; tertiary: string }
-}>`
-  background: #0a0a0a;
-  border: 1px solid ${props => props.$borderColor || BORDER_COLORS.one};
-  border-radius: 12px;
-  padding: ${SPACING.lg}px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  cursor: pointer;
-  transition: all 0.2s ease-in-out;
+// Title text
+const Title: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <h2 className="text-white mx-6 text-2xl text-center whitespace-nowrap m-0">
+    {children}
+  </h2>
+)
 
-  &:hover {
-    transform: translateY(-4px);
-    border-color: ${props => props.$hoverColors?.tertiary || BORDER_COLORS.two};
-    box-shadow: ${props =>
-      props.$hoverColors ?
-        `0 4px 12px rgba(0, 0, 0, 0.3), 0 0 0 1px ${props.$hoverColors.secondary}`
-      : '0 4px 12px rgba(0, 0, 0, 0.2)'};
-  }
-`
+// Games grid
+const GamesGrid: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <div
+    className={cn(
+      'grid grid-cols-6 gap-6',
+      'max-[1200px]:grid-cols-4',
+      'max-[992px]:grid-cols-3 max-[992px]:gap-4'
+    )}
+    role='list'
+    aria-label='Available games'
+  >
+    {children}
+  </div>
+)
 
-const SGameIcon = styled.div`
-  width: 60px;
-  height: 60px;
-  margin-bottom: ${SPACING.md}px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+// Game tile
+interface GameTileProps {
+  borderColor?: string
+  hoverColors?: { secondary: string; tertiary: string }
+  children: React.ReactNode
+}
 
-  img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-  }
-`
+const GameTile: React.FC<GameTileProps> = ({ borderColor, hoverColors, children }) => {
+  const [isHovered, setIsHovered] = useState(false)
 
-const SGameName = styled.div<{ $textColor?: string }>`
-  color: ${props => props.$textColor || TEXT_COLORS.one};
-  font-size: 16px;
-  font-weight: 600;
-  text-align: center;
-`
+  return (
+    <div
+      className={cn(
+        'bg-casino-dark rounded-xl p-6 flex flex-col items-center cursor-pointer',
+        'transition-all duration-200 ease-in-out',
+        isHovered && '-translate-y-1'
+      )}
+      style={{
+        border: `1px solid ${isHovered && hoverColors?.tertiary ? hoverColors.tertiary : borderColor || '#1b1d26'}`,
+        boxShadow: isHovered && hoverColors ?
+          `0 4px 12px rgba(0, 0, 0, 0.3), 0 0 0 1px ${hoverColors.secondary}` :
+          'none'
+      }}
+      role='listitem'
+      tabIndex={0}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      {children}
+    </div>
+  )
+}
+
+// Game icon container
+const GameIconWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <div className="w-[60px] h-[60px] mb-4 flex items-center justify-center [&_img]:w-full [&_img]:h-full [&_img]:object-contain">
+    {children}
+  </div>
+)
+
+// Game name
+interface GameNameProps {
+  textColor?: string
+  children: React.ReactNode
+}
+
+const GameName: React.FC<GameNameProps> = ({ textColor, children }) => (
+  <div
+    className="text-base font-semibold text-center"
+    style={{ color: textColor || '#ffffff' }}
+  >
+    {children}
+  </div>
+)
 
 // Map of game types to icon SVGs
 export const GAME_ICONS: Record<AppGameName, string> = {
@@ -129,27 +153,25 @@ export const GAME_ICONS: Record<AppGameName, string> = {
 export const GameTiles: React.FC<GameTilesProps> = ({ games = [], themeColors }) => {
   // Use provided games or fallback to defaults if empty
   const displayGames = games.length > 0 ? games : DEFAULT_GAMES
-  
+
   // Track failed images
-  const [failedImages, setFailedImages] = React.useState<Set<string>>(new Set())
-  
+  const [failedImages, setFailedImages] = useState<Set<string>>(new Set())
+
   const handleImageError = (gameId: string) => {
     setFailedImages(prev => new Set(prev).add(gameId))
   }
 
   return (
-    <SSection>
-      <STitleContainer>
-        <STitleLine $colors={themeColors} $position='left' />
-        <STitle>Games</STitle>
-        <STitleLine $colors={themeColors} $position='right' />
-      </STitleContainer>
-      <SGamesGrid role='list' aria-label='Available games'>
+    <Section>
+      <TitleContainer colors={themeColors}>
+        <Title>Games</Title>
+      </TitleContainer>
+      <GamesGrid>
         {displayGames.map(game => (
-          <SGameTile
+          <GameTile
             key={game.id}
-            $borderColor={themeColors?.themeColor1}
-            $hoverColors={
+            borderColor={themeColors?.themeColor1}
+            hoverColors={
               themeColors ?
                 {
                   secondary: themeColors.themeColor2,
@@ -157,10 +179,8 @@ export const GameTiles: React.FC<GameTilesProps> = ({ games = [], themeColors })
                 }
               : undefined
             }
-            role='listitem'
-            tabIndex={0}
           >
-            <SGameIcon>
+            <GameIconWrapper>
               <img
                 src={
                   game.icon && !failedImages.has(game.id) ? game.icon
@@ -169,11 +189,11 @@ export const GameTiles: React.FC<GameTilesProps> = ({ games = [], themeColors })
                 alt={`${game.name} game icon`}
                 onError={() => handleImageError(game.id)}
               />
-            </SGameIcon>
-            <SGameName $textColor={themeColors?.themeColor1}>{game.name}</SGameName>
-          </SGameTile>
+            </GameIconWrapper>
+            <GameName textColor={themeColors?.themeColor1}>{game.name}</GameName>
+          </GameTile>
         ))}
-      </SGamesGrid>
-    </SSection>
+      </GamesGrid>
+    </Section>
   )
 }

@@ -1,7 +1,6 @@
 // @ts-nocheck
 import React, { useState, useEffect } from 'react'
-import { styled } from 'styled-components'
-import { SPACING, FARE_COLORS, COLORS } from '@/design'
+import { cn } from '@/lib/utils'
 import { ModalBase } from '../shared/ModalBase'
 import { ModalActions } from '../shared/ModalActions'
 import UploadGrid from './components/UploadGrid'
@@ -17,50 +16,6 @@ interface UserUploadsModalProps {
   /** Optional list of tags to filter by – if not provided defaults will be used */
   allowedTags?: string[]
 }
-
-// Styled components
-const SModalContent = styled.div`
-  margin: ${SPACING.md}px 0;
-  min-height: 300px;
-`
-
-const SLoadingContainer = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 16rem;
-`
-
-const SSpinner = styled.div`
-  width: 3rem;
-  height: 3rem;
-  border-radius: 50%;
-  border: 2px solid transparent;
-  border-top-color: ${FARE_COLORS.blue};
-  border-bottom-color: ${FARE_COLORS.blue};
-  animation: spin 1s linear infinite;
-
-  @keyframes spin {
-    to {
-      transform: rotate(360deg);
-    }
-  }
-`
-
-const SErrorContainer = styled.div`
-  color: ${COLORS.error};
-  padding: ${SPACING.md}px;
-  text-align: center;
-`
-
-const STryAgainButton = styled.button`
-  margin-left: ${SPACING.sm}px;
-  text-decoration: underline;
-
-  &:hover {
-    color: ${COLORS.softError};
-  }
-`
 
 /**
  * Modal for browsing and selecting previously uploaded user images
@@ -121,30 +76,37 @@ const UserUploadsModal: React.FC<UserUploadsModalProps> = ({
 
   return (
     <ModalBase isOpen={isOpen} onClose={onClose} title='Your Uploaded Images'>
-      <SModalContent>
+      {/* Modal Content */}
+      <div className="my-4 min-h-[300px]">
         {!readyAndAuth ? (
-          <SErrorContainer>
+          <div className="text-[#ef4444] p-4 text-center">
             Link a wallet to view uploads.
-          </SErrorContainer>
-        ) : isLoading ?
-          <SLoadingContainer>
-            <SSpinner />
-          </SLoadingContainer>
-        : error ?
-          <SErrorContainer>
+          </div>
+        ) : isLoading ? (
+          <div className="flex items-center justify-center h-64">
+            <div className="w-12 h-12 rounded-full border-2 border-transparent border-t-[#410dff] border-b-[#410dff] animate-spin" />
+          </div>
+        ) : error ? (
+          <div className="text-[#ef4444] p-4 text-center">
             Error loading your images: {error.message}
-            <STryAgainButton onClick={refreshFiles}>Try Again</STryAgainButton>
-          </SErrorContainer>
-        : filteredFiles.length === 0 ?
+            <button
+              onClick={refreshFiles}
+              className="ml-3 underline hover:text-[#fca5a5]"
+            >
+              Try Again
+            </button>
+          </div>
+        ) : filteredFiles.length === 0 ? (
           <EmptyState onRefresh={refreshFiles} />
-        : <UploadGrid
+        ) : (
+          <UploadGrid
             files={filteredFiles}
             selectedUrl={selectedImageUrl}
             onSelect={handleImageSelect}
             onDelete={handleImageDelete}
           />
-        }
-      </SModalContent>
+        )}
+      </div>
 
       <ModalActions
         onCancel={onClose}
@@ -155,12 +117,12 @@ const UserUploadsModal: React.FC<UserUploadsModalProps> = ({
       />
 
       {/* Tag selector */}
-      <div style={{ marginTop: 12 }}>
-        <label style={{ fontSize: 12, marginRight: 6 }}>Filter:</label>
+      <div className="mt-3">
+        <label className="text-xs mr-1.5">Filter:</label>
         <select
           value={selectedTag}
           onChange={e => setSelectedTag(e.target.value)}
-          style={{ padding: '4px 6px', fontSize: 12 }}
+          className="py-1 px-1.5 text-xs bg-black/30 border border-white/20 rounded text-white"
         >
           {allowedTags.map(tag => (
             <option key={tag} value={tag}>

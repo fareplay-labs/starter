@@ -1,12 +1,57 @@
 // @ts-nocheck
 import React, { useState, useEffect, useCallback } from 'react'
-import { styled } from 'styled-components'
-import { BORDER_COLORS, FARE_COLORS, TEXT_COLORS } from '@/design'
-import { TagItem } from '../styles/uploadSectionStyles'
+import { cn } from '@/lib/utils'
 import { createImageService } from '../../../services/imageService'
 import { type StoredImage } from '../../../types/image.types'
 import UserUploadsModal from '../../UserUploadsModal'
 import { useActiveWallet } from '@/lib/privy/hooks'
+
+// Tag color mapping
+const TAG_COLORS = {
+  'image-type': '#ffcd9e',    // peach
+  'game-or-general': '#d900d5', // pink
+  'element': '#410dff',        // blue
+  'user-tag': '#4af5d3',       // aqua
+}
+
+// Determine tag type for styling
+const getTagType = (tag: string): string => {
+  const lowerTag = tag.toLowerCase()
+  if (['icon', 'background', 'banner', 'asset'].includes(lowerTag)) return 'image-type'
+  if (['bombs', 'general', 'casino', 'games'].includes(lowerTag)) return 'game-or-general'
+  if (lowerTag.startsWith('user-')) return 'user-tag'
+  return 'element'
+}
+
+// Tag Item Component
+const TagItem: React.FC<{
+  tag: string
+  isSelected: boolean
+  onClick: () => void
+}> = ({ tag, isSelected, onClick }) => {
+  const type = tag === 'all' ? 'element' : getTagType(tag)
+  const color = TAG_COLORS[type as keyof typeof TAG_COLORS] || '#f1f1f1'
+
+  return (
+    <div
+      onClick={onClick}
+      className={cn(
+        'flex items-center justify-center leading-[1.5] min-w-auto w-auto',
+        'bg-transparent text-white rounded py-0 px-[7px] text-[0.9em]',
+        'cursor-pointer transition-all duration-200 select-none',
+        'relative z-[1] border',
+        'hover:brightness-105 active:scale-[0.98]'
+      )}
+      style={{ borderColor: color }}
+    >
+      <div
+        className="absolute inset-0 rounded -z-[1]"
+        style={{ backgroundColor: color, opacity: isSelected ? 1 : 0.5 }}
+      />
+      {tag}
+    </div>
+  )
+}
 
 interface UserUploadsMiniProps {
   onSelect: (imageUrl: string) => void
@@ -14,136 +59,6 @@ interface UserUploadsMiniProps {
   /** Optional list of tags to filter by */
   allowedTags?: string[]
 }
-
-const Container = styled.div`
-  width: auto;
-  border-radius: 8px;
-  border: 1px solid ${BORDER_COLORS.one};
-  padding: 12px;
-  margin-top: 16px;
-  background-color: rgba(0, 0, 0, 0.15);
-`
-
-const SectionTitle = styled.div`
-  font-size: 1em;
-  margin-bottom: 12px;
-  color: ${TEXT_COLORS.one};
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-`
-
-const ManagementSection = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-`
-
-const ManagementButton = styled.button`
-  background: none;
-  border: none;
-  color: ${TEXT_COLORS.two};
-  font-size: 0.8em;
-  cursor: pointer;
-  padding: 4px 8px;
-  border-radius: 4px;
-  height: 24px;
-
-  &:hover {
-    background-color: rgba(255, 255, 255, 0.1);
-  }
-`
-
-const GridContainer = styled.div`
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 12px;
-  margin-bottom: 12px;
-  max-height: 220px;
-  overflow-y: auto;
-  padding-right: 4px;
-
-  /* Scrollbar styling */
-  &::-webkit-scrollbar {
-    width: 6px;
-  }
-
-  &::-webkit-scrollbar-track {
-    background: rgba(0, 0, 0, 0.2);
-    border-radius: 3px;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background-color: ${FARE_COLORS.blue}66;
-    border-radius: 3px;
-  }
-`
-
-const ItemContainer = styled.div<{ $isSelected: boolean }>`
-  position: relative;
-  border-radius: 8px;
-  overflow: hidden;
-  border: 1px solid ${props => (props.$isSelected ? FARE_COLORS.blue : 'rgba(255, 255, 255, 0.1)')};
-  cursor: pointer;
-  transition: all 0.2s ease;
-  background-color: rgba(0, 0, 0, 0.2);
-
-  &:hover {
-    border: ${props =>
-      props.$isSelected ? '1px solid ${FARE_COLORS.blue}' : `1px solid ${FARE_COLORS.blue}99`};
-  }
-`
-
-const Thumbnail = styled.div`
-  height: 60px;
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  img {
-    max-width: 100%;
-    max-height: 100%;
-    object-fit: contain;
-  }
-`
-
-const EmptyState = styled.div`
-  text-align: center;
-  padding: 30px;
-  color: rgba(255, 255, 255, 0.6);
-  font-size: 0.9em;
-`
-
-const LoadingSpinner = styled.div`
-  width: 42px;
-  height: 42px;
-  border: 2px solid rgba(255, 255, 255, 0.1);
-  border-top-color: ${FARE_COLORS.blue};
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  margin: 20px auto;
-
-  @keyframes spin {
-    to {
-      transform: rotate(360deg);
-    }
-  }
-`
-
-const TagsContainer = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-top: 12px;
-`
-
-const EmptyMsg = styled.div`
-  text-align: center;
-  padding: 30px 0;
-  color: rgba(255, 255, 255, 0.5);
-  font-size: 0.9em;
-`
 
 const UserUploadsMini: React.FC<UserUploadsMiniProps> = ({
   onSelect,
@@ -221,57 +136,78 @@ const UserUploadsMini: React.FC<UserUploadsMiniProps> = ({
 
   return (
     <>
-      <Container>
-        <SectionTitle>
+      <div className="w-auto rounded-lg border border-[#1b1d26] p-3 mt-4 bg-black/15">
+        {/* Section Title */}
+        <div className="text-base mb-3 text-white flex items-center justify-between">
           Uploads
-          <ManagementSection>
-            <ManagementButton onClick={openUserUploadsModal}>Manage</ManagementButton>
-            <ManagementButton onClick={fetchFiles}>
+          <div className="flex items-center justify-between">
+            <button
+              onClick={openUserUploadsModal}
+              className="bg-transparent border-none text-[#aaaaaa] text-[0.8em] cursor-pointer py-1 px-2 rounded h-6 hover:bg-white/10"
+            >
+              Manage
+            </button>
+            <button
+              onClick={fetchFiles}
+              className="bg-transparent border-none text-[#aaaaaa] text-[0.8em] cursor-pointer py-1 px-2 rounded h-6 hover:bg-white/10"
+            >
               <i className='fa fa-refresh' /> Refresh
-            </ManagementButton>
-          </ManagementSection>
-        </SectionTitle>
+            </button>
+          </div>
+        </div>
 
-        {isLoading ?
-          <LoadingSpinner />
-        : error ?
-          <EmptyState>
+        {isLoading ? (
+          <div className="w-[42px] h-[42px] border-2 border-white/10 border-t-[#410dff] rounded-full animate-spin mx-auto my-5" />
+        ) : error ? (
+          <div className="text-center py-[30px] text-white/60 text-[0.9em]">
             Error loading uploads. <button onClick={fetchFiles}>Try again</button>
-          </EmptyState>
-        : filteredImages.length === 0 ?
-          <EmptyMsg>No uploads found matching the selected filter.</EmptyMsg>
-        : <GridContainer>
+          </div>
+        ) : filteredImages.length === 0 ? (
+          <div className="text-center py-[30px] text-white/50 text-[0.9em]">
+            No uploads found matching the selected filter.
+          </div>
+        ) : (
+          <div className={cn(
+            'grid grid-cols-4 gap-3 mb-3 max-h-[220px] overflow-y-auto pr-1',
+            '[&::-webkit-scrollbar]:w-1.5',
+            '[&::-webkit-scrollbar-track]:bg-black/20 [&::-webkit-scrollbar-track]:rounded',
+            '[&::-webkit-scrollbar-thumb]:bg-[#410dff66] [&::-webkit-scrollbar-thumb]:rounded'
+          )}>
             {filteredImages.map(image => {
               const displayUrl = image.data.url
 
               return (
-                <ItemContainer
+                <div
                   key={image.id}
-                  $isSelected={selectedUrl === displayUrl}
                   onClick={() => handleSelect(image)}
+                  className={cn(
+                    'relative rounded-lg overflow-hidden cursor-pointer transition-all duration-200 bg-black/20',
+                    selectedUrl === displayUrl
+                      ? 'border border-[#410dff]'
+                      : 'border border-white/10 hover:border-[#410dff99]'
+                  )}
                 >
-                  <Thumbnail>
+                  <div className="h-[60px] w-full flex items-center justify-center [&_img]:max-w-full [&_img]:max-h-full [&_img]:object-contain">
                     <img src={displayUrl} alt={image.filename} />
-                  </Thumbnail>
-                </ItemContainer>
+                  </div>
+                </div>
               )
             })}
-          </GridContainer>
-        }
+          </div>
+        )}
 
-        <TagsContainer>
+        {/* Tags Container */}
+        <div className="flex flex-wrap gap-1.5 mt-3">
           {allTags.map(tag => (
             <TagItem
               key={tag}
-              $isSelected={selectedTag === tag}
-              $type={tag === 'all' ? 'element' : tag}
+              tag={tag}
+              isSelected={selectedTag === tag}
               onClick={() => setSelectedTag(tag)}
-            >
-              {tag}
-            </TagItem>
+            />
           ))}
-        </TagsContainer>
-      </Container>
+        </div>
+      </div>
 
       {/* User Uploads Modal */}
       {isUploadsModalOpen && (

@@ -1,7 +1,5 @@
-// @ts-nocheck
 import React, { useEffect, useRef, useState } from 'react'
-import { styled } from 'styled-components'
-import { BORDER_COLORS, BREAKPOINTS, SPACING, TEXT_COLORS, FARE_COLORS } from '@/design'
+import { cn } from '@/lib/utils'
 import { type CasinoEntity } from '../../shared/types'
 import { type PageConfig } from '../../config/PageConfig'
 import { useEditStore } from '@/features/custom-casino/UserPage/editor/useEditStore'
@@ -21,182 +19,124 @@ interface UserHeroSectionProps {
   config: PageConfig
 }
 
-const SHeroContainer = styled.div<{
-  $borderColor?: string
-  $colors?: { themeColor1: string; themeColor2: string; themeColor3: string }
-  $animateBorder?: boolean
-}>`
-  width: 100%;
-  min-height: 280px;
-  position: relative;
-  border-radius: 12px;
-  overflow: hidden;
-  transition: transform 0.2s ease-in-out;
-  border: 2px solid ${props => props.$borderColor || BORDER_COLORS.one};
-  box-shadow: ${props => (props.$borderColor ? `0 4px 20px ${props.$borderColor}40` : 'none')};
+// Hero container
+interface HeroContainerProps {
+  borderColor?: string
+  children: React.ReactNode
+}
 
-  @media (max-width: ${BREAKPOINTS.sm}px) {
-    min-height: 200px;
-    width: 99%;
-  }
-`
+const HeroContainer: React.FC<HeroContainerProps> = ({ borderColor, children }) => (
+  <div
+    className="w-full min-h-[280px] relative rounded-xl overflow-hidden transition-transform duration-200 max-sm:min-h-[200px] max-sm:w-[99%]"
+    style={{
+      border: `2px solid ${borderColor || '#1a2744'}`,
+      boxShadow: borderColor ? `0 4px 20px ${borderColor}40` : 'none',
+    }}
+  >
+    {children}
+  </div>
+)
 
-const SHeroBackground = styled.div`
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 1;
-  background: #1a1a1a;
+// Hero background with gradient overlay
+const HeroBackground: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <div className="absolute inset-0 z-[1] bg-casino-card">
+    {children}
+    {/* Gradient overlay */}
+    <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-black/40 pointer-events-none z-[2]" />
+  </div>
+)
 
-  &::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(0deg, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.4) 100%);
-    pointer-events: none;
-    z-index: 2;
-  }
-`
+// Content container
+const HeroContent: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <div className="relative z-[3] px-8 py-6 h-full min-h-[inherit] flex flex-col justify-end gap-6 max-sm:p-4">
+    {children}
+  </div>
+)
 
-const SContent = styled.div`
-  position: relative;
-  z-index: 3;
-  padding: ${SPACING.lg}px ${SPACING.xl}px;
-  height: 100%;
-  min-height: inherit;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  gap: ${SPACING.lg}px;
+// Profile section
+const ProfileSection: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <div className="flex items-end gap-6 w-full z-[4] mb-4 max-sm:gap-4 max-sm:mb-3">
+    {children}
+  </div>
+)
 
-  @media (max-width: ${BREAKPOINTS.sm}px) {
-    padding: ${SPACING.md}px;
-  }
-`
+// Profile picture
+interface ProfilePicProps {
+  themeColor?: string
+  children: React.ReactNode
+}
 
-const SProfileSection = styled.div`
-  display: flex;
-  align-items: flex-end;
-  gap: ${SPACING.lg}px;
-  width: 100%;
-  z-index: 4;
-  margin-bottom: ${SPACING.md}px;
+const ProfilePic: React.FC<ProfilePicProps> = ({ themeColor, children }) => (
+  <div
+    className="w-[90px] h-[90px] rounded-full bg-[#333] shadow-lg relative -top-[5px] flex-shrink-0 overflow-hidden max-sm:w-[70px] max-sm:h-[70px]"
+    style={{ border: `4px solid ${themeColor || '#5f5fff'}` }}
+  >
+    {children}
+  </div>
+)
 
-  @media (max-width: ${BREAKPOINTS.sm}px) {
-    gap: ${SPACING.md}px;
-    margin-bottom: ${SPACING.sm}px;
-  }
-`
+// Profile info
+const ProfileInfo: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <div className="flex-1 max-w-[calc(100%-120px)] max-sm:max-w-[calc(100%-90px)]">
+    {children}
+  </div>
+)
 
-const SProfilePic = styled.div<{ $themeColor?: string }>`
-  width: 90px;
-  height: 90px;
-  border-radius: 50%;
-  border: 4px solid ${props => props.$themeColor || FARE_COLORS.blue};
-  background: #333;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-  position: relative;
-  top: -5px;
-  flex-shrink: 0;
-  overflow: hidden;
+// Title wrapper
+interface TitleWrapperProps {
+  isEditMode?: boolean
+  themeColor?: string
+  children: React.ReactNode
+}
 
-  @media (max-width: ${BREAKPOINTS.sm}px) {
-    width: 70px;
-    height: 70px;
-  }
-`
+const TitleWrapper: React.FC<TitleWrapperProps> = ({ isEditMode, themeColor, children }) => (
+  <div
+    className={cn(
+      'text-4xl font-bold text-white mb-3 w-full max-w-[600px] flex items-center relative leading-tight',
+      'max-sm:text-2xl max-sm:mb-2 max-sm:pl-0',
+      isEditMode ? 'pl-10' : 'pl-0',
+      '[&>button]:absolute [&>button]:left-0 [&>button]:top-1/2 [&>button]:-translate-y-1/2 [&>button]:z-10'
+    )}
+    style={{
+      textShadow: themeColor ? `0 0 10px ${themeColor}40, 0 0 15px ${themeColor}20` : 'none',
+    }}
+  >
+    {children}
+  </div>
+)
 
-const SProfileInfo = styled.div`
-  flex: 1;
-  max-width: calc(100% - 120px); /* Account for profile pic width + gap */
+// Description wrapper
+interface DescriptionWrapperProps {
+  isEditMode?: boolean
+  children: React.ReactNode
+}
 
-  @media (max-width: ${BREAKPOINTS.sm}px) {
-    max-width: calc(100% - 90px);
-  }
-`
+const DescriptionWrapper: React.FC<DescriptionWrapperProps> = ({ isEditMode, children }) => (
+  <div
+    className={cn(
+      'text-lg text-[#aaa] m-0 w-full max-w-[800px] relative leading-snug',
+      'max-sm:text-sm max-sm:pl-0 max-sm:pb-5',
+      isEditMode ? 'pl-10' : 'pl-5',
+      '[&>button]:absolute [&>button]:left-0 [&>button]:top-1/2 [&>button]:-translate-y-1/2 [&>button]:z-10'
+    )}
+  >
+    {children}
+  </div>
+)
 
-const STitle = styled.div<{ $isEditMode?: boolean; $themeColor?: string }>`
-  font-size: 36px;
-  font-weight: bold;
-  color: ${TEXT_COLORS.one};
-  margin: 0 0 ${SPACING.sm}px 0;
-  width: 100%;
-  max-width: 600px;
-  display: flex;
-  align-items: center;
-  position: relative;
-  padding-left: ${props => (props.$isEditMode ? '40px' : '0')};
-  line-height: 1.2;
-  text-shadow: ${props =>
-    props.$themeColor ?
-      `0 0 10px ${props.$themeColor}40, 0 0 15px ${props.$themeColor}20`
-    : 'none'};
+// Banner edit circle wrapper
+const BannerEditWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <div className="absolute top-6 left-6 z-10">
+    {children}
+  </div>
+)
 
-  > button {
-    position: absolute;
-    left: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    z-index: 10;
-  }
-
-  @media (max-width: ${BREAKPOINTS.sm}px) {
-    font-size: 24px;
-    margin-bottom: ${SPACING.xs}px;
-    padding-left: 0;
-  }
-`
-
-const SDescription = styled.div<{ $isEditMode?: boolean }>`
-  font-size: 18px;
-  color: ${TEXT_COLORS.two};
-  margin: 0;
-  padding-left: ${props => (props.$isEditMode ? '40px' : '20px')};
-  width: 100%;
-  max-width: 800px;
-  position: relative;
-  line-height: 1.3;
-
-  > button {
-    position: absolute;
-    left: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    z-index: 10;
-  }
-
-  @media (max-width: ${BREAKPOINTS.sm}px) {
-    font-size: 14px;
-    padding-left: 0;
-    padding-bottom: 20px;
-  }
-`
-
-const BannerEditCircleWrapper = styled.div`
-  position: absolute;
-  top: ${SPACING.lg}px;
-  left: ${SPACING.lg}px;
-  z-index: 10;
-`
-
-const SSocials = styled.div`
-  display: flex;
-  gap: ${SPACING.lg}px;
-  z-index: 5;
-  position: absolute;
-  bottom: ${SPACING.xl}px;
-  right: ${SPACING.xl}px;
-
-  @media (max-width: ${BREAKPOINTS.sm}px) {
-    bottom: ${SPACING.md}px;
-    right: ${SPACING.md}px;
-  }
-`
+// Socials wrapper
+const SocialsWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <div className="flex gap-6 z-[5] absolute bottom-8 right-8 max-sm:bottom-4 max-sm:right-4">
+    {children}
+  </div>
+)
 
 export const UserHeroSection: React.FC<UserHeroSectionProps> = ({
   casino,
@@ -367,89 +307,83 @@ export const UserHeroSection: React.FC<UserHeroSectionProps> = ({
   links.sort((a, b) => a.platform.localeCompare(b.platform))
 
   return (
-    <SHeroContainer
-      $borderColor={config.colors.themeColor1}
-      $colors={themeColors}
-      $animateBorder={animateBorder}
-    >
-      <SHeroBackground>
-        {hasBannerImage ?
-          <CroppedImage imageData={bannerImage} alt='Casino Banner' width='100%' height='100%' />
-        : <img
+    <HeroContainer borderColor={config.colors.themeColor1}>
+      <HeroBackground>
+        {hasBannerImage ? (
+          <CroppedImage imageData={bannerImage} alt="Casino Banner" width="100%" height="100%" />
+        ) : (
+          <img
             src={bannerPlaceholder}
-            alt='Banner Placeholder'
-            style={{
-              width: '100%',
-              height: '100%',
-              objectFit: 'cover',
-              objectPosition: '50% 75%',
-            }}
+            alt="Banner Placeholder"
+            className="w-full h-full object-cover"
+            style={{ objectPosition: '50% 75%' }}
           />
-        }
-      </SHeroBackground>
+        )}
+      </HeroBackground>
 
       {isEditMode && (
-        <BannerEditCircleWrapper>
-          <EditCircle onClick={() => openModal('image', 'bannerImage')} title='Edit Banner Image' />
-        </BannerEditCircleWrapper>
+        <BannerEditWrapper>
+          <EditCircle onClick={() => openModal('image', 'bannerImage')} title="Edit Banner Image" />
+        </BannerEditWrapper>
       )}
 
-      <SContent>
+      <HeroContent>
         {/* Profile section with avatar, title, description */}
-        <SProfileSection>
+        <ProfileSection>
           {/* Profile picture with edit circle */}
           <EditableContainer isEditable={isEditMode}>
-            <SProfilePic $themeColor={themeColor}>
-              {hasProfileImage ?
-                <CroppedImage imageData={profileImage} alt='Profile' width='100%' height='100%' />
-              : <img
+            <ProfilePic themeColor={themeColor}>
+              {hasProfileImage ? (
+                <CroppedImage imageData={profileImage} alt="Profile" width="100%" height="100%" />
+              ) : (
+                <img
                   src={profilePlaceholder}
-                  alt='Profile Placeholder'
-                  style={{
-                    width: '100%',
-                    height: '100%',
-                    transform: 'scale(1.4)',
-                  }}
+                  alt="Profile Placeholder"
+                  className="w-full h-full scale-[1.4]"
                 />
-              }
-            </SProfilePic>
+              )}
+            </ProfilePic>
             {isEditMode && (
               <EditCircle
-                $position='center'
+                $position="center"
                 onClick={() => openModal('image', 'profileImage')}
-                title='Edit Profile Image'
+                title="Edit Profile Image"
               />
             )}
           </EditableContainer>
 
-          <SProfileInfo>
+          <ProfileInfo>
             {/* Title - using EditableText if in edit mode */}
-            <STitle $isEditMode={isEditMode} $themeColor={themeColor}>
-              {isEditMode ?
+            <TitleWrapper isEditMode={isEditMode} themeColor={themeColor}>
+              {isEditMode ? (
                 <EditableText
                   value={title}
                   onChange={value => handleEdit('title', value)}
-                  placeholder='Enter Title'
+                  placeholder="Enter Title"
                 />
-              : title}
-            </STitle>
+              ) : (
+                title
+              )}
+            </TitleWrapper>
 
             {/* Description - using EditableText if in edit mode */}
-            <SDescription $isEditMode={isEditMode}>
-              {isEditMode ?
+            <DescriptionWrapper isEditMode={isEditMode}>
+              {isEditMode ? (
                 <EditableText
                   value={description}
                   onChange={value => handleEdit('shortDescription', value)}
-                  placeholder='Enter Description'
+                  placeholder="Enter Description"
                   multiline
                 />
-              : description}
-            </SDescription>
-          </SProfileInfo>
-        </SProfileSection>
+              ) : (
+                description
+              )}
+            </DescriptionWrapper>
+          </ProfileInfo>
+        </ProfileSection>
 
         {/* Social links - simplified rendering */}
-        <SSocials>
+        <SocialsWrapper>
           <EditableContainer isEditable={isEditMode}>
             {(links.length > 0 || isEditMode) && (
               <Socials
@@ -462,14 +396,14 @@ export const UserHeroSection: React.FC<UserHeroSectionProps> = ({
             )}
             {isEditMode && (
               <EditCircle
-                $position='topRight'
+                $position="topRight"
                 onClick={() => openModal('socials')}
-                title='Edit Social Links'
+                title="Edit Social Links"
               />
             )}
           </EditableContainer>
-        </SSocials>
-      </SContent>
-    </SHeroContainer>
+        </SocialsWrapper>
+      </HeroContent>
+    </HeroContainer>
   )
 }

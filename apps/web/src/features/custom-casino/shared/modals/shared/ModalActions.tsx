@@ -1,7 +1,5 @@
-// @ts-nocheck
 import React from 'react'
-import { styled } from 'styled-components'
-import { SPACING, BREAKPOINTS } from '@/design'
+import { cn } from '@/lib/utils'
 
 // Props for the modal actions
 interface ModalActionsProps {
@@ -14,57 +12,61 @@ interface ModalActionsProps {
   confirmButtonVariant?: 'primary' | 'danger'
 }
 
-// Styled components
-const ButtonGroup = styled.div`
-  display: flex;
-  justify-content: space-between;
-  margin-top: ${SPACING.md}px;
+// Button component
+interface ButtonProps {
+  onClick: () => void
+  isPrimary?: boolean
+  variant?: 'primary' | 'danger'
+  disabled?: boolean
+  children: React.ReactNode
+}
 
-  @media (max-width: ${BREAKPOINTS.sm}px) {
-    flex-direction: column;
-    gap: ${SPACING.md}px;
-  }
-`
-
-const Button = styled.button<{ $isPrimary?: boolean; $variant?: 'primary' | 'danger' }>`
-  background-color: ${props => {
-    if (!props.$isPrimary) return 'rgba(20, 20, 20, 0.7)';
-    return props.$variant === 'danger' ? '#dc3545' : '#ff5e4f';
-  }};
-  color: #ffffff;
-  border: ${props => (props.$isPrimary ? 'none' : '1px solid rgba(255, 255, 255, 0.1)')};
-  border-radius: 8px;
-  padding: ${SPACING.sm}px ${SPACING.lg}px;
-  font-size: 1rem;
-  font-weight: ${props => (props.$isPrimary ? '600' : 'normal')};
-  cursor: pointer;
-  transition: all 0.2s ease;
-  height: 42px;
-  min-width: 120px;
-  opacity: ${props => (props.disabled ? 0.6 : 1)};
-
-  &:hover {
-    background-color: ${props => {
-      if (props.disabled) {
-        return props.$isPrimary ? 
-          (props.$variant === 'danger' ? '#dc3545' : '#ff5e4f') : 
-          'rgba(20, 20, 20, 0.7)';
-      }
-      if (!props.$isPrimary) return 'rgba(40, 40, 40, 0.8)';
-      return props.$variant === 'danger' ? '#c82333' : '#ff7a6e';
-    }};
-    transform: ${props => (props.disabled ? 'none' : 'translateY(-1px)')};
+const Button: React.FC<ButtonProps> = ({
+  onClick,
+  isPrimary = false,
+  variant = 'primary',
+  disabled = false,
+  children,
+}) => {
+  const getBackgroundColor = () => {
+    if (!isPrimary) return 'rgba(20, 20, 20, 0.7)'
+    return variant === 'danger' ? '#dc3545' : '#ff5e4f'
   }
 
-  &:active {
-    transform: ${props => (props.disabled ? 'none' : 'translateY(0)')};
+  const getHoverBackgroundColor = () => {
+    if (disabled) return getBackgroundColor()
+    if (!isPrimary) return 'rgba(40, 40, 40, 0.8)'
+    return variant === 'danger' ? '#c82333' : '#ff7a6e'
   }
 
-  @media (max-width: ${BREAKPOINTS.sm}px) {
-    width: 100%;
-    height: 48px;
-  }
-`
+  return (
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      className={cn(
+        'text-white rounded-lg py-3 px-6 text-base cursor-pointer',
+        'transition-all duration-200 h-[42px] min-w-[120px]',
+        isPrimary ? 'border-none font-semibold' : 'border border-white/10 font-normal',
+        disabled && 'opacity-60 cursor-not-allowed',
+        !disabled && 'hover:-translate-y-px active:translate-y-0',
+        'max-[992px]:w-full max-[992px]:h-12'
+      )}
+      style={{
+        backgroundColor: getBackgroundColor(),
+      }}
+      onMouseEnter={(e) => {
+        if (!disabled) {
+          e.currentTarget.style.backgroundColor = getHoverBackgroundColor()
+        }
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.backgroundColor = getBackgroundColor()
+      }}
+    >
+      {children}
+    </button>
+  )
+}
 
 /**
  * Standardized action buttons for modals
@@ -79,13 +81,18 @@ export const ModalActions: React.FC<ModalActionsProps> = ({
   confirmButtonVariant = 'primary',
 }) => {
   return (
-    <ButtonGroup>
+    <div className="flex justify-between mt-4 max-[992px]:flex-col max-[992px]:gap-4">
       <Button onClick={onCancel}>{cancelText}</Button>
       {onConfirm && (
-        <Button $isPrimary $variant={confirmButtonVariant} onClick={onConfirm} disabled={disabled || confirmDisabled}>
+        <Button
+          isPrimary
+          variant={confirmButtonVariant}
+          onClick={onConfirm}
+          disabled={disabled || confirmDisabled}
+        >
           {confirmText}
         </Button>
       )}
-    </ButtonGroup>
+    </div>
   )
 }

@@ -1,7 +1,5 @@
 // @ts-nocheck
 import React, { useState, useEffect } from 'react'
-import { styled } from 'styled-components'
-import { TEXT_COLORS } from '@/design'
 import { SocialPlatformItem, SocialLayoutSelector, type SocialLayoutType, detectPlatform } from '.'
 import { ModalBase } from '../../../shared/modals/shared/ModalBase'
 import { ModalActions } from '../../../shared/modals/shared/ModalActions'
@@ -16,24 +14,6 @@ interface LinkEntry {
   url: string
   id: string
 }
-
-// Styled components
-const SectionTitle = styled.h3`
-  font-size: 16px;
-  color: ${TEXT_COLORS.one};
-  margin: 0 0 8px 0;
-`
-
-const LinksContainer = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  width: 100%;
-
-  @media (max-width: 640px) {
-    grid-template-columns: 1fr;
-  }
-`
 
 /**
  * Modal for editing social link settings
@@ -229,8 +209,8 @@ export const SocialsEditModal: React.FC<SocialsEditModalProps> = ({
       <SocialLayoutSelector selectedLayout={layoutType} onLayoutChange={handleLayoutChange} />
 
       {/* Social Link Inputs */}
-      <SectionTitle>Your Social Links</SectionTitle>
-      <LinksContainer>
+      <h3 className="text-base text-white m-0 mb-2">Your Social Links</h3>
+      <div className="grid grid-cols-2 gap-2.5 w-full max-sm:grid-cols-1">
         {/* First column of links */}
         <div>
           {links.slice(0, 4).map(link => (
@@ -258,7 +238,7 @@ export const SocialsEditModal: React.FC<SocialsEditModalProps> = ({
             />
           ))}
         </div>
-      </LinksContainer>
+      </div>
 
       {/* Action Buttons */}
       <ModalActions onCancel={onClose} onConfirm={handleSave} />

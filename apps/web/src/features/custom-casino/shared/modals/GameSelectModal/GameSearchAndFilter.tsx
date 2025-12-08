@@ -1,62 +1,6 @@
 // @ts-nocheck
 import React from 'react'
-import { styled } from 'styled-components'
-import { SPACING, TEXT_COLORS, BORDER_COLORS, FARE_COLORS } from '@/design'
-
-// Styled components
-const SSearchContainer = styled.div`
-  width: 100%;
-  position: relative;
-  margin-bottom: ${SPACING.md}px;
-`
-
-const SSearchInput = styled.input`
-  width: 100%;
-  width: -moz-available; /* WebKit-based browsers will ignore this. */
-  width: -webkit-fill-available; /* Mozilla-based browsers will ignore this. */
-  padding: ${SPACING.md}px;
-  padding-left: 40px;
-  border-radius: 8px;
-  background-color: rgba(30, 30, 30, 0.7);
-  border: 1px solid ${BORDER_COLORS.one};
-  color: ${TEXT_COLORS.one};
-  font-size: 16px;
-
-  &:focus {
-    outline: none;
-    border-color: ${FARE_COLORS.salmon};
-  }
-`
-
-const SSearchIcon = styled.div`
-  position: absolute;
-  left: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 18px;
-  height: 18px;
-  color: ${TEXT_COLORS.two};
-
-  svg {
-    width: 100%;
-    height: 100%;
-    fill: currentColor;
-  }
-`
-
-const SGameCount = styled.div`
-  color: ${TEXT_COLORS.two};
-  text-align: center;
-  padding: ${SPACING.md}px 0;
-  font-size: 14px;
-`
-
-const SNoGamesMessage = styled.div`
-  color: ${TEXT_COLORS.two};
-  text-align: center;
-  padding: ${SPACING.xl}px;
-  font-size: 16px;
-`
+import { cn } from '@/lib/utils'
 
 // Search SVG icon
 const SearchSVG = () => (
@@ -92,26 +36,39 @@ export const GameSearchAndFilter: React.FC<GameSearchAndFilterProps> = ({
 
   return (
     <>
-      <SSearchContainer>
-        <SSearchIcon>
+      {/* Search Container */}
+      <div className="w-full relative mb-4">
+        {/* Search Icon */}
+        <div className="absolute left-3 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-[#aaaaaa] [&_svg]:w-full [&_svg]:h-full [&_svg]:fill-current">
           <SearchSVG />
-        </SSearchIcon>
-        <SSearchInput
+        </div>
+        {/* Search Input */}
+        <input
           type='text'
           placeholder='Search games...'
           value={searchTerm}
           onChange={handleSearchChange}
+          className={cn(
+            'w-full p-4 pl-10 rounded-lg',
+            'bg-[rgba(30,30,30,0.7)] border border-[#1b1d26]',
+            'text-white text-base',
+            'focus:outline-none focus:border-[#ff5e4f]'
+          )}
         />
-      </SSearchContainer>
+      </div>
 
+      {/* Game Count */}
       {showCounts && filteredCount > 0 && (
-        <SGameCount>
+        <div className="text-[#aaaaaa] text-center py-4 text-sm">
           Showing {filteredCount} of {totalCount} games ({selectedCount} selected)
-        </SGameCount>
+        </div>
       )}
 
+      {/* No Games Message */}
       {filteredCount === 0 && (
-        <SNoGamesMessage>No games found matching your search criteria.</SNoGamesMessage>
+        <div className="text-[#aaaaaa] text-center py-8 text-base">
+          No games found matching your search criteria.
+        </div>
       )}
     </>
   )

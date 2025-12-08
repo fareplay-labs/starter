@@ -1,22 +1,121 @@
-// @ts-nocheck
 import React, { useState, useEffect } from 'react'
+import { cn } from '@/lib/utils'
 import { type ModalType } from '../editor/useEditStore'
 import { type PageConfig } from '../../config/PageConfig'
 import { EditButton, type EditButtonState } from './EditButton'
 import { addAppNoti } from '@/store/useNotiStore'
-import {
-  SEditToolbar,
-  SToolbarSection,
-  SToolbarLabel,
-  SThemeLabel,
-  SToolbarDivider,
-  SThemeSection,
-  SColorControls,
-  SColorButtonContainer,
-  SColorButton,
-  SFontLabel,
-  SFontButton,
-} from '../styles'
+
+// Toolbar container
+interface ToolbarContainerProps {
+  isEditMode: boolean
+  children: React.ReactNode
+}
+
+const ToolbarContainer: React.FC<ToolbarContainerProps> = ({ isEditMode, children }) => (
+  <div
+    className={cn(
+      'h-fit w-16 rounded-xl flex flex-col items-center p-3 z-10 border transition-all duration-300',
+      'max-sm:absolute max-sm:left-[10px] max-sm:top-[325px]',
+      isEditMode
+        ? 'bg-[rgba(20,20,20,0.85)] shadow-lg border-white/10 backdrop-blur-[5px]'
+        : 'bg-[rgba(20,20,20,0.5)] shadow-md border-white/5 backdrop-blur-[3px]'
+    )}
+  >
+    {children}
+  </div>
+)
+
+// Toolbar section
+const ToolbarSection: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <div className="flex flex-col items-center w-full">{children}</div>
+)
+
+// Toolbar label
+const ToolbarLabel: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <div className="text-xs text-[#aaa] mb-2 whitespace-nowrap text-center uppercase tracking-wide">
+    {children}
+  </div>
+)
+
+// Theme label with animation
+const ThemeLabel: React.FC<{ children: React.ReactNode; isClosing: boolean }> = ({ children, isClosing }) => (
+  <div
+    className={cn(
+      'text-xs text-[#aaa] mb-2 whitespace-nowrap text-center uppercase tracking-wide',
+      isClosing ? 'animate-fade-out' : 'opacity-0 animate-fade-in [animation-delay:0.25s] [animation-fill-mode:forwards]'
+    )}
+  >
+    {children}
+  </div>
+)
+
+// Toolbar divider with animation
+const ToolbarDivider: React.FC<{ isClosing: boolean }> = ({ isClosing }) => (
+  <div
+    className={cn(
+      'w-full h-px bg-white/10 my-4',
+      isClosing ? 'animate-fade-out' : 'opacity-0 animate-fade-in [animation-delay:0.15s] [animation-fill-mode:forwards]'
+    )}
+  />
+)
+
+// Theme section with animation
+const ThemeSection: React.FC<{ children: React.ReactNode; isClosing: boolean }> = ({ children, isClosing }) => (
+  <div
+    className={cn(
+      'w-full flex flex-col items-center overflow-hidden',
+      isClosing
+        ? 'animate-fade-out'
+        : 'opacity-0 animate-fade-in [animation-delay:0.1s] [animation-fill-mode:forwards]'
+    )}
+  >
+    {children}
+  </div>
+)
+
+// Color controls container
+const ColorControls: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <div className="flex flex-col items-center gap-3 w-full">{children}</div>
+)
+
+// Color button
+interface ColorButtonProps {
+  color: string
+  onClick: () => void
+  title: string
+}
+
+const ColorButton: React.FC<ColorButtonProps> = ({ color, onClick, title }) => (
+  <div className="flex flex-col items-center mb-3">
+    <button
+      onClick={onClick}
+      title={title}
+      className="w-8 h-8 rounded-full border-2 border-white/80 cursor-pointer transition-all duration-200 relative overflow-hidden my-2 hover:scale-110 hover:shadow-[0_0_10px_rgba(255,255,255,0.5)]"
+      style={{ backgroundColor: color || '#ffffff' }}
+    >
+      {/* Gradient overlay */}
+      <span className="absolute inset-0 bg-gradient-to-br from-white/30 via-transparent to-transparent" />
+    </button>
+  </div>
+)
+
+// Font button
+interface FontButtonProps {
+  onClick: () => void
+  title: string
+}
+
+const FontButton: React.FC<FontButtonProps> = ({ onClick, title }) => (
+  <button
+    onClick={onClick}
+    title={title}
+    className="w-8 h-8 rounded-full border-2 border-white/80 bg-[rgba(40,40,40,0.85)] cursor-pointer transition-all duration-200 relative overflow-hidden my-2 flex items-center justify-center text-white text-lg font-bold hover:scale-110 hover:shadow-[0_0_10px_rgba(255,255,255,0.5)]"
+  >
+    T
+    {/* Gradient overlay */}
+    <span className="absolute inset-0 bg-gradient-to-br from-white/30 via-transparent to-transparent pointer-events-none" />
+  </button>
+)
 
 interface EditToolbarProps {
   isEditMode: boolean
@@ -162,65 +261,57 @@ export const EditToolbar: React.FC<EditToolbarProps> = ({
   }
 
   return (
-    <SEditToolbar $isEditMode={visualEditMode || isClosing}>
+    <ToolbarContainer isEditMode={visualEditMode || isClosing}>
       {/* Toggle Edit Mode */}
-      <SToolbarSection>
-        <SToolbarLabel>{getButtonLabel()}</SToolbarLabel>
+      <ToolbarSection>
+        <ToolbarLabel>{getButtonLabel()}</ToolbarLabel>
         <EditButton
           onClick={handleEditButtonClick}
           state={
-            isBackendLoading && saveState !== 'saving' && saveState !== 'saved' ?
-              'saving'
-            : saveState
+            isBackendLoading && saveState !== 'saving' && saveState !== 'saved'
+              ? 'saving'
+              : saveState
           }
           disabled={isBackendLoading || saveState === 'saving' || isClosing}
         />
-      </SToolbarSection>
+      </ToolbarSection>
 
       {(isEditMode || isClosing) && (
-        <div className={isClosing ? 'closing' : ''}>
-          <SToolbarDivider />
+        <>
+          <ToolbarDivider isClosing={isClosing} />
           {/* Theme Color Controls */}
-          <SThemeSection>
-            <SThemeLabel>Theme</SThemeLabel>
-            <SColorControls>
-              <SColorButtonContainer>
-                <SColorButton
-                  $color={pageConfig.colors.themeColor1}
-                  onClick={() => openColorModal('themeColor1')}
-                  title='Primary Color'
-                />
-              </SColorButtonContainer>
+          <ThemeSection isClosing={isClosing}>
+            <ThemeLabel isClosing={isClosing}>Theme</ThemeLabel>
+            <ColorControls>
+              <ColorButton
+                color={pageConfig.colors.themeColor1}
+                onClick={() => openColorModal('themeColor1')}
+                title="Primary Color"
+              />
+              <ColorButton
+                color={pageConfig.colors.themeColor2}
+                onClick={() => openColorModal('themeColor2')}
+                title="Secondary Color"
+              />
+              <ColorButton
+                color={pageConfig.colors.themeColor3}
+                onClick={() => openColorModal('themeColor3')}
+                title="Tertiary Color"
+              />
+            </ColorControls>
+          </ThemeSection>
 
-              <SColorButtonContainer>
-                <SColorButton
-                  $color={pageConfig.colors.themeColor2}
-                  onClick={() => openColorModal('themeColor2')}
-                  title='Secondary Color'
-                />
-              </SColorButtonContainer>
-
-              <SColorButtonContainer>
-                <SColorButton
-                  $color={pageConfig.colors.themeColor3}
-                  onClick={() => openColorModal('themeColor3')}
-                  title='Tertiary Color'
-                />
-              </SColorButtonContainer>
-            </SColorControls>
-          </SThemeSection>
-
-          <SToolbarDivider />
+          <ToolbarDivider isClosing={isClosing} />
           {/* Font Selection */}
-          <SThemeSection>
-            <SFontLabel>Font</SFontLabel>
-            <SFontButton onClick={() => handleFontSelect(pageConfig.font)} title='Change Font'>
-              T
-            </SFontButton>
-          </SThemeSection>
-
-        </div>
+          <ThemeSection isClosing={isClosing}>
+            <ThemeLabel isClosing={isClosing}>Font</ThemeLabel>
+            <FontButton
+              onClick={() => handleFontSelect(pageConfig.font)}
+              title="Change Font"
+            />
+          </ThemeSection>
+        </>
       )}
-    </SEditToolbar>
+    </ToolbarContainer>
   )
 }

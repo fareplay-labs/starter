@@ -1,120 +1,60 @@
-// @ts-nocheck
 import React, { type ChangeEvent } from 'react'
-import { styled } from 'styled-components'
-import { SPACING, TEXT_COLORS, BORDER_COLORS, FARE_COLORS, BREAKPOINTS } from '@/design'
+import { cn } from '@/lib/utils'
 
-// Container for input groups
-const SInputContainer = styled.div`
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: ${SPACING.sm}px;
-  margin-bottom: ${SPACING.lg}px;
-`
+// Input container
+const InputContainer: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <div className="w-full flex flex-col gap-3 mb-6">
+    {children}
+  </div>
+)
 
 // Input label
-const SInputLabel = styled.label`
-  color: ${TEXT_COLORS.two};
-  font-size: 14px;
-  font-weight: 500;
-  margin-bottom: 2px;
-`
+const InputLabel: React.FC<{ htmlFor: string; children: React.ReactNode }> = ({ htmlFor, children }) => (
+  <label htmlFor={htmlFor} className="text-[#aaaaaa] text-sm font-medium mb-0.5">
+    {children}
+  </label>
+)
 
-// Base input styles (shared between inputs and textareas)
-const inputStyles = `
-  background-color: rgba(10, 10, 10, 0.8);
-  border: 1px solid ${BORDER_COLORS.one};
-  border-radius: 8px;
-  color: ${TEXT_COLORS.one};
-  padding: ${SPACING.md}px;
-  font-size: 16px;
-  width: 100%;
-  transition: all 0.2s ease;
+// Base input styles
+const inputBaseStyles = cn(
+  'bg-[rgba(10,10,10,0.8)] border border-[#1b1d26] rounded-lg',
+  'text-white p-4 text-base w-full transition-all duration-200',
+  'hover:border-white/30',
+  'focus:outline-none focus:border-[#410dff] focus:shadow-[0_0_0_2px_rgba(0,112,243,0.15)]',
+  'disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-black/20'
+)
 
-  &:hover {
-    border-color: rgba(255, 255, 255, 0.3);
-  }
+// Help text
+const HelpText: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <p className="text-[#aaaaaa] text-[13px] mt-1 opacity-80">
+    {children}
+  </p>
+)
 
-  &:focus {
-    outline: none;
-    border-color: ${FARE_COLORS.blue};
-    box-shadow: 0 0 0 2px rgba(0, 112, 243, 0.15);
-  }
+// Error text
+const ErrorText: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <p className="text-[#ff5e4f] text-[13px] mt-1 font-medium">
+    {children}
+  </p>
+)
 
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-    background-color: rgba(0, 0, 0, 0.2);
-  }
-`
+// Character count
+interface CharCountProps {
+  current: number
+  max: number
+  isNearLimit: boolean
+}
 
-// Text input
-const STextInput = styled.input`
-  ${inputStyles}
-  height: 48px;
-  width: auto;
-
-  @media (max-width: ${BREAKPOINTS.sm}px) {
-    height: 52px;
-    font-size: 16px; /* Prevent zoom on mobile */
-  }
-`
-
-// Textarea for multiline text
-const STextArea = styled.textarea`
-  ${inputStyles}
-  min-height: 120px;
-  width: auto;
-  resize: vertical;
-  line-height: 1.5;
-`
-
-// Select dropdown
-const SSelect = styled.select`
-  ${inputStyles}
-  height: 48px;
-  appearance: none;
-  background-image: url("data:image/svg+xml;utf8,<svg fill='white' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/><path d='M0 0h24v24H0z' fill='none'/></svg>");
-  background-repeat: no-repeat;
-  background-position: right ${SPACING.md}px center;
-  padding-right: ${SPACING.xl}px;
-
-  @media (max-width: ${BREAKPOINTS.sm}px) {
-    height: 52px;
-  }
-`
-
-// Option for select dropdown
-const SOption = styled.option`
-  background-color: #0a0a0a;
-  color: ${TEXT_COLORS.one};
-  padding: ${SPACING.md}px;
-`
-
-// Form instruction text
-const SHelpText = styled.p`
-  color: ${TEXT_COLORS.two};
-  font-size: 13px;
-  margin: 4px 0 0 0;
-  opacity: 0.8;
-`
-
-// Error message styling
-const SErrorText = styled.p`
-  color: ${FARE_COLORS.salmon};
-  font-size: 13px;
-  margin: 4px 0 0 0;
-  font-weight: 500;
-`
-
-// Character count display
-const SCharCount = styled.div<{ $isNearLimit: boolean }>`
-  font-size: 12px;
-  margin-top: 4px;
-  text-align: right;
-  color: ${props => (props.$isNearLimit ? FARE_COLORS.salmon : TEXT_COLORS.two)};
-  transition: color 0.2s ease;
-`
+const CharCount: React.FC<CharCountProps> = ({ current, max, isNearLimit }) => (
+  <div
+    className={cn(
+      'text-xs mt-1 text-right transition-colors duration-200',
+      isNearLimit ? 'text-[#ff5e4f]' : 'text-[#aaaaaa]'
+    )}
+  >
+    {current}/{max}
+  </div>
+)
 
 // Text input props
 export interface TextInputProps {
@@ -151,9 +91,9 @@ export const TextInput: React.FC<TextInputProps> = ({
   const isNearLimit = showCharCount ? value.length > maxLength * 0.8 : false
 
   return (
-    <SInputContainer>
-      <SInputLabel htmlFor={id}>{label}</SInputLabel>
-      <STextInput
+    <InputContainer>
+      <InputLabel htmlFor={id}>{label}</InputLabel>
+      <input
         id={id}
         name={name || id}
         type={type}
@@ -163,15 +103,18 @@ export const TextInput: React.FC<TextInputProps> = ({
         disabled={disabled}
         maxLength={maxLength}
         aria-invalid={error ? 'true' : 'false'}
+        className={cn(
+          inputBaseStyles,
+          'h-12 w-auto',
+          'max-[992px]:h-[52px] max-[992px]:text-base'
+        )}
       />
-      {helpText && <SHelpText>{helpText}</SHelpText>}
-      {error && <SErrorText>{error}</SErrorText>}
+      {helpText && <HelpText>{helpText}</HelpText>}
+      {error && <ErrorText>{error}</ErrorText>}
       {showCharCount && (
-        <SCharCount $isNearLimit={isNearLimit}>
-          {value.length}/{maxLength}
-        </SCharCount>
+        <CharCount current={value.length} max={maxLength} isNearLimit={isNearLimit} />
       )}
-    </SInputContainer>
+    </InputContainer>
   )
 }
 
@@ -210,9 +153,9 @@ export const TextArea: React.FC<TextAreaProps> = ({
   const isNearLimit = showCharCount ? value.length > maxLength * 0.8 : false
 
   return (
-    <SInputContainer>
-      <SInputLabel htmlFor={id}>{label}</SInputLabel>
-      <STextArea
+    <InputContainer>
+      <InputLabel htmlFor={id}>{label}</InputLabel>
+      <textarea
         id={id}
         name={name || id}
         value={value}
@@ -222,15 +165,17 @@ export const TextArea: React.FC<TextAreaProps> = ({
         rows={rows}
         maxLength={maxLength}
         aria-invalid={error ? 'true' : 'false'}
+        className={cn(
+          inputBaseStyles,
+          'min-h-[120px] w-auto resize-y leading-relaxed'
+        )}
       />
-      {helpText && <SHelpText>{helpText}</SHelpText>}
-      {error && <SErrorText>{error}</SErrorText>}
+      {helpText && <HelpText>{helpText}</HelpText>}
+      {error && <ErrorText>{error}</ErrorText>}
       {showCharCount && (
-        <SCharCount $isNearLimit={isNearLimit}>
-          {value.length}/{maxLength}
-        </SCharCount>
+        <CharCount current={value.length} max={maxLength} isNearLimit={isNearLimit} />
       )}
-    </SInputContainer>
+    </InputContainer>
   )
 }
 
@@ -268,24 +213,34 @@ export const Select: React.FC<SelectProps> = ({
   error,
 }) => {
   return (
-    <SInputContainer>
-      <SInputLabel htmlFor={id}>{label}</SInputLabel>
-      <SSelect
+    <InputContainer>
+      <InputLabel htmlFor={id}>{label}</InputLabel>
+      <select
         id={id}
         name={name || id}
         value={value}
         onChange={onChange}
         disabled={disabled}
         aria-invalid={error ? 'true' : 'false'}
+        className={cn(
+          inputBaseStyles,
+          'h-12 appearance-none pr-8',
+          'bg-[url("data:image/svg+xml;utf8,<svg fill=\'white\' height=\'24\' viewBox=\'0 0 24 24\' width=\'24\' xmlns=\'http://www.w3.org/2000/svg\'><path d=\'M7 10l5 5 5-5z\'/><path d=\'M0 0h24v24H0z\' fill=\'none\'/></svg>")] bg-no-repeat bg-[right_16px_center]',
+          'max-[992px]:h-[52px]'
+        )}
       >
         {options.map(option => (
-          <SOption key={option.value} value={option.value}>
+          <option
+            key={option.value}
+            value={option.value}
+            className="bg-casino-dark text-white p-4"
+          >
             {option.label}
-          </SOption>
+          </option>
         ))}
-      </SSelect>
-      {helpText && <SHelpText>{helpText}</SHelpText>}
-      {error && <SErrorText>{error}</SErrorText>}
-    </SInputContainer>
+      </select>
+      {helpText && <HelpText>{helpText}</HelpText>}
+      {error && <ErrorText>{error}</ErrorText>}
+    </InputContainer>
   )
 }

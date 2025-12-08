@@ -1,81 +1,9 @@
-// @ts-nocheck
 import React, { useState, useEffect } from 'react'
+import { cn } from '@/lib/utils'
 import { ModalBase } from './shared/ModalBase'
 import { ModalActions } from './shared/ModalActions'
 import { type FieldEditModalProps } from './shared/modalTypes'
 import { TextInput } from './shared/FormElements'
-import { styled } from 'styled-components'
-import { SPACING, FARE_COLORS, TEXT_COLORS } from '@/design'
-
-const LinkPreviewContainer = styled.div`
-  background-color: rgba(0, 0, 0, 0.2);
-  border-radius: 8px;
-  padding: ${SPACING.md}px;
-  margin-bottom: ${SPACING.md}px;
-  display: flex;
-  align-items: center;
-  gap: ${SPACING.md}px;
-  transition: all 0.2s ease;
-  border: 1px solid transparent;
-
-  &:hover {
-    background-color: rgba(0, 0, 0, 0.3);
-  }
-`
-
-const LinkIcon = styled.div`
-  width: 42px;
-  height: 42px;
-  border-radius: 6px;
-  background-color: ${FARE_COLORS.salmon};
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  color: white;
-  font-size: 18px;
-`
-
-const LinkInfo = styled.div`
-  flex: 1;
-  overflow: hidden;
-`
-
-const LinkUrl = styled.a`
-  color: ${TEXT_COLORS.one};
-  text-decoration: none;
-  font-size: 14px;
-  word-break: break-all;
-  display: block;
-
-  &:hover {
-    color: ${FARE_COLORS.blue};
-    text-decoration: underline;
-  }
-`
-
-const LinkTest = styled.button`
-  background-color: transparent;
-  border: none;
-  color: ${FARE_COLORS.blue};
-  font-size: 13px;
-  cursor: pointer;
-  padding: 0;
-  margin-top: 4px;
-
-  &:hover {
-    text-decoration: underline;
-  }
-`
-
-const StatusMessage = styled.div<{ $isValid: boolean }>`
-  margin-top: 4px;
-  color: ${props => (props.$isValid ? FARE_COLORS.blue : FARE_COLORS.salmon)};
-  font-size: 13px;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-`
 
 /**
  * Validates if a URL is in a valid format
@@ -191,19 +119,41 @@ const LinkEditModal: React.FC<FieldEditModalProps> = ({
   return (
     <ModalBase isOpen={isOpen} onClose={onClose} title={`Edit ${getDisplayName()} Link`}>
       {linkUrl && (
-        <LinkPreviewContainer>
-          <LinkIcon>🔗</LinkIcon>
-          <LinkInfo>
-            <LinkUrl href={displayUrl} target='_blank' rel='noopener noreferrer'>
+        <div className="bg-black/20 rounded-lg p-4 mb-4 flex items-center gap-4 transition-all duration-200 border border-transparent hover:bg-black/30">
+          {/* Link icon */}
+          <div className="w-[42px] h-[42px] rounded-md bg-[#ff5e4f] flex items-center justify-center flex-shrink-0 text-white text-lg">
+            🔗
+          </div>
+          {/* Link info */}
+          <div className="flex-1 overflow-hidden">
+            <a
+              href={displayUrl}
+              target='_blank'
+              rel='noopener noreferrer'
+              className="text-white text-sm break-all block no-underline hover:text-[#410dff] hover:underline"
+            >
               {displayUrl}
-            </LinkUrl>
-            {isUrlValid && linkUrl && <LinkTest onClick={handleTestLink}>Test link</LinkTest>}
-            {linkUrl && !isUrlValid && (
-              <StatusMessage $isValid={false}>⚠️ Invalid URL format</StatusMessage>
+            </a>
+            {isUrlValid && linkUrl && (
+              <button
+                onClick={handleTestLink}
+                className="bg-transparent border-none text-[#410dff] text-[13px] cursor-pointer p-0 mt-1 hover:underline"
+              >
+                Test link
+              </button>
             )}
-            {linkUrl && isUrlValid && <StatusMessage $isValid={true}>✓ Valid URL</StatusMessage>}
-          </LinkInfo>
-        </LinkPreviewContainer>
+            {linkUrl && !isUrlValid && (
+              <div className="mt-1 text-[#ff5e4f] text-[13px] flex items-center gap-1">
+                ⚠️ Invalid URL format
+              </div>
+            )}
+            {linkUrl && isUrlValid && (
+              <div className="mt-1 text-[#410dff] text-[13px] flex items-center gap-1">
+                ✓ Valid URL
+              </div>
+            )}
+          </div>
+        </div>
       )}
 
       <TextInput

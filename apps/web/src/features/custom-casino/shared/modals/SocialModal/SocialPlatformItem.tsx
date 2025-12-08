@@ -1,6 +1,6 @@
 // @ts-nocheck
-import { styled } from 'styled-components'
-import { TEXT_COLORS } from '@/design'
+import React, { useState } from 'react'
+import { cn } from '@/lib/utils'
 import { SVGS } from '@/assets'
 
 // Platform definitions and detection
@@ -90,80 +90,6 @@ export const detectPlatform = (url: string): string => {
   return 'custom'
 }
 
-// Styled components
-const SLinkInputWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  background-color: #1a1a1a;
-  border-radius: 6px;
-  padding: 6px 8px;
-  margin-bottom: 8px;
-  position: relative;
-  border: 1px solid transparent;
-  transition: border-color 0.2s ease;
-
-  &[data-invalid='true'] {
-    border-color: #ff5e4f;
-  }
-`
-
-const SPlatformIcon = styled.div`
-  width: 16px;
-  height: 16px;
-  min-width: 16px;
-  margin-right: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-  }
-`
-
-const SLinkInput = styled.input`
-  flex: 1;
-  background: transparent;
-  border: none;
-  color: ${TEXT_COLORS.one};
-  font-size: 14px;
-  outline: none;
-  padding: 4px;
-  min-width: 0;
-
-  &::placeholder {
-    color: ${TEXT_COLORS.three};
-    opacity: 0.7;
-  }
-`
-
-const SRemoveButton = styled.div`
-  width: 16px;
-  height: 16px;
-  min-width: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  color: ${TEXT_COLORS.two};
-  transition: color 0.2s;
-  margin-left: 4px;
-
-  &:hover {
-    color: #ff5e4f;
-  }
-`
-
-const SErrorMessage = styled.div`
-  position: absolute;
-  bottom: -18px;
-  left: 0;
-  font-size: 11px;
-  color: #ff5e4f;
-`
-
 // Props for the component
 interface SocialPlatformItemProps {
   id: string
@@ -223,17 +149,54 @@ export const SocialPlatformItem: React.FC<SocialPlatformItemProps> = ({
   }
 
   return (
-    <SLinkInputWrapper data-invalid={isInvalid}>
-      <SPlatformIcon>
-        <img src={getPlatformIcon(platform)} alt={platform} />
-      </SPlatformIcon>
-      <SLinkInput
+    <div
+      className={cn(
+        'flex items-center bg-[#1a1a1a] rounded-md px-2 py-1.5 mb-2 relative',
+        'border transition-colors duration-200',
+        isInvalid ? 'border-[#ff5e4f]' : 'border-transparent'
+      )}
+    >
+      {/* Platform Icon */}
+      <div className="w-4 h-4 min-w-[16px] mr-2 flex items-center justify-center">
+        <img
+          src={getPlatformIcon(platform)}
+          alt={platform}
+          className="w-full h-full object-contain"
+        />
+      </div>
+
+      {/* Input */}
+      <input
         value={url}
         onChange={handleChange}
         placeholder={`${KNOWN_PLATFORMS[platform]?.name || 'Website'} URL`}
+        className={cn(
+          'flex-1 bg-transparent border-none text-white text-sm',
+          'outline-none p-1 min-w-0',
+          'placeholder:text-[#666] placeholder:opacity-70'
+        )}
       />
-      {url && <SRemoveButton onClick={() => onClear(id)}>✕</SRemoveButton>}
-      {isInvalid && errorMessage && <SErrorMessage>{errorMessage}</SErrorMessage>}
-    </SLinkInputWrapper>
+
+      {/* Clear Button */}
+      {url && (
+        <div
+          onClick={() => onClear(id)}
+          className={cn(
+            'w-4 h-4 min-w-[16px] flex items-center justify-center',
+            'cursor-pointer text-[#aaaaaa] transition-colors duration-200 ml-1',
+            'hover:text-[#ff5e4f]'
+          )}
+        >
+          ✕
+        </div>
+      )}
+
+      {/* Error Message */}
+      {isInvalid && errorMessage && (
+        <div className="absolute -bottom-[18px] left-0 text-[11px] text-[#ff5e4f]">
+          {errorMessage}
+        </div>
+      )}
+    </div>
   )
 }

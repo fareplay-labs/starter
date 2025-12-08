@@ -1,7 +1,6 @@
 // @ts-nocheck
 import React from 'react'
-import { styled } from 'styled-components'
-import { TEXT_COLORS, FARE_COLORS } from '@/design'
+import { cn } from '@/lib/utils'
 import { KNOWN_PLATFORMS } from './SocialPlatformItem'
 
 // Define layout types
@@ -13,91 +12,48 @@ interface SocialLayoutSelectorProps {
   onLayoutChange: (layout: SocialLayoutType) => void
 }
 
-// Styled components
-const SSectionTitle = styled.h3`
-  font-size: 16px;
-  color: ${TEXT_COLORS.one};
-  margin: 0 0 8px 0;
-`
+// Preview colors for icons (peach, salmon, pink from FARE_COLORS)
+const previewColors = ['#ffcd9e', '#ff5e4f', '#d900d5']
 
-const SLayoutOptions = styled.div`
-  display: flex;
-  gap: 8px;
-  margin-bottom: 12px;
-  width: 100%;
-`
+// Sample platforms for previews
+const samplePlatforms = ['twitter', 'discord', 'telegram']
 
-const SLayoutOption = styled.button<{ $isSelected: boolean }>`
-  flex: 1;
-  border: 2px solid ${props => (props.$isSelected ? '#ff5e4f' : 'rgba(255, 255, 255, 0.1)')};
-  border-radius: 6px;
-  padding: 10px;
-  cursor: pointer;
-  background-color: #1a1a1a;
-  transition: all 0.2s ease;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 80px;
+// Social icon circle component
+const SocialIconCircle: React.FC<{ platform: string; color: string }> = ({ platform, color }) => (
+  <div
+    className={cn(
+      'w-7 h-7 rounded-full bg-[rgba(40,40,40,0.85)]',
+      'flex items-center justify-center border-2'
+    )}
+    style={{ borderColor: color }}
+  >
+    <img
+      src={KNOWN_PLATFORMS[platform]?.icon}
+      alt={platform}
+      className="w-4 h-4 object-contain"
+    />
+  </div>
+)
 
-  &:hover {
-    border-color: ${props => (props.$isSelected ? '#ff5e4f' : 'rgba(255, 255, 255, 0.3)')};
-  }
-`
-
-// Social Icons for Previews
-const SSocialIconCircle = styled.div<{ $color?: string }>`
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  background-color: rgba(40, 40, 40, 0.85);
-  border: 2px solid ${props => props.$color || FARE_COLORS.peach};
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  img {
-    width: 16px;
-    height: 16px;
-    object-fit: contain;
-  }
-`
-
-// Layout preview components
-const SHorizontalPreview = styled.div`
-  display: flex;
-  gap: 6px;
-  justify-content: center;
-`
-
-const SVerticalPreview = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  align-items: center;
-`
-
-const SShowLinksPreview = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  align-items: flex-start;
-`
-
-const SLinkRow = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 4px;
-`
-
-const SLinkText = styled.div`
-  color: ${TEXT_COLORS.one};
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  font-size: 12px;
-`
+// Layout option button
+const LayoutOption: React.FC<{
+  isSelected: boolean
+  onClick: () => void
+  children: React.ReactNode
+}> = ({ isSelected, onClick, children }) => (
+  <button
+    onClick={onClick}
+    className={cn(
+      'flex-1 rounded-md p-2.5 cursor-pointer bg-[#1a1a1a]',
+      'transition-all duration-200 flex flex-col items-center justify-center',
+      'min-h-[80px] border-2',
+      isSelected ? 'border-[#ff5e4f]' : 'border-white/10',
+      !isSelected && 'hover:border-white/30'
+    )}
+  >
+    {children}
+  </button>
+)
 
 /**
  * Component for selecting social link layout style
@@ -106,64 +62,66 @@ export const SocialLayoutSelector: React.FC<SocialLayoutSelectorProps> = ({
   selectedLayout,
   onLayoutChange,
 }) => {
-  // Preview colors for icons
-  const previewColors = [FARE_COLORS.peach, FARE_COLORS.salmon, FARE_COLORS.pink]
-
-  // Sample platforms for previews
-  const samplePlatforms = ['twitter', 'discord', 'telegram']
-
   return (
     <>
-      <SSectionTitle>Layout Style</SSectionTitle>
-      <SLayoutOptions>
-        <SLayoutOption
-          $isSelected={selectedLayout === 'showLinks'}
+      {/* Section Title */}
+      <h3 className="text-base text-white m-0 mb-2">Layout Style</h3>
+
+      {/* Layout Options */}
+      <div className="flex gap-2 mb-3 w-full">
+        {/* Show Links Layout */}
+        <LayoutOption
+          isSelected={selectedLayout === 'showLinks'}
           onClick={() => onLayoutChange('showLinks')}
         >
-          <SShowLinksPreview>
+          <div className="flex flex-col gap-1 items-start">
             {samplePlatforms.map((platform, index) => (
-              <SLinkRow key={platform}>
-                <SSocialIconCircle $color={previewColors[index % 3]}>
-                  <img src={KNOWN_PLATFORMS[platform]?.icon} alt={platform} />
-                </SSocialIconCircle>
-                <SLinkText>
-                  {platform === 'twitter' ?
-                    'x.com/user'
-                  : platform === 'discord' ?
-                    'discord.gg/link'
-                  : 't.me/user'}
-                </SLinkText>
-              </SLinkRow>
+              <div key={platform} className="flex items-center gap-1">
+                <SocialIconCircle platform={platform} color={previewColors[index % 3]} />
+                <div className="text-white whitespace-nowrap overflow-hidden text-ellipsis text-xs">
+                  {platform === 'twitter'
+                    ? 'x.com/user'
+                    : platform === 'discord'
+                      ? 'discord.gg/link'
+                      : 't.me/user'}
+                </div>
+              </div>
             ))}
-          </SShowLinksPreview>
-        </SLayoutOption>
+          </div>
+        </LayoutOption>
 
-        <SLayoutOption
-          $isSelected={selectedLayout === 'vertical'}
+        {/* Vertical Layout */}
+        <LayoutOption
+          isSelected={selectedLayout === 'vertical'}
           onClick={() => onLayoutChange('vertical')}
         >
-          <SVerticalPreview>
+          <div className="flex flex-col gap-1.5 items-center">
             {samplePlatforms.map((platform, index) => (
-              <SSocialIconCircle key={platform} $color={previewColors[index % 3]}>
-                <img src={KNOWN_PLATFORMS[platform]?.icon} alt={platform} />
-              </SSocialIconCircle>
+              <SocialIconCircle
+                key={platform}
+                platform={platform}
+                color={previewColors[index % 3]}
+              />
             ))}
-          </SVerticalPreview>
-        </SLayoutOption>
+          </div>
+        </LayoutOption>
 
-        <SLayoutOption
-          $isSelected={selectedLayout === 'horizontal'}
+        {/* Horizontal Layout */}
+        <LayoutOption
+          isSelected={selectedLayout === 'horizontal'}
           onClick={() => onLayoutChange('horizontal')}
         >
-          <SHorizontalPreview>
+          <div className="flex gap-1.5 justify-center">
             {samplePlatforms.map((platform, index) => (
-              <SSocialIconCircle key={platform} $color={previewColors[index % 3]}>
-                <img src={KNOWN_PLATFORMS[platform]?.icon} alt={platform} />
-              </SSocialIconCircle>
+              <SocialIconCircle
+                key={platform}
+                platform={platform}
+                color={previewColors[index % 3]}
+              />
             ))}
-          </SHorizontalPreview>
-        </SLayoutOption>
-      </SLayoutOptions>
+          </div>
+        </LayoutOption>
+      </div>
     </>
   )
 }

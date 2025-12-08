@@ -1,56 +1,5 @@
-// @ts-nocheck
 import React, { type ReactNode } from 'react'
-import { styled } from 'styled-components'
-import { BREAKPOINTS, SPACING, TEXT_COLORS, BORDER_COLORS, FARE_COLORS } from '@/design'
-
-// Button group container
-const SButtonGroup = styled.div`
-  display: flex;
-  gap: ${SPACING.md}px;
-  margin-top: ${SPACING.md}px;
-
-  @media (max-width: ${BREAKPOINTS.sm}px) {
-    flex-direction: column;
-  }
-`
-
-// Base button styling
-const SButton = styled.button<{ $isPrimary?: boolean; $fullWidth?: boolean }>`
-  flex: ${props => (props.$fullWidth ? 1 : 'initial')};
-  padding: ${SPACING.md}px;
-  border-radius: 8px;
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  text-align: center;
-
-  ${props =>
-    props.$isPrimary ?
-      `
-    background-color: ${FARE_COLORS.salmon};
-    color: white;
-    border: none;
-    
-    &:hover {
-      background-color: ${FARE_COLORS.pink};
-    }
-  `
-    : `
-    background-color: transparent;
-    color: ${TEXT_COLORS.one};
-    border: 1px solid ${BORDER_COLORS.one};
-    
-    &:hover {
-      background-color: rgba(255, 255, 255, 0.1);
-    }
-  `}
-
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-`
+import { cn } from '@/lib/utils'
 
 // Button Props interface
 export interface ButtonProps {
@@ -74,15 +23,21 @@ export const Button: React.FC<ButtonProps> = ({
   children,
 }) => {
   return (
-    <SButton
+    <button
       onClick={onClick}
-      $isPrimary={isPrimary}
-      $fullWidth={fullWidth}
       disabled={disabled}
       type={type}
+      className={cn(
+        'p-4 rounded-lg text-base font-semibold cursor-pointer transition-all duration-200 text-center',
+        fullWidth ? 'flex-1' : '',
+        isPrimary
+          ? 'bg-[#ff5e4f] text-white border-none hover:bg-[#d900d5]'
+          : 'bg-transparent text-white border border-[#1b1d26] hover:bg-white/10',
+        'disabled:opacity-50 disabled:cursor-not-allowed'
+      )}
     >
       {children}
-    </SButton>
+    </button>
   )
 }
 
@@ -95,7 +50,11 @@ export interface ButtonGroupProps {
  * Button group component for modal actions
  */
 export const ButtonGroup: React.FC<ButtonGroupProps> = ({ children }) => {
-  return <SButtonGroup>{children}</SButtonGroup>
+  return (
+    <div className="flex gap-4 mt-4 max-[992px]:flex-col">
+      {children}
+    </div>
+  )
 }
 
 // Standard modal action buttons for OK/Cancel or Save/Cancel patterns
