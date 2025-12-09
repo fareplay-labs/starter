@@ -51,7 +51,6 @@ export const KNOWN_PLATFORMS: Record<string, PlatformInfo> = {
 // Helper function to detect platform from URL
 export const detectPlatform = (url: string): string => {
   if (!url) return 'custom'
-  console.log('[detectPlatform] Analyzing URL:', url)
 
   try {
     // Clean the URL to ensure it's valid for parsing
@@ -60,12 +59,10 @@ export const detectPlatform = (url: string): string => {
 
     try {
       urlObj = new URL(cleanUrl.startsWith('http') ? cleanUrl : `https://${cleanUrl}`)
-    } catch (e) {
-      console.log('[detectPlatform] Failed to parse URL:', e)
+    } catch {
       // Just do basic string matching if URL parsing fails
       for (const [platform, info] of Object.entries(KNOWN_PLATFORMS)) {
         if (info.urlPatterns.some(pattern => cleanUrl.includes(pattern))) {
-          console.log('[detectPlatform] Matched platform via string matching:', platform)
           return platform
         }
       }
@@ -73,20 +70,17 @@ export const detectPlatform = (url: string): string => {
     }
 
     const domain = urlObj.hostname.replace('www.', '')
-    console.log('[detectPlatform] Parsed domain:', domain)
 
     // Check against known platform patterns
     for (const [platform, info] of Object.entries(KNOWN_PLATFORMS)) {
       if (info.urlPatterns.some(pattern => domain.includes(pattern))) {
-        console.log('[detectPlatform] Matched platform:', platform)
         return platform
       }
     }
-  } catch (e) {
-    console.error('[detectPlatform] Error detecting platform:', e)
+  } catch {
+    // Silently handle errors
   }
 
-  console.log('[detectPlatform] No platform match found, using "custom"')
   return 'custom'
 }
 

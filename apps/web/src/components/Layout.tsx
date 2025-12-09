@@ -9,10 +9,10 @@ interface LayoutProps {
 
 export function Layout({ children }: LayoutProps) {
   return (
-    <div className="min-h-screen bg-casino-dark">
+    <div className="min-h-screen">
       <Header />
       <main className="container mx-auto px-4 py-8">{children}</main>
-      <footer className="bg-casino-darker border-t border-casino-border mt-20">
+      <footer className="bg-black/60 backdrop-blur-md border-t border-white/10 mt-20">
         <div className="container mx-auto px-4 py-8 text-center text-gray-400">
           <p>© 2024 Fare Casino. Powered by Solana.</p>
         </div>

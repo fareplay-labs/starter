@@ -55,7 +55,7 @@ export function Header() {
   }, [connected, publicKey, isAuthenticated, isLoading, login]);
 
   return (
-    <header className="bg-casino-darker border-b border-casino-border">
+    <header className="bg-black/60 backdrop-blur-md border-b border-white/10">
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-8">

@@ -7,6 +7,11 @@ export default {
   ],
   theme: {
   	extend: {
+  		/* === Font Family (supports dynamic override) === */
+  		fontFamily: {
+  			sans: 'var(--font-family)',
+  			user: 'var(--user-selected-font)',
+  		},
   		colors: {
   			/* === Core shadcn colors (CSS variable based) === */
   			background: 'hsl(var(--background))',

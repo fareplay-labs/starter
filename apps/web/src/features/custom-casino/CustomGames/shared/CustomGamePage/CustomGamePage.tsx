@@ -137,8 +137,12 @@ function CustomGamePage<T extends BaseGameParameters>({
                   <SPanelContentContainer>
                     {TestPanel ?
                       <TestPanel />
-                    : <div>
-                        <h1>BET HISTORY</h1>
+                    : <div className="flex flex-col w-full">
+                        <div className="pb-3 border-b border-white/10">
+                          <h1 className="text-lg font-bold text-foreground uppercase tracking-wide m-0">
+                            Bet History
+                          </h1>
+                        </div>
                       </div>
                     }
                   </SPanelContentContainer>

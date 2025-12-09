@@ -12,6 +12,7 @@ import { useEditStore } from '@/features/custom-casino/UserPage/editor/useEditSt
 import { useBackendService } from '../backend/hooks'
 
 import { applyFontToPage, usePreloadFonts } from '../shared/utils/fontUtils'
+import { useThemeOverride } from '../shared/hooks'
 
 // AI Integration
 import { CreateCasinoModal } from '../shared/modals/CreateCasinoModal/CreateCasinoModal'
@@ -129,6 +130,10 @@ export const UserPage: React.FC = () => {
 
   // Preload fonts when the component mounts - prevents flash of unstyled text
   usePreloadFonts(true)
+
+  // Apply theme colors and font as CSS variables for site-wide theming
+  // This propagates the custom casino's colors to all Tailwind/shadcn components
+  useThemeOverride(casino?.config?.colors, casino?.config?.font)
 
   // Apply AI-generated casino configuration
   // When the font changes in the config, apply it to the page

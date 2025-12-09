@@ -33,7 +33,6 @@ export const SocialsEditModal: React.FC<SocialsEditModalProps> = ({
   // Initialize links from props when modal opens
   useEffect(() => {
     if (isOpen) {
-      console.log('[SocialsEditModal] Modal opened with socialLinks:', socialLinks)
       const initialLinks: LinkEntry[] = []
 
       // Extract layout type if it exists
@@ -43,11 +42,8 @@ export const SocialsEditModal: React.FC<SocialsEditModalProps> = ({
       let processedSocialLinks = socialLinks
       if (typeof socialLinks === 'string') {
         try {
-          console.log('[SocialsEditModal] Attempting to parse string socialLinks')
           processedSocialLinks = JSON.parse(socialLinks)
-          console.log('[SocialsEditModal] Successfully parsed socialLinks:', processedSocialLinks)
         } catch (e) {
-          console.error('[SocialsEditModal] Failed to parse socialLinks string:', e)
           processedSocialLinks = {}
         }
       }
@@ -57,15 +53,10 @@ export const SocialsEditModal: React.FC<SocialsEditModalProps> = ({
         // Handle layoutType
         if (processedSocialLinks.layoutType) {
           initialLayoutType = processedSocialLinks.layoutType
-          console.log('[SocialsEditModal] Using layout type:', initialLayoutType)
         }
 
         // Handle links array if it exists in the new format
         if (Array.isArray(processedSocialLinks.links)) {
-          console.log(
-            '[SocialsEditModal] Processing links array format:',
-            processedSocialLinks.links
-          )
           processedSocialLinks.links.forEach(link => {
             if (typeof link === 'string') {
               const platform = detectPlatform(link)
@@ -78,10 +69,8 @@ export const SocialsEditModal: React.FC<SocialsEditModalProps> = ({
           })
         } else {
           // For backward compatibility, handle old format of key-value pairs
-          console.log('[SocialsEditModal] Processing key-value pairs format')
           Object.entries(processedSocialLinks).forEach(([key, value]) => {
             if (key !== 'layoutType' && key !== 'links' && value && typeof value === 'string') {
-              console.log('[SocialsEditModal] Found link:', key, value)
               initialLinks.push({
                 platform: key,
                 url: value,
@@ -91,8 +80,6 @@ export const SocialsEditModal: React.FC<SocialsEditModalProps> = ({
           })
         }
       }
-
-      console.log('[SocialsEditModal] Initial links before padding:', initialLinks)
 
       // Initialize exactly 8 input fields
       const filledLinksCount = initialLinks.length
@@ -109,7 +96,6 @@ export const SocialsEditModal: React.FC<SocialsEditModalProps> = ({
 
       setLinks(initialLinks)
       setLayoutType(initialLayoutType)
-      console.log('[SocialsEditModal] Final initialized links:', initialLinks)
     }
   }, [isOpen, socialLinks])
 
@@ -145,7 +131,6 @@ export const SocialsEditModal: React.FC<SocialsEditModalProps> = ({
 
   // Save the social links
   const handleSave = () => {
-    console.log('[SocialsEditModal] Starting save process with links:', links)
     // URL validation helper
     const isValidUrl = (url: string): boolean => {
       try {
@@ -164,22 +149,14 @@ export const SocialsEditModal: React.FC<SocialsEditModalProps> = ({
     // Filter out empty and invalid links
     const filledLinks = links.filter(link => {
       const trimmedUrl = link.url.trim()
-      const isValid = trimmedUrl !== '' && isValidUrl(trimmedUrl)
-      if (!isValid && trimmedUrl !== '') {
-        console.log('[SocialsEditModal] Filtered out invalid URL:', trimmedUrl)
-      }
-      return isValid
+      return trimmedUrl !== '' && isValidUrl(trimmedUrl)
     })
-
-    console.log('[SocialsEditModal] Filtered valid links:', filledLinks)
 
     // Create links array with validated URLs
     const linkUrls = filledLinks.map(link => {
       const trimmedUrl = link.url.trim()
       return trimmedUrl.startsWith('http') ? trimmedUrl : `https://${trimmedUrl}`
     })
-
-    console.log('[SocialsEditModal] Processed URLs for links array:', linkUrls)
 
     // Convert to the format expected by the parent component
     const socialLinksData: SocialLinksConfig = {
@@ -194,9 +171,6 @@ export const SocialsEditModal: React.FC<SocialsEditModalProps> = ({
         link.url.trim().startsWith('http') ? link.url.trim() : `https://${link.url.trim()}`
       socialLinksData[platform] = url
     })
-
-    console.log('[SocialsEditModal] Final socialLinksData to save:', socialLinksData)
-    console.log('[SocialsEditModal] Stringified data:', JSON.stringify(socialLinksData))
 
     // Save the data
     onSave('socialLinks', JSON.stringify(socialLinksData))

@@ -101,7 +101,7 @@ const ColorButton: React.FC<ColorButtonProps> = ({ color, onClick, title }) => (
         <button
           onClick={onClick}
           className="w-8 h-8 rounded-full border-2 border-white/80 cursor-pointer transition-all duration-200 relative overflow-hidden my-2 hover:scale-110 hover:shadow-[0_0_10px_rgba(255,255,255,0.5)]"
-          style={{ backgroundColor: color || '#ffffff' }}
+          style={{ background: color || '#ffffff' }}
         >
           {/* Gradient overlay */}
           <span className="absolute inset-0 bg-gradient-to-br from-white/30 via-transparent to-transparent" />
@@ -319,6 +319,19 @@ export const EditToolbar: React.FC<EditToolbarProps> = ({
                   color={pageConfig.colors.themeColor3}
                   onClick={() => openColorModal('themeColor3')}
                   title="Tertiary Color"
+                />
+              </ColorControls>
+            </ThemeSection>
+
+            <ToolbarDivider isClosing={isClosing} />
+            {/* Background Color */}
+            <ThemeSection isClosing={isClosing}>
+              <ThemeLabel isClosing={isClosing}><span className="text-[10px]">BG</span></ThemeLabel>
+              <ColorControls>
+                <ColorButton
+                  color={pageConfig.colors.backgroundColor}
+                  onClick={() => openColorModal('backgroundColor')}
+                  title="Background Color"
                 />
               </ColorControls>
             </ThemeSection>

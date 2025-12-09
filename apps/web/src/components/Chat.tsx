@@ -44,6 +44,7 @@ export function Chat() {
       <Button
         onClick={() => setIsOpen(!isOpen)}
         size="icon"
+        variant="secondary"
         className={`fixed top-1/2 -translate-y-1/2 z-40 rounded-l-lg rounded-r-none shadow-lg transition-all duration-300 ${
           isOpen ? 'right-80' : 'right-0'
         }`}

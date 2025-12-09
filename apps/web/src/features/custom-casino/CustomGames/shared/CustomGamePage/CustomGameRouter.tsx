@@ -483,6 +483,7 @@ const CustomGamesRouter: React.FC = () => {
         gameType={gameType}
         GameComponent={components.GameComponent}
         FormComponent={components.FormComponent}
+        GameRules={components.GameRules}
         useGameStore={components.useGameStore}
         casinoName={casino?.config?.title ?? 'User Casino'}
         bannerImage={casino?.config?.bannerImage ?? ''}
